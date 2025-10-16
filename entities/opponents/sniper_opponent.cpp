@@ -1,0 +1,105 @@
+#include "sniper_opponent.h"
+#include <SDL3/SDL.h>
+#include <SDL3_image/SDL_image.h>
+#include <cmath>
+#include <algorithm>
+#include "../particle.h"
+#include "../../core/texture_manager.h"
+
+SniperOpponent::SniperOpponent(float x, float y, float w, float h, SDL_Renderer* renderer) 
+    : BaseOpponent(x, y, w, h, renderer) {
+    m_speed = 20.0f;
+    m_angularSpeed = 0.8f;
+    m_oscillationAmplitude = 60.0f;
+    m_oscillationSpeed = 1.0f;
+    m_oscillationOffset = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI;
+    m_fireInterval = 4.0f;
+    m_fireAccuracy = 0.1f;
+    
+    m_health = 1;
+    m_scoreVal = 100;
+    
+    m_texture = TextureManager::getInstance().getTexture(Config::Textures::SNIPER_OPPONENT, renderer);
+    
+    if (!m_texture) {
+        SDL_Log("failed to load sniper opponent texture: %s", SDL_GetError());
+    }
+}
+
+void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) {
+    if (m_health <= 0) return;
+
+    // simple movement
+    m_rect.y += m_speed * deltaTime;
+    m_angle += m_oscillationSpeed * deltaTime;
+    m_rect.x = m_startX + sin(m_angle + m_oscillationOffset) * m_oscillationAmplitude;
+
+    m_fireTimer += deltaTime;
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, screenWidth);
+    
+    if (opponentVisible && m_fireTimer >= m_fireInterval) {
+        float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
+        m_projectiles.emplace_back(
+            std::make_unique<Projectile>(
+            m_rect.x + m_rect.w/2,
+            m_rect.y + m_rect.h/2,
+            playerPos.x,
+            playerPos.y,
+            1800.0f
+            )
+        );
+        m_fireTimer = 0.0f;
+    }
+    
+    for (auto& projectile : m_projectiles) {
+        projectile->update(deltaTime);
+    }
+    
+    m_projectiles.erase(
+        std::remove_if(m_projectiles.begin(), m_projectiles.end(),
+            [](const std::unique_ptr<Projectile>& p) {
+                return p->isOffScreen(800, 600);
+            }),
+        m_projectiles.end()
+    );
+}
+
+void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
+    if (m_health <= 0) return;
+
+    if (m_texture) {
+        SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
+    } else {
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+        SDL_RenderFillRect(renderer, renderBounds);
+    }
+}
+
+void SniperOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const {
+    const int numParticles = 45;
+    SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
+
+    for (int i = 0; i < numParticles; ++i) {
+        float angle = (static_cast<float>(i) / numParticles) * 2.0f * M_PI + (static_cast<float>(rand()) / RAND_MAX) * 0.2f;
+        float speed = static_cast<float>(rand() % 110) + 70.0f;
+
+        float velX = cos(angle) * speed;
+        float velY = sin(angle) * speed;
+
+        Uint8 r = static_cast<Uint8>(rand() % 100 + 55);
+        Uint8 g = static_cast<Uint8>(rand() % 100 + 155);
+        Uint8 b = static_cast<Uint8>(rand() % 50 + 55);
+
+        gameParticles.emplace_back(std::make_unique<Particle>(center.x, center.y, velX, velY, r, g, b, 0.0001f, 1.35f));
+    }
+}
+
+bool SniperOpponent::isOnScreen(float objX, float objY, float cameraX, int screenWidth) const {
+    float screenMinX = cameraX;
+    float screenMaxX = cameraX + screenWidth;
+    // Y is always fully visible because:
+    // world height = 600px
+    // window height is enforced to be >= 600px
+    // no vertical camera movement
+    return (objX >= screenMinX && objX <= screenMaxX);
+}
