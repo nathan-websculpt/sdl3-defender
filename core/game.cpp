@@ -60,6 +60,7 @@ Game::~Game() {
     m_opponents.clear();
     m_particles.clear(); 
 
+    // TODO: redundant but fixes segfault on close
     // clear the managers' caches before destroying the renderer
     TextureManager::getInstance().clearCache();
     FontManager::getInstance().clearCache();
@@ -279,92 +280,87 @@ void Game::update(float deltaTime) {
         m_player->update(deltaTime);
         auto& playerProjectiles = m_player->getProjectiles();
 
-        for (auto& p : playerProjectiles) {
-            if (p) p->update(deltaTime);
+        for (auto& p : playerProjectiles) { 
+            p.update(deltaTime);
         }
 
         SDL_FRect pb = m_player->getBounds();
+
         float cx = pb.x;
         float cy = pb.y;
-
         if (cx < 0) cx = 0;
         if (cy < 0) cy = 0;
-
         if (cx + pb.w > m_worldWidth) cx = m_worldWidth - pb.w;
         if (cy + pb.h > m_worldHeight) cy = m_worldHeight - pb.h;
-
         if (cx != pb.x || cy != pb.y) m_player->setPosition(cx, cy);
     }
-    
-    //update opponents
-    for (auto& o : m_opponents) {
+
+    // update opponents
+    for (auto& o : m_opponents) { // o is std::unique_ptr<BaseOpponent>&
+        if (!o || !o->isAlive()) continue; 
         SDL_FPoint playerPos = { m_player->getBounds().x, m_player->getBounds().y };
-        if (o) o->update(deltaTime, playerPos, m_cameraX, m_windowWidth);
+        o->update(deltaTime, playerPos, m_cameraX, m_windowWidth); 
     }
 
-    m_opponents.erase(
-        std::remove_if(m_opponents.begin(), m_opponents.end(),
-            [this](const std::unique_ptr<BaseOpponent>& o) {
-                if (o->getBounds().y > m_worldHeight) {
-                    BasicOpponent* b = dynamic_cast<BasicOpponent*>(o.get()); // TODO: better way to check if this is a basic opponent?
-                    if (b) { // only the basic opponents damage world
-                        m_worldHealth--;
-                        if (m_worldHealth <= 0) m_state = GameState::GAME_OVER;
-                    }
-                    return true;
-                }
-                return !o->isAlive();
-            }),
-        m_opponents.end()
-    );
+    // erase opponents
+    for (auto o_it = m_opponents.begin(); o_it != m_opponents.end(); ) {
+        if (!(*o_it) || (*o_it)->getBounds().y > m_worldHeight) {
+            BasicOpponent* b = dynamic_cast<BasicOpponent*>((*o_it).get()); //get() to get raw pointer for cast
+            if (b) { // only the basic opponents damage world
+                m_worldHealth--;
+                if (m_worldHealth <= 0) m_state = GameState::GAME_OVER;
+            }
+            o_it = m_opponents.erase(o_it);
+        } else if (!(*o_it)->isAlive()) {
+            o_it = m_opponents.erase(o_it);
+        } else {
+            ++o_it; // only increment if not erased
+        }
+    }
 
+    // player projectiles
     if (m_player) {
         auto& pp = m_player->getProjectiles();
-        pp.erase(
-            std::remove_if(pp.begin(), pp.end(),
-                [this](const std::unique_ptr<Projectile>& p) {
-                    if (!p) return true;
-                    SDL_FRect b = p->getBounds();
-                    float mx = 100.0f;
-                    float my = 100.0f;
-
-                    return (b.x + b.w < -mx || b.x > m_worldWidth + mx || b.y + b.h < -my || b.y > m_worldHeight + my);
-                }),
-            pp.end()
-        );
-    }
-
-    for (auto& o : m_opponents) {
-        if (!o) continue;
-        auto& op = o->getProjectiles();
-        for (auto& p : op) {
-            if (p) p->update(deltaTime);
+        for (auto p_it = pp.begin(); p_it != pp.end(); ) {
+            p_it->update(deltaTime);
+            SDL_FRect b = p_it->getBounds();
+            float mx = 100.0f;
+            float my = 100.0f;
+            if (b.x + b.w < -mx || b.x > m_worldWidth + mx || b.y + b.h < -my || b.y > m_worldHeight + my) {
+                p_it = pp.erase(p_it);
+            } else {
+                ++p_it;
+            }
         }
-        op.erase(
-            std::remove_if(op.begin(), op.end(),
-                [this](const std::unique_ptr<Projectile>& p) {
-                    if (!p) return true;
-                    SDL_FRect b = p->getBounds();
-                    float mx = 100.0f, my = 100.0f;
-
-                    return (b.x + b.w < -mx || b.x > m_worldWidth + mx || b.y + b.h < -my || b.y > m_worldHeight + my);
-                }),
-            op.end()
-        );
     }
 
-    for (auto& p : m_particles) {
-        p->update(deltaTime);
+    // opponent projectiles
+    for (auto& o : m_opponents) { // o is std::unique_ptr<BaseOpponent>&
+        if (!o) continue; 
+        auto& op = o->getProjectiles(); 
+        for (auto& p : op) { 
+            p.update(deltaTime);
+        }
+        
+        for (auto p_it = op.begin(); p_it != op.end(); ) {
+            SDL_FRect b = p_it->getBounds();
+            float mx = 100.0f, my = 100.0f;
+            if (b.x + b.w < -mx || b.x > m_worldWidth + mx || b.y + b.h < -my || b.y > m_worldHeight + my) {
+                p_it = op.erase(p_it); 
+            } else {
+                ++p_it; 
+            }
+        }
     }
 
-    m_particles.erase(
-        std::remove_if(m_particles.begin(), m_particles.end(),
-            [](const std::unique_ptr<Particle>& p) {
-                return !p->isAlive();
-            }),
-        m_particles.end()
-    );
-
+    for (auto particle = m_particles.begin(); particle != m_particles.end(); ) {
+        particle->update(deltaTime);
+        if (!particle->isAlive()) {
+            particle = m_particles.erase(particle);
+        } else {
+            ++particle; // only increment if not erasing
+        }
+    }
     checkCollisions();
     updateCamera();
 }
@@ -374,7 +370,6 @@ void Game::render() {
     SDL_RenderClear(m_renderer);
 
     if (m_player) {
-        // render player
         SDL_FRect renderBounds = m_player->getBounds();
         renderBounds.x -= m_cameraX;
         m_player->render(m_renderer, &renderBounds);
@@ -382,76 +377,63 @@ void Game::render() {
         // render player projectiles
         const auto& pp = m_player->getProjectiles();
         for (const auto& p : pp) {
-            if (p) {
-                SDL_FRect pr = p->getBounds();
-                pr.x -= m_cameraX;
-                p->render(m_renderer, &pr);
-            }
+            SDL_FRect pr = p.getBounds();
+            pr.x -= m_cameraX;
+            p.render(m_renderer, &pr);
         }
     }
-    
+
     for (const auto& o : m_opponents) {
         if (o) {
             // render opponent
-            SDL_FRect or_ = o->getBounds();
+            SDL_FRect or_ = o->getBounds(); 
             or_.x -= m_cameraX;
             o->render(m_renderer, &or_);
 
             // render opponent projectiles
             const auto& op = o->getProjectiles();
-            for (const auto& p : op) {
-                if (p) {
-                    SDL_FRect pr = p->getBounds();
-                    pr.x -= m_cameraX;
-                    p->render(m_renderer, &pr);
-                }
+            for (const auto& p : op) { 
+                SDL_FRect pr = p.getBounds();
+                pr.x -= m_cameraX;
+                p.render(m_renderer, &pr);
             }
         }
     }
 
     // render particles
-    for (const auto& particle : m_particles) {
-        if (particle) {
-            SDL_FRect pr = particle->getBounds();
-            pr.x -= m_cameraX;
-            particle->render(m_renderer, &pr);
-        }
+    for (const auto& particle : m_particles) { // particle is the object itself
+        SDL_FRect pr = particle.getBounds();
+        pr.x -= m_cameraX;
+        particle.render(m_renderer, &pr);
     }
 
-
     renderMinimap();
-    
 
-    // render health bars    
+    // render health bars
     const int barW = 200;
     const int barH = 10;
     const int barX = 10;
-    const int barY = 10; 
+    const int barY = 10;
     const int spacing = 5;
     SDL_Color white = {255,255,255,255};
 
     renderText("Player Health:", barX, barY, white, FontSize::SMALL);
     float phr = m_player ? (float)m_player->getHealth() / 10.0f : 1.0f; // TODO: change 10 to a maxHealth
     SDL_SetRenderDrawColor(m_renderer, 255,0,0,255);
-
     SDL_FRect pbBg = {(float)barX, (float)(barY+20), (float)barW, (float)barH};
     SDL_RenderFillRect(m_renderer, &pbBg);
-
     SDL_SetRenderDrawColor(m_renderer, 0,255,0,255);
     SDL_FRect pbFill = {(float)barX, (float)(barY+20), (float)(barW * phr), (float)barH};
     SDL_RenderFillRect(m_renderer, &pbFill);
-
     SDL_SetRenderDrawColor(m_renderer, 255,255,255,255);
     SDL_RenderRect(m_renderer, &pbBg);
-    renderText("World Health:", barX, barY + 20 + barH + spacing, white, FontSize::SMALL);
 
+    renderText("World Health:", barX, barY + 20 + barH + spacing, white, FontSize::SMALL);
     float whr = (float)m_worldHealth / 10.0f; // TODO: change 10 to a maxHealth
     SDL_SetRenderDrawColor(m_renderer, 255,0,0,255);
-
     SDL_FRect wbBg = {(float)barX, (float)(barY + 20 + barH + spacing + 20), (float)barW, (float)barH};
     SDL_RenderFillRect(m_renderer, &wbBg);
     SDL_SetRenderDrawColor(m_renderer, 0,255,0,255);
-
     SDL_FRect wbFill = {(float)barX, (float)(barY + 20 + barH + spacing + 20), (float)(barW * whr), (float)barH};
     SDL_RenderFillRect(m_renderer, &wbFill);
     SDL_SetRenderDrawColor(m_renderer, 255,255,255,255);
@@ -463,8 +445,6 @@ void Game::render() {
     std::string scoreStr = std::to_string(m_playerScore);
     renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
 
-    
-
     SDL_RenderPresent(m_renderer);
 }
 
@@ -473,9 +453,9 @@ void Game::spawnOpponent() {
     float x = (float)(rand() % (int)(m_worldWidth - 50));
     float y = -50.0f;
     switch (type) {
-        case 0: m_opponents.emplace_back(std::make_unique<BasicOpponent>(x, y, 40, 40, m_renderer)); break;
-        case 1: m_opponents.emplace_back(std::make_unique<AggressiveOpponent>(x, y, 45, 45, m_renderer)); break;
-        case 2: m_opponents.emplace_back(std::make_unique<SniperOpponent>(x, y, 35, 35, m_renderer)); break;
+        case 0: m_opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40, m_renderer)); break;
+        case 1: m_opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45, m_renderer)); break;
+        case 2: m_opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35, m_renderer)); break;
     }
 }
 
@@ -484,69 +464,80 @@ void Game::checkCollisions() {
 
     // collisions between player projectile and opponent
     auto& pp = m_player->getProjectiles();
-    for (int i = pp.size() - 1; i >= 0; --i) {
-        auto& p = pp[i];
-        if (!p) continue;
-        SDL_FRect pb = p->getBounds();
-        for (int j = m_opponents.size() - 1; j >= 0; --j) {
-            auto& o = m_opponents[j];
+    for (auto p_it = pp.begin(); p_it != pp.end(); ) {
+        SDL_FRect pb = p_it->getBounds();
+        bool projectileHit = false;
+        for (auto& o : m_opponents) { // o is std::unique_ptr<BaseOpponent>&
             if (!o || !o->isAlive()) continue;
             if (o->isHit(pb)) {
                 o->takeDamage(1);
-                if (!o->isAlive()) {          
-                    m_playerScore += o->getScoreVal();          
+                if (!o->isAlive()) {
+                    m_playerScore += o->getScoreVal();
                     o->explode(m_particles);
                 }
-                pp.erase(pp.begin() + i);
-                break;
+                projectileHit = true;
+                break; // break inner loop
             }
         }
-    }
+        if (projectileHit) {
+            p_it = pp.erase(p_it); // erase using projectile iterator, assign returned iterator
+        } else {
+            ++p_it;
+        }
+    } 
 
+    // player collisions with opponents and opponent projectiles
     if (m_player->isAlive()) {
-        for (int j = m_opponents.size() - 1; j >= 0; --j) {
-            auto& o = m_opponents[j];
-            if (!o || !o->isAlive()) continue;
+        for (auto o_it = m_opponents.begin(); o_it != m_opponents.end(); ) {
+            auto& o = *o_it;
+            if (!o || !o->isAlive()) {
+                 ++o_it; // skip dead opponents
+                 continue;
+            }
 
             // check player/opponent collision
-            if (m_player->isHit(o->getBounds())) {
+            if (m_player->isHit(o->getBounds())) { 
                 m_player->takeDamage(1);
                 m_playerHealth = m_player->getHealth();
-                o->explode(m_particles);
-                m_playerScore += o->getScoreVal();         
-                m_opponents.erase(m_opponents.begin() + j); // remove opponent
+                o->explode(m_particles); 
+                m_playerScore += o->getScoreVal();
+                o_it = m_opponents.erase(o_it);
                 if (!m_player->isAlive()) {
                     m_state = GameState::GAME_OVER;
-                    break;
+                    return; // exit early if player dies
                 }
-                continue;
+                continue; // skip projectile check if opponent was destroyed by collision
             }
 
             // check if opponent's projectiles hit player
-            auto& op = o->getProjectiles();
-            SDL_FRect playerBounds = m_player->getBounds();
-            for (int k = op.size() - 1; k >= 0; --k) {
-                auto& p = op[k];
-                if (!p) continue;
-                SDL_FRect projBounds = p->getBounds();
+            auto& op = o->getProjectiles(); 
+            for (auto op_it = op.begin(); op_it != op.end(); ) {
+                SDL_FRect projBounds = op_it->getBounds();
+                SDL_FRect playerBounds = m_player->getBounds();
 
                 // collision check ... projectile and player
                 if (projBounds.x < playerBounds.x + playerBounds.w &&
                     projBounds.x + projBounds.w > playerBounds.x &&
                     projBounds.y < playerBounds.y + playerBounds.h &&
                     projBounds.y + projBounds.h > playerBounds.y) {
-
                     m_player->takeDamage(1);
                     m_playerHealth = m_player->getHealth();
-                    op.erase(op.begin() + k); // remove projectile that hit player
+                    // erase the projectile that hit the player using the iterator
+                    op_it = op.erase(op_it);
                     if (!m_player->isAlive()) {
                         m_state = GameState::GAME_OVER;
-                        break; // exit projectile loop for  opponent
+                        return; // exit early if player dies
                     }
-
+                } else {
+                    ++op_it;
                 }
             }
-            if (!m_running) break; 
+
+            // increment opponent iterator only if the opponent itself wasn't erased in the player collision check
+            if (m_state != GameState::GAME_OVER && o_it != m_opponents.end()) { // check if state changed or iterator became invalid due to erase
+                ++o_it;
+            }
+            // ... if state is GAME_OVER or o_it was invalidated by erase in the inner loop, the outer loop will terminate
         }
     }
 }
@@ -566,11 +557,9 @@ void Game::renderMinimap() {
     const int mmW = 210;
     const int mmH = 42;
     const int mmX = (m_windowWidth - mmW)/2, mmY = 10;
-
     SDL_SetRenderDrawColor(m_renderer, 0, 40, 80, 200);
     SDL_FRect mm = {(float)mmX, (float)mmY, (float)mmW, (float)mmH};
     SDL_RenderFillRect(m_renderer, &mm);
-
     SDL_SetRenderDrawColor(m_renderer, 0, 100, 200, 255);
     SDL_RenderRect(m_renderer, &mm);
 

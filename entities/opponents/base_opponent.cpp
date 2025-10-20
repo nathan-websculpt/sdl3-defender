@@ -45,11 +45,11 @@ bool BaseOpponent::isHit(const SDL_FRect& projectileBounds) {
             projectileBounds.y + projectileBounds.h > oppBounds.y);
 }
 
-std::vector<std::unique_ptr<Projectile>>& BaseOpponent::getProjectiles() {
+plf::colony<Projectile>& BaseOpponent::getProjectiles() {
     return m_projectiles;
 }
 
-const std::vector<std::unique_ptr<Projectile>>& BaseOpponent::getProjectiles() const {
+const plf::colony<Projectile>& BaseOpponent::getProjectiles() const {
     return m_projectiles;
 }
 

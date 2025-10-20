@@ -11,7 +11,7 @@ public:
 
     void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) override;
     void render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const override;
-    void explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const override;
+    void explode(plf::colony<Particle>& gameParticles) const override;
 
 private:
     float m_fireInterval = 15.8f;

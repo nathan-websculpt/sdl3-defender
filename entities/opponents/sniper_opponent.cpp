@@ -39,29 +39,24 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
-        m_projectiles.emplace_back(
-            std::make_unique<Projectile>(
+        m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
             m_rect.y + m_rect.h/2,
             playerPos.x,
             playerPos.y,
             1800.0f
-            )
         );
         m_fireTimer = 0.0f;
     }
-    
-    for (auto& projectile : m_projectiles) {
+
+    for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
         projectile->update(deltaTime);
+        if (projectile->isOffScreen(800, 600)) { //TODO:
+            projectile = m_projectiles.erase(projectile);
+        } else {
+            ++projectile;
+        }
     }
-    
-    m_projectiles.erase(
-        std::remove_if(m_projectiles.begin(), m_projectiles.end(),
-            [](const std::unique_ptr<Projectile>& p) {
-                return p->isOffScreen(800, 600);
-            }),
-        m_projectiles.end()
-    );
 }
 
 void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
@@ -75,7 +70,7 @@ void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) con
     }
 }
 
-void SniperOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const {
+void SniperOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 45;
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
 
@@ -90,7 +85,7 @@ void SniperOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticl
         Uint8 g = static_cast<Uint8>(rand() % 100 + 155);
         Uint8 b = static_cast<Uint8>(rand() % 50 + 55);
 
-        gameParticles.emplace_back(std::make_unique<Particle>(center.x, center.y, velX, velY, r, g, b, 0.0001f, 1.35f));
+        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.0001f, 1.35f);
     }
 }
 

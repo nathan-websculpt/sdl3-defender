@@ -10,6 +10,7 @@
 #include <memory>
 #include "texture_manager.h"
 #include "font_manager.h"
+#include "../plf/plf_colony.h" 
 
 
 enum class FontSize {
@@ -39,8 +40,8 @@ private:
     int m_windowHeight = 0;
 
     std::unique_ptr<Player> m_player;
-    std::vector<std::unique_ptr<BaseOpponent>> m_opponents;
-    std::vector<std::unique_ptr<Particle>> m_particles;
+    plf::colony<std::unique_ptr<BaseOpponent>> m_opponents;
+    plf::colony<Particle> m_particles;
 
     GameState m_state;
     bool m_running;

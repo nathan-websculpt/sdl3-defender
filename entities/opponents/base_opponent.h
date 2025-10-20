@@ -5,6 +5,7 @@
 #include "../projectile.h"
 #include "../particle.h" 
 #include "../../core/config.h"
+#include "../../plf/plf_colony.h" 
 
 class BaseOpponent {
 public:
@@ -22,12 +23,12 @@ public:
     void reset();
     bool isHit(const SDL_FRect& projectileBounds);
 
-    std::vector<std::unique_ptr<Projectile>>& getProjectiles();
-    const std::vector<std::unique_ptr<Projectile>>& getProjectiles() const;
+    plf::colony<Projectile>& getProjectiles();
+    const plf::colony<Projectile>& getProjectiles() const;
 
     const int& getScoreVal() const;
 
-    virtual void explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const = 0;
+    virtual void explode(plf::colony<Particle>& gameParticles) const = 0;
 
 protected:
     SDL_FRect m_rect;
@@ -41,7 +42,7 @@ protected:
     int m_health;
     int m_maxHealth; //TODO: remove
 
-    std::vector<std::unique_ptr<Projectile>> m_projectiles;
+    plf::colony<Projectile> m_projectiles;
     float m_fireTimer;
     float m_fireInterval;
 

@@ -48,20 +48,23 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
-        m_projectiles.emplace_back(
-            std::make_unique<Projectile>(
+        m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
             m_rect.y + m_rect.h/2,
             targetX,
             targetY,
             300.0f
-            )
         );
         m_fireTimer = 0.0f;
     }
 
-    for (auto& p : m_projectiles) {
-        p->update(deltaTime);
+    for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
+        projectile->update(deltaTime);
+        if (projectile->isOffScreen(800, 600)) { // TODO
+            projectile = m_projectiles.erase(projectile);
+        } else {
+            ++projectile;
+        }
     }
 }
 
@@ -76,7 +79,7 @@ void AggressiveOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds)
     }
 }
 
-void AggressiveOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const {
+void AggressiveOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 50;
 
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
@@ -92,7 +95,7 @@ void AggressiveOpponent::explode(std::vector<std::unique_ptr<Particle>>& gamePar
         Uint8 g = static_cast<Uint8>(rand() % 50);
         Uint8 b = static_cast<Uint8>(rand() % 100 + 155);
 
-        gameParticles.emplace_back(std::make_unique<Particle>(center.x, center.y, velX, velY, r, g, b, 0.2f, 1.9f));
+        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.2f, 1.9f);
     }
 }
 

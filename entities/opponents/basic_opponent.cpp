@@ -35,7 +35,7 @@ void BasicOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) cons
     }
 }
 
-void BasicOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticles) const {
+void BasicOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 120;
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
 
@@ -50,6 +50,6 @@ void BasicOpponent::explode(std::vector<std::unique_ptr<Particle>>& gameParticle
         Uint8 g = static_cast<Uint8>(rand() % 100 + 55);
         Uint8 b = static_cast<Uint8>(rand() % 50);
 
-        gameParticles.emplace_back(std::make_unique<Particle>(center.x, center.y, velX, velY, r, g, b, 0.02f, 2.8f));
+        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.02f, 2.8f);
     }
 }

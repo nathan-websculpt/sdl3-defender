@@ -5,6 +5,7 @@
 #include "projectile.h"
 #include "particle.h"
 #include "../core/config.h"
+#include "../plf/plf_colony.h"
 
 enum class Direction {
     RIGHT,
@@ -25,7 +26,7 @@ public:
     SDL_FPoint getFrontCenter() const;
     void setPosition(float x, float y);
 
-    std::vector<std::unique_ptr<Projectile>>& getProjectiles();
+    plf::colony<Projectile>& getProjectiles();
 
     void shoot();
     bool isAlive() const { return m_health > 0; }
@@ -40,8 +41,9 @@ private:
     Direction m_facing;
     std::shared_ptr<SDL_Texture> m_texture;
 
-    std::vector<std::unique_ptr<Projectile>> m_projectiles;
-    std::vector<std::unique_ptr<Particle>> m_boosterParticles;
+    plf::colony<Projectile> m_projectiles;
+    
+    plf::colony<Particle> m_boosterParticles;
 
     bool m_spacePressed;
     int m_health = 10; // TODO: use the var in Game instead

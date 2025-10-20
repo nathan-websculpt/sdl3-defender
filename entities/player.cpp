@@ -26,17 +26,15 @@ Player::~Player() {
 }
 
 void Player::update(float deltaTime) {
-    for (auto& particle : m_boosterParticles) 
-        particle->update(deltaTime);
-    
 
-    m_boosterParticles.erase(
-        std::remove_if(m_boosterParticles.begin(), m_boosterParticles.end(),
-            [](const std::unique_ptr<Particle>& p) {
-                return !p->isAlive();
-            }),
-        m_boosterParticles.end()
-    );
+    for (auto particle = m_boosterParticles.begin(); particle != m_boosterParticles.end(); ) {
+        particle->update(deltaTime);
+        if (!particle->isAlive()) {
+            particle = m_boosterParticles.erase(particle);
+        } else {
+            ++particle;
+        }
+    }
 
     spawnDefaultBoosterParticles();
 
@@ -60,11 +58,12 @@ void Player::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
     }
 
     SDL_RenderTexture(renderer, m_texture.get(), nullptr, &destRect);
+
     for (const auto& particle : m_boosterParticles) {
-        SDL_FRect particleBounds = particle->getBounds();
+        SDL_FRect particleBounds = particle.getBounds();
         particleBounds.x -= (m_rect.x - renderBounds->x);
         particleBounds.y -= (m_rect.y - renderBounds->y);
-        particle->render(renderer, &particleBounds);
+        particle.render(renderer, &particleBounds);
     }
 }
 
@@ -118,16 +117,14 @@ void Player::setPosition(float x, float y) {
     m_rect.y = y;
 }
 
-std::vector<std::unique_ptr<Projectile>>& Player::getProjectiles() {
+plf::colony<Projectile>& Player::getProjectiles() {
     return m_projectiles;
 }
 
 void Player::shoot() {
     SDL_FPoint spawn = getFrontCenter();
     float dir = (m_facing == Direction::RIGHT) ? 1.0f : -1.0f;
-    m_projectiles.emplace_back(
-        std::make_unique<Projectile>(spawn.x, spawn.y, dir, 600.0f)
-    );
+    m_projectiles.emplace(spawn.x, spawn.y, dir, 600.0f);
 }
 
 bool Player::isHit(const SDL_FRect& opponentBounds) {
@@ -169,7 +166,7 @@ void Player::spawnBoosterParticles() {
         Uint8 g = static_cast<Uint8>(rand() % 100 + 100);
         Uint8 b = static_cast<Uint8>(rand() % 50);
 
-        m_boosterParticles.emplace_back(std::make_unique<Particle>(spawnX, spawnY, velX, velY, r, g, b));
+        m_boosterParticles.emplace(spawnX, spawnY, velX, velY, r, g, b);
     }
 }
 
@@ -193,6 +190,5 @@ void Player::spawnDefaultBoosterParticles() {
     Uint8 g = static_cast<Uint8>(rand() % 100 + 100);
     Uint8 b = static_cast<Uint8>(rand() % 50);
 
-    m_boosterParticles.emplace_back(std::make_unique<Particle>(spawnX, spawnY, velX, velY, r, g, b));
-    
+    m_boosterParticles.emplace(spawnX, spawnY, velX, velY, r, g, b);    
 }
