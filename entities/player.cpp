@@ -5,7 +5,7 @@
 #include <algorithm>
 #include "../core/texture_manager.h"
 
-Player::Player(float x, float y, float w, float h, SDL_Renderer* renderer) 
+Player::Player(float x, float y, float w, float h) 
     : m_rect{x, y, w, h}, 
       m_normalSpeed(200.0f),
       m_speedBoostActive(false),
@@ -13,11 +13,6 @@ Player::Player(float x, float y, float w, float h, SDL_Renderer* renderer)
       m_facing(Direction::RIGHT), 
       m_spacePressed(false) {
     m_speed = m_normalSpeed;
-
-    m_texture = TextureManager::getInstance().getTexture(Config::Textures::PLAYER, renderer);
-    if (!m_texture) {
-        SDL_Log("failed to load player texture: %s", SDL_GetError());
-    }
 }
 
 Player::~Player() {
@@ -40,31 +35,6 @@ void Player::update(float deltaTime) {
 
     if (m_speedBoostActive) 
         spawnBoosterParticles();    
-}
-
-void Player::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-    if (!m_texture) return;
-
-    SDL_FRect destRect = *renderBounds;
-    SDL_FlipMode flipMode = SDL_FLIP_NONE;
-
-    if (m_facing == Direction::LEFT) {
-        flipMode = SDL_FLIP_HORIZONTAL;
-    }
-
-    if (flipMode == SDL_FLIP_HORIZONTAL) {
-        destRect.x += destRect.w;
-        destRect.w = -destRect.w;
-    }
-
-    SDL_RenderTexture(renderer, m_texture.get(), nullptr, &destRect);
-
-    for (const auto& particle : m_boosterParticles) {
-        SDL_FRect particleBounds = particle.getBounds();
-        particleBounds.x -= (m_rect.x - renderBounds->x);
-        particleBounds.y -= (m_rect.y - renderBounds->y);
-        particle.render(renderer, &particleBounds);
-    }
 }
 
 void Player::handleInput(const bool* keyboardState) {

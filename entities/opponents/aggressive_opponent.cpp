@@ -6,8 +6,8 @@
 #include "../particle.h"
 #include "../../core/texture_manager.h"
 
-AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h, SDL_Renderer* renderer) 
-    : BaseOpponent(x, y, w, h, renderer) {
+AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h) 
+    : BaseOpponent(x, y, w, h) {
     m_speed = 70.0f;
     m_angularSpeed = 0.0f;
     m_oscillationAmplitude = 0.0f;
@@ -15,12 +15,6 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h, SDL_R
 
     m_health = 2;
     m_scoreVal = 100;
-    
-    m_texture = TextureManager::getInstance().getTexture(Config::Textures::AGGRESSIVE_OPPONENT, renderer);
-
-    if (!m_texture) {
-        SDL_Log("failed to load aggressive opponent texture: %s", SDL_GetError());
-    }
 }
 
 void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) {
@@ -68,16 +62,16 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     }
 }
 
-void AggressiveOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-    if (m_health <= 0) return;
+// void AggressiveOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
+//     if (m_health <= 0) return;
 
-    if (m_texture) {
-        SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
-    } else {
-        SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
-        SDL_RenderFillRect(renderer, renderBounds);
-    }
-}
+//     if (m_texture) {
+//         SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
+//     } else {
+//         SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
+//         SDL_RenderFillRect(renderer, renderBounds);
+//     }
+// }
 
 void AggressiveOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 50;

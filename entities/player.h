@@ -14,11 +14,10 @@ enum class Direction {
 
 class Player {
 public:
-    Player(float x, float y, float w, float h, SDL_Renderer* renderer);
+    Player(float x, float y, float w, float h);
     ~Player();
 
     void update(float deltaTime);
-    void render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const;
 
     void handleInput(const bool* keyboardState);
 
@@ -36,7 +35,8 @@ public:
     void setSpeedBoost(bool active);
 
     float getSpeed() const { return m_speed; }
-    void setFacing(Direction dir) { m_facing = dir; }
+    void setFacing(Direction dir) { m_facing = dir; } // TODO: needed?
+    Direction getFacing() const { return m_facing; }
     void moveBy(float dx, float dy) {
         m_rect.x += dx;
         m_rect.y += dy;
@@ -46,7 +46,6 @@ private:
     SDL_FRect m_rect;
     float m_speed;
     Direction m_facing;
-    std::shared_ptr<SDL_Texture> m_texture;
 
     plf::colony<Projectile> m_projectiles;
     

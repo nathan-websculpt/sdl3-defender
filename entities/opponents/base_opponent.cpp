@@ -4,15 +4,11 @@
 #include <cmath>
 #include "../../core/texture_manager.h"
 
-BaseOpponent::BaseOpponent(float x, float y, float w, float h, SDL_Renderer* renderer) 
-    : m_rect{x, y, w, h}, m_texture(nullptr), m_speed(50.0f),
+BaseOpponent::BaseOpponent(float x, float y, float w, float h) 
+    : m_rect{x, y, w, h}, m_speed(50.0f),
       m_angle(0.0f), m_angularSpeed(2.0f), m_oscillationAmplitude(100.0f),
-      m_startX(x), m_maxHealth(3), m_health(3), m_fireTimer(0.0f), m_fireInterval(5.0f) {
-    m_texture = TextureManager::getInstance().getTexture(Config::Textures::BASIC_OPPONENT, renderer);
-    if (!m_texture) {
-        SDL_Log("failed to load opponent texture: %s", SDL_GetError());
-    }
-}
+      m_startX(x), m_maxHealth(3), m_health(3), m_fireTimer(0.0f), m_fireInterval(5.0f) 
+      {}
 
 BaseOpponent::~BaseOpponent() {
     

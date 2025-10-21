@@ -5,8 +5,8 @@
 #include <cmath>
 #include <cstdlib>
 
-BasicOpponent::BasicOpponent(float x, float y, float w, float h, SDL_Renderer* renderer) 
-    : BaseOpponent(x, y, w, h, renderer) {
+BasicOpponent::BasicOpponent(float x, float y, float w, float h) 
+    : BaseOpponent(x, y, w, h) {
     m_speed = 30.0f;
     m_angularSpeed = 1.5f;
     m_oscillationAmplitude = 80.0f;
@@ -22,17 +22,6 @@ void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float c
     m_rect.y += m_speed * deltaTime;
     m_angle += m_angularSpeed * deltaTime;
     m_rect.x = m_startX + sin(m_angle) * m_oscillationAmplitude;
-}
-
-void BasicOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-    if (m_health <= 0) return;
-
-    if (m_texture) {
-        SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
-    } else {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-        SDL_RenderFillRect(renderer, renderBounds);
-    }
 }
 
 void BasicOpponent::explode(plf::colony<Particle>& gameParticles) const {

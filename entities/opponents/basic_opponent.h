@@ -6,12 +6,13 @@
 
 class BasicOpponent : public BaseOpponent {
 public:
-    BasicOpponent(float x, float y, float w, float h, SDL_Renderer* renderer);
+    BasicOpponent(float x, float y, float w, float h);
     ~BasicOpponent() = default;
 
     void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) override;
-    void render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const override;
     void explode(plf::colony<Particle>& gameParticles) const override;
+
+    const std::string& getTextureKey() const override { return Config::Textures::BASIC_OPPONENT; }
 
 private:
     float m_startY;

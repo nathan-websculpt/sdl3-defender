@@ -9,11 +9,10 @@
 
 class BaseOpponent {
 public:
-    BaseOpponent(float x, float y, float w, float h, SDL_Renderer* renderer);
+    BaseOpponent(float x, float y, float w, float h);
     virtual ~BaseOpponent();
 
     virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) = 0;
-    virtual void render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const = 0;
 
     SDL_FRect getBounds() const;
     bool isOffScreen(int screenHeight) const;
@@ -30,9 +29,11 @@ public:
 
     virtual void explode(plf::colony<Particle>& gameParticles) const = 0;
 
+    virtual const std::string& getTextureKey() const = 0;
+
 protected:
     SDL_FRect m_rect;
-    std::shared_ptr<SDL_Texture> m_texture;
+    // std::shared_ptr<SDL_Texture> m_texture;
 
     float m_speed;
     float m_angle;

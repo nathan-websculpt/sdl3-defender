@@ -118,7 +118,7 @@ void Game::startNewGame() {
     m_state.particles.clear();
     m_state.cameraX = 0.0f;
     float px = m_state.worldWidth / 2.0f - 40;
-    m_state.player = std::make_unique<Player>(px, 500, 80, 48, nullptr);
+    m_state.player = std::make_unique<Player>(px, 500, 80, 48);
     m_state.state = GameStateData::State::PLAYING;
     m_state.worldHealth = 10;
     m_state.playerScore = 0;
@@ -236,9 +236,9 @@ void Game::spawnOpponent() {
     float x = (float)(rand() % (int)(m_state.worldWidth - 50));
     float y = -50.0f;
     switch (type) {
-        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40, nullptr)); break;
-        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45, nullptr)); break;
-        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35, nullptr)); break;
+        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
+        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
+        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
     }
 }
 

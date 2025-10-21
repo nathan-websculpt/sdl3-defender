@@ -6,8 +6,8 @@
 #include "../particle.h"
 #include "../../core/texture_manager.h"
 
-SniperOpponent::SniperOpponent(float x, float y, float w, float h, SDL_Renderer* renderer) 
-    : BaseOpponent(x, y, w, h, renderer) {
+SniperOpponent::SniperOpponent(float x, float y, float w, float h) 
+    : BaseOpponent(x, y, w, h) {
     m_speed = 20.0f;
     m_angularSpeed = 0.8f;
     m_oscillationAmplitude = 60.0f;
@@ -18,12 +18,6 @@ SniperOpponent::SniperOpponent(float x, float y, float w, float h, SDL_Renderer*
     
     m_health = 1;
     m_scoreVal = 100;
-    
-    m_texture = TextureManager::getInstance().getTexture(Config::Textures::SNIPER_OPPONENT, renderer);
-    
-    if (!m_texture) {
-        SDL_Log("failed to load sniper opponent texture: %s", SDL_GetError());
-    }
 }
 
 void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) {
@@ -59,16 +53,16 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     }
 }
 
-void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-    if (m_health <= 0) return;
+// void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
+//     if (m_health <= 0) return;
 
-    if (m_texture) {
-        SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
-    } else {
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-        SDL_RenderFillRect(renderer, renderBounds);
-    }
-}
+//     if (m_texture) {
+//         SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
+//     } else {
+//         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+//         SDL_RenderFillRect(renderer, renderBounds);
+//     }
+// }
 
 void SniperOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 45;

@@ -72,7 +72,7 @@ void Projectile::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
         float dy = m_rect.y - m_spawnY;
 
         //extend 3x further in same direction
-        float endX = m_spawnX + dx * 4.0f; // 1x = current, 4x = long beam
+        float endX = m_spawnX + dx * 4.0f; 
         float endY = m_spawnY + dy * 4.0f;
 
         SDL_FPoint start = { m_spawnX - offsetX, m_spawnY - offsetY };

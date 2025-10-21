@@ -107,33 +107,53 @@ void Platform::render(const GameStateData& state) {
             SDL_RenderClear(m_renderer);
 
             if (state.player) {
-                SDL_FRect renderBounds = state.player->getBounds();
-                renderBounds.x -= state.cameraX;
-                state.player->render(m_renderer, &renderBounds);
+                // render player
+                auto playerTex = TextureManager::getInstance().getTexture(Config::Textures::PLAYER, m_renderer);
+                if (playerTex) {
+                    SDL_FRect renderBounds = state.player->getBounds();
+                    renderBounds.x -= state.cameraX;
+                    
+                    // apply flip based on facing
+                    SDL_FRect drawRect = renderBounds;
+                    SDL_FlipMode flip = (state.player->getFacing() == Direction::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
+                    if (flip == SDL_FLIP_HORIZONTAL) {
+                        drawRect.x += drawRect.w;
+                        drawRect.w = -drawRect.w;
+                    }
+                    SDL_RenderTexture(m_renderer, playerTex.get(), nullptr, &drawRect);
 
-                // render player projectiles
-                const auto& pp = state.player->getProjectiles();
-                for (const auto& p : pp) {
-                    SDL_FRect pr = p.getBounds();
-                    pr.x -= state.cameraX;
-                    p.render(m_renderer, &pr);
+                    // render player projectiles
+                    const auto& pp = state.player->getProjectiles();
+                    for (const auto& p : pp) {
+                        SDL_FRect pr = p.getBounds();
+                        pr.x -= state.cameraX;
+                        p.render(m_renderer, &pr); // TODO:
+                    }
                 }
             }
 
             for (const auto& o : state.opponents) {
-                if (o) {
-                    // render opponent
-                    SDL_FRect or_ = o->getBounds(); 
-                    or_.x -= state.cameraX;
-                    o->render(m_renderer, &or_);
+                if (!o || !o->isAlive()) continue;
 
-                    // render opponent projectiles
-                    const auto& op = o->getProjectiles();
-                    for (const auto& p : op) { 
-                        SDL_FRect pr = p.getBounds();
-                        pr.x -= state.cameraX;
-                        p.render(m_renderer, &pr);
-                    }
+                SDL_FRect or_ = o->getBounds();
+                or_.x -= state.cameraX;
+
+                // render opponent texture
+                auto opponentTex = TextureManager::getInstance().getTexture(o->getTextureKey(), m_renderer);
+                if (opponentTex) {
+                    SDL_RenderTexture(m_renderer, opponentTex.get(), nullptr, &or_);
+                } else {
+                    // fallback rect
+                    SDL_SetRenderDrawColor(m_renderer, 255, 0, 255, 255);
+                    SDL_RenderFillRect(m_renderer, &or_);
+                }
+
+                //render opponent projectiles
+                const auto& op = o->getProjectiles();
+                for (const auto& p : op) {
+                    SDL_FRect pr = p.getBounds();
+                    pr.x -= state.cameraX;
+                    p.render(m_renderer, &pr);
                 }
             }
 

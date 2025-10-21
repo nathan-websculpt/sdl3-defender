@@ -6,12 +6,13 @@
 
 class SniperOpponent : public BaseOpponent {
 public:
-    SniperOpponent(float x, float y, float w, float h, SDL_Renderer* renderer);
+    SniperOpponent(float x, float y, float w, float h);
     ~SniperOpponent() = default;
 
     void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) override;
-    void render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const override;
     void explode(plf::colony<Particle>& gameParticles) const override;
+
+    const std::string& getTextureKey() const override { return Config::Textures::SNIPER_OPPONENT; }
 
 private:
     float m_oscillationSpeed;
