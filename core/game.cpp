@@ -84,25 +84,69 @@ void Game::handleInput(const GameInput& input) {
             if (input.moveUp) dy -= speed * delta;
             if (input.moveDown) dy += speed * delta;
             m_state.player->moveBy(dx, dy);
-        }
+        }    
     } else if (m_state.state == GameStateData::State::GAME_OVER) {
         if (m_state.waitingForHighScore) {
+            if (input.charInputEvent) {
+                char c = input.inputChar;
+                if (m_state.highScoreNameInput.length() < 10 && (std::isalnum(static_cast<unsigned char>(c)) || c == ' ')) {
+                    m_state.highScoreNameInput += c;
+                }
+            }
+            
+            // const bool* keys = SDL_GetKeyboardState(nullptr);
+            
+            static float backspaceCooldown = 0.0f;
+            const float BACKSPACE_DELAY = 0.1f; 
+            if (input.backspacePressed) { 
+                if (backspaceCooldown <= 0.0f && !m_state.highScoreNameInput.empty()) {
+                    m_state.highScoreNameInput.pop_back();
+                    backspaceCooldown = BACKSPACE_DELAY;
+                } else {
+                    backspaceCooldown = std::max(0.0f, backspaceCooldown - 1.0f/60.0f);
+                }
+            } else {
+                backspaceCooldown = 0.0f;
+            }
+
+            // process enter/esc/click for submission/cancellation
             if (input.enter) {
-                submitHighScore(m_state.highScoreNameInput);
+                // trim leading/trailing spaces
+                std::string trimmedName = m_state.highScoreNameInput;
+                if (!trimmedName.empty()) {
+                    size_t start = trimmedName.find_first_not_of(" \t");
+                    size_t end = trimmedName.find_last_not_of(" \t");
+                    if (start != std::string::npos && end != std::string::npos) {
+                        trimmedName = trimmedName.substr(start, end - start + 1);
+                    } else {
+                        trimmedName = "";
+                    }
+                }
+                // use "ANON" if the name is empty after trimming or was empty initially
+                if (trimmedName.empty()) {
+                    trimmedName = "ANON";
+                }
+                submitHighScore(trimmedName);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else if (input.escape) {
+                // use "ANON" if user cancels with escape and input was empty
+                std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
+                submitHighScore(nameToSubmit);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
-                //TODO:
+                // TODO:
                 // assume 'X' button at top-right (20x20)
                 if (input.mouseX > 800 - 30 && input.mouseY < 30) {
+                    // use "ANON" if user cancels with 'X' and input was empty
+                    std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
+                    submitHighScore(nameToSubmit);
                     m_state.waitingForHighScore = false;
                     m_state.state = GameStateData::State::MENU;
                 }
             }
-        } else {
+        } else { // not waiting for high score
             if (input.escape || input.enter || input.mouseClick) {
                 if (input.mouseClick && input.mouseX > 800 - 30 && input.mouseY < 30) {
                     m_state.state = GameStateData::State::MENU;

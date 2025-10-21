@@ -21,6 +21,11 @@ struct GameInput {
     bool mouseClick = false;
     int mouseX = 0;
     int mouseY = 0;
+
+    // for text input
+    bool charInputEvent = false; // flag indicating a character input event occurred
+    char inputChar = 0;
+    bool backspacePressed = false;
 };
 
 struct GameStateData {

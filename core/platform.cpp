@@ -283,6 +283,14 @@ GameInput Platform::pollInput(const GameStateData& state) {
                 input.mouseX = event.button.x;
                 input.mouseY = event.button.y;
             }
+        } else if (event.type == SDL_EVENT_TEXT_INPUT) { // for text input
+            if (event.text.text[0] != '\0' && event.text.text[1] == '\0') { // ensure it's a single character
+                char c = event.text.text[0];
+                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == ' ') {
+                    input.charInputEvent = true;
+                    input.inputChar = c;
+                }
+            }
         }
     }
 
@@ -295,6 +303,12 @@ GameInput Platform::pollInput(const GameStateData& state) {
         input.moveDown  = keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S];
         input.shoot     = keys[SDL_SCANCODE_SPACE];
         input.boost     = keys[SDL_SCANCODE_C] || keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
+    } else if (state.state == GameStateData::State::GAME_OVER && state.waitingForHighScore) {
+        const bool* keys = SDL_GetKeyboardState(nullptr);
+        // poll for backspace/delete specifically on the high score screen
+        if (keys[SDL_SCANCODE_BACKSPACE] || keys[SDL_SCANCODE_DELETE]) {
+             input.backspacePressed = true;
+        }
     }
 
     return input;
