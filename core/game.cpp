@@ -136,7 +136,7 @@ void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
     if (m_state.player) {
-        m_state.player->update(deltaTime);
+        m_state.player->update(deltaTime, m_state.particles);
         auto& playerProjectiles = m_state.player->getProjectiles();
 
         for (auto& p : playerProjectiles) { 

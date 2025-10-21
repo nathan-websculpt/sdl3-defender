@@ -33,9 +33,7 @@ private:
 
     // menus
     void renderMenu(const GameStateData& state);
-    // void renderHowToPlayScreen(const GameStateData& state);
     void renderHowToPlayScreen();
     void renderGameOverScreen(const GameStateData& state);
-    // void renderGameOverScreen();
     void renderHighScoreEntryScreen(const GameStateData& state);
 };

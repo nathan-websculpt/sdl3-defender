@@ -62,17 +62,6 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     }
 }
 
-// void AggressiveOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-//     if (m_health <= 0) return;
-
-//     if (m_texture) {
-//         SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
-//     } else {
-//         SDL_SetRenderDrawColor(renderer, 128, 0, 128, 255);
-//         SDL_RenderFillRect(renderer, renderBounds);
-//     }
-// }
-
 void AggressiveOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 50;
 

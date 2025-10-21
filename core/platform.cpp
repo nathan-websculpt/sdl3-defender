@@ -125,9 +125,37 @@ void Platform::render(const GameStateData& state) {
                     // render player projectiles
                     const auto& pp = state.player->getProjectiles();
                     for (const auto& p : pp) {
-                        SDL_FRect pr = p.getBounds();
-                        pr.x -= state.cameraX;
-                        p.render(m_renderer, &pr); // TODO:
+                        if (p.getAge() >= p.getLifetime()) continue;
+
+                        // SDL_FRect renderBounds = p.getBounds();
+                        // float cameraOffsetX = renderBounds.x - state.cameraX;
+                        // float cameraOffsetY = renderBounds.y - 0.0f; // currently assuming no vertical camera movement
+                        float cameraOffsetX = state.cameraX;
+                        float cameraOffsetY = 0.0f;
+
+                        SDL_Color color = p.getColor(); // calculated color
+                        SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+
+                        if (p.isHorizontal()) {
+                            // player beam: from spawn to world edge
+                            float startX = p.getSpawnX() - cameraOffsetX;
+                            float startY = p.getSpawnY() - cameraOffsetY;
+                            float endX = (p.getVelocity().x > 0) ? (p.getWorldWidth() - cameraOffsetX) : (0.0f - cameraOffsetX);
+                            float endY = startY;
+                            SDL_RenderLine(m_renderer, startX, startY, endX, endY);
+                        } else {
+                            // remove block
+                            SDL_Log("TEST"); // TODO: is this block still needed?
+                            // opponent beam
+                            // from spawn to current pos (then extended)
+                            float dx = p.getCurrentX() - p.getSpawnX();
+                            float dy = p.getCurrentY() - p.getSpawnY();
+                            float endX = p.getSpawnX() + dx * 4.0f; // 4x extension
+                            float endY = p.getSpawnY() + dy * 4.0f;
+                            SDL_FPoint start = { p.getSpawnX() - cameraOffsetX, p.getSpawnY() - cameraOffsetY };
+                            SDL_FPoint end   = { endX - cameraOffsetX, endY - cameraOffsetY };
+                            SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
+                        }
                     }
                 }
             }
@@ -150,23 +178,38 @@ void Platform::render(const GameStateData& state) {
 
                 //render opponent projectiles
                 const auto& op = o->getProjectiles();
-                for (const auto& p : op) {
-                    SDL_FRect pr = p.getBounds();
-                    pr.x -= state.cameraX;
-                    p.render(m_renderer, &pr);
+                for (const auto& p : op) { 
+                    if (p.getAge() >= p.getLifetime()) continue;
+                    float cameraOffsetX = state.cameraX;
+                    float cameraOffsetY = 0.0f; // TODO: remove
+
+                    SDL_Color color = p.getColor();
+                    SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
+
+                    // opponent beam ... from spawn to current pos, extended
+                    float dx = p.getCurrentX() - p.getSpawnX();
+                    float dy = p.getCurrentY() - p.getSpawnY();
+                    float endX = p.getSpawnX() + dx * 4.0f; // 4x extension
+                    float endY = p.getSpawnY() + dy * 4.0f;
+                    SDL_FPoint start = { p.getSpawnX() - cameraOffsetX, p.getSpawnY() - cameraOffsetY };
+                    SDL_FPoint end   = { endX - cameraOffsetX, endY - cameraOffsetY };
+                    SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
                 }
             }
 
             // render particles
-            for (const auto& particle : state.particles) { // particle is the object itself
-                SDL_FRect pr = particle.getBounds();
-                pr.x -= state.cameraX;
-                particle.render(m_renderer, &pr);
+            for (const auto& particle : state.particles) {
+                if (particle.isAlive()) { 
+                    SDL_FRect renderBounds = { particle.getX(), particle.getY(), particle.getCurrentSize(), particle.getCurrentSize() };
+                    renderBounds.x -= state.cameraX; // apply camera offset
+
+                    SDL_SetRenderDrawColor(m_renderer, particle.getR(), particle.getG(), particle.getB(), particle.getAlpha());
+                    SDL_RenderFillRect(m_renderer, &renderBounds);
+                }
             }
 
             renderMinimap(state);
 
-            // render health bars
             renderHealthBars(state);
             break;
         case GameStateData::State::GAME_OVER:
@@ -177,6 +220,7 @@ void Platform::render(const GameStateData& state) {
             }
             break;
     }
+    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderText(const char* text, int x, int y, const SDL_Color& color, FontSize sizeEnum) {
@@ -428,8 +472,6 @@ void Platform::renderHealthBars(const GameStateData& state) {
     renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
     std::string scoreStr = std::to_string(state.playerScore);
     renderText(scoreStr.c_str(), state.worldWidth - 90, barY, white, FontSize::SMALL);
-
-    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderMinimap(const GameStateData& state) {

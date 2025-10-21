@@ -41,13 +41,6 @@ void Particle::update(float deltaTime) {
     m_rect.y -= (currentSize - m_initialSize) * 0.5f;
 }
 
-void Particle::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-    if (!isAlive()) return;
-
-    SDL_SetRenderDrawColor(renderer, m_r, m_g, m_b, m_alpha);
-    SDL_RenderFillRect(renderer, renderBounds);
-}
-
 SDL_FRect Particle::getBounds() const {
     return m_rect;
 }

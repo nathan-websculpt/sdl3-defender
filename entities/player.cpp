@@ -20,21 +20,21 @@ Player::~Player() {
     
 }
 
-void Player::update(float deltaTime) {
+void Player::update(float deltaTime, plf::colony<Particle>& particles) {
+    //TODO: make sure that these are getting erased
+    // for (auto particle = m_boosterParticles.begin(); particle != m_boosterParticles.end(); ) {
+    //     particle->update(deltaTime);
+    //     if (!particle->isAlive()) {
+    //         particle = m_boosterParticles.erase(particle);
+    //     } else {
+    //         ++particle;
+    //     }
+    // }
 
-    for (auto particle = m_boosterParticles.begin(); particle != m_boosterParticles.end(); ) {
-        particle->update(deltaTime);
-        if (!particle->isAlive()) {
-            particle = m_boosterParticles.erase(particle);
-        } else {
-            ++particle;
-        }
-    }
-
-    spawnDefaultBoosterParticles();
+    spawnDefaultBoosterParticles(particles);
 
     if (m_speedBoostActive) 
-        spawnBoosterParticles();    
+        spawnBoosterParticles(particles);    
 }
 
 void Player::handleInput(const bool* keyboardState) {
@@ -112,7 +112,7 @@ void Player::setSpeedBoost(bool active) {
     m_speed = active ? m_normalSpeed * m_boostMultiplier : m_normalSpeed;
 }
 
-void Player::spawnBoosterParticles() {
+void Player::spawnBoosterParticles(plf::colony<Particle>& particles) {
     if (!m_speedBoostActive) return;
     
     SDL_FPoint rearCenter = getFrontCenter();
@@ -136,11 +136,11 @@ void Player::spawnBoosterParticles() {
         Uint8 g = static_cast<Uint8>(rand() % 100 + 100);
         Uint8 b = static_cast<Uint8>(rand() % 50);
 
-        m_boosterParticles.emplace(spawnX, spawnY, velX, velY, r, g, b);
+        particles.emplace(spawnX, spawnY, velX, velY, r, g, b);
     }
 }
 
-void Player::spawnDefaultBoosterParticles() {    
+void Player::spawnDefaultBoosterParticles(plf::colony<Particle>& particles) {    
     SDL_FPoint rearCenter = getFrontCenter();
     if (m_facing == Direction::RIGHT) 
         rearCenter.x = m_rect.x;
@@ -160,5 +160,5 @@ void Player::spawnDefaultBoosterParticles() {
     Uint8 g = static_cast<Uint8>(rand() % 100 + 100);
     Uint8 b = static_cast<Uint8>(rand() % 50);
 
-    m_boosterParticles.emplace(spawnX, spawnY, velX, velY, r, g, b);    
+    particles.emplace(spawnX, spawnY, velX, velY, r, g, b);    
 }

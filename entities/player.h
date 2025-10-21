@@ -17,7 +17,7 @@ public:
     Player(float x, float y, float w, float h);
     ~Player();
 
-    void update(float deltaTime);
+    void update(float deltaTime, plf::colony<Particle>& particles);
 
     void handleInput(const bool* keyboardState);
 
@@ -48,8 +48,6 @@ private:
     Direction m_facing;
 
     plf::colony<Projectile> m_projectiles;
-    
-    plf::colony<Particle> m_boosterParticles;
 
     bool m_spacePressed;
     int m_health = 10; // TODO: use the var in Game instead
@@ -57,6 +55,6 @@ private:
     float m_boostMultiplier;
     bool m_speedBoostActive;
 
-    void spawnBoosterParticles();
-    void spawnDefaultBoosterParticles();
+    void spawnBoosterParticles(plf::colony<Particle>& particles);
+    void spawnDefaultBoosterParticles(plf::colony<Particle>& particles);
 };
