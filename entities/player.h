@@ -35,6 +35,13 @@ public:
     bool isHit(const SDL_FRect& opponentBounds);
     void setSpeedBoost(bool active);
 
+    float getSpeed() const { return m_speed; }
+    void setFacing(Direction dir) { m_facing = dir; }
+    void moveBy(float dx, float dy) {
+        m_rect.x += dx;
+        m_rect.y += dy;
+    }
+
 private:
     SDL_FRect m_rect;
     float m_speed;

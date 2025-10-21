@@ -1,0 +1,41 @@
+#pragma once
+#include <SDL3/SDL.h>
+#include <SDL3_ttf/SDL_ttf.h>
+#include <memory>
+#include <string>
+#include "game.h"
+#include "texture_manager.h"
+#include "font_manager.h"
+
+class Platform {
+public:
+    Platform();
+    ~Platform();
+
+    bool initialize();
+    void run(Game& sim);
+    void shutdown();
+
+private:
+    SDL_Window* m_window = nullptr;
+    SDL_Renderer* m_renderer = nullptr;
+    int m_windowWidth = 800;
+    int m_windowHeight = 600;
+    bool m_running = true;
+
+    void render(const GameStateData& state);
+    void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
+    GameInput pollInput(const GameStateData& state);
+    bool pointInRect(int x, int y, const SDL_FRect& rect);
+
+    void renderHealthBars(const GameStateData& state);
+    void renderMinimap(const GameStateData& state);
+
+    // menus
+    void renderMenu(const GameStateData& state);
+    // void renderHowToPlayScreen(const GameStateData& state);
+    void renderHowToPlayScreen();
+    void renderGameOverScreen(const GameStateData& state);
+    // void renderGameOverScreen();
+    void renderHighScoreEntryScreen(const GameStateData& state);
+};

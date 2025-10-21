@@ -1,6 +1,13 @@
 #pragma once
 #include <string>
 
+enum class FontSize {
+    SMALL,
+    MEDIUM,
+    LARGE,
+    GRANDELOCO
+};
+
 namespace Config {
     namespace Textures {
         const std::string PLAYER = "assets/defender.png";
