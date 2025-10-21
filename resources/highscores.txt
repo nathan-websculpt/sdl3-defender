@@ -1,10 +1,1 @@
-testt6 5100
-nathan 4900
-test3 4100
-test5 4100
-test18 3900
-test16 3700
-test16 3600
-test17 3500
-test4 3100
-test13 3100
+ANON 1100

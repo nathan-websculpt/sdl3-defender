@@ -95,7 +95,8 @@ void Game::handleInput(const GameInput& input) {
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
-                // Assume 'X' button at top-right (20x20)
+                //TODO:
+                // assume 'X' button at top-right (20x20)
                 if (input.mouseX > 800 - 30 && input.mouseY < 30) {
                     m_state.waitingForHighScore = false;
                     m_state.state = GameStateData::State::MENU;
@@ -168,7 +169,14 @@ void Game::update(float deltaTime) {
             BasicOpponent* b = dynamic_cast<BasicOpponent*>((*o_it).get()); //get() to get raw pointer for cast
             if (b) { // only the basic opponents damage world
                 m_state.worldHealth--;
-                if (m_state.worldHealth <= 0) m_state.state = GameStateData::State::GAME_OVER;
+                if (m_state.worldHealth <= 0) {
+                    m_state.state = GameStateData::State::GAME_OVER;
+                    if (isHighScore(m_state.playerScore)) {
+                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                        m_state.waitingForHighScore = true;
+                        m_state.highScoreNameInput = ""; // initialize empty input
+                    }
+                }
             }
             o_it = m_state.opponents.erase(o_it);
         } else if (!(*o_it)->isAlive()) {
@@ -287,6 +295,11 @@ void Game::checkCollisions() {
                 o_it = m_state.opponents.erase(o_it);
                 if (!m_state.player->isAlive()) {
                     m_state.state = GameStateData::State::GAME_OVER;
+                    if (isHighScore(m_state.playerScore)) {
+                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                        m_state.waitingForHighScore = true;
+                        m_state.highScoreNameInput = ""; // Initialize empty input
+                    }
                     return; // exit early if player dies
                 }
                 continue; // skip projectile check if opponent was destroyed by collision
@@ -309,6 +322,11 @@ void Game::checkCollisions() {
                     op_it = op.erase(op_it);
                     if (!m_state.player->isAlive()) {
                         m_state.state = GameStateData::State::GAME_OVER;
+                        if (isHighScore(m_state.playerScore)) {
+                            m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                            m_state.waitingForHighScore = true;
+                            m_state.highScoreNameInput = ""; // Initialize empty input
+                        }
                         return; // exit early if player dies
                     }
                 } else {

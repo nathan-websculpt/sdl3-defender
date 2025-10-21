@@ -331,8 +331,6 @@ void Platform::renderMenu(const GameStateData& state) {
     renderText("Play", m_windowWidth/2 - 40, m_windowHeight/2 - 50, white, FontSize::MEDIUM); 
     renderText("How to Play", m_windowWidth/2 - 80, m_windowHeight/2 + 10, white, FontSize::MEDIUM);
     renderText("Exit", m_windowWidth/2 - 40, m_windowHeight/2 + 70, white, FontSize::MEDIUM);
-
-    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderHowToPlayScreen() {
@@ -393,8 +391,6 @@ void Platform::renderHowToPlayScreen() {
     y_pos += line_spacing + 20;
 
     renderText("Press ESC or ENTER to return to the menu.", m_windowWidth/2 - 150, y_pos, white, FontSize::SMALL);
-
-    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderGameOverScreen(const GameStateData& state) {
@@ -419,8 +415,6 @@ void Platform::renderGameOverScreen(const GameStateData& state) {
     SDL_RenderLine(m_renderer, xButtonRect.x, xButtonRect.y + xButtonRect.h, xButtonRect.x + xButtonRect.w, xButtonRect.y);
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
     SDL_RenderRect(m_renderer, &xButtonRect);
-
-    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderHighScoreEntryScreen(const GameStateData& state) {
@@ -434,7 +428,6 @@ void Platform::renderHighScoreEntryScreen(const GameStateData& state) {
     renderText(("Score: " + std::to_string(state.playerScore)).c_str(), m_windowWidth / 2 - 60, m_windowHeight / 2 - 20, white, FontSize::MEDIUM);
     renderText("Enter Name (max 10 chars):", m_windowWidth / 2 - 140, m_windowHeight / 2 + 20, white, FontSize::SMALL);
     renderText((state.highScoreNameInput + "_").c_str(), m_windowWidth / 2 - 40, m_windowHeight / 2 + 50, white, FontSize::MEDIUM);
-    SDL_RenderPresent(m_renderer);
 }
 
 void Platform::renderHealthBars(const GameStateData& state) {
@@ -468,16 +461,16 @@ void Platform::renderHealthBars(const GameStateData& state) {
     SDL_RenderRect(m_renderer, &wbBg);
 
     // render player score
-    float rightOffset = state.worldWidth - 150;
+    float rightOffset = m_windowWidth - 150;
     renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
     std::string scoreStr = std::to_string(state.playerScore);
-    renderText(scoreStr.c_str(), state.worldWidth - 90, barY, white, FontSize::SMALL);
+    renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
 }
 
 void Platform::renderMinimap(const GameStateData& state) {
     const int mmW = 210;
     const int mmH = 42;
-    const int mmX = (state.worldWidth - mmW)/2, mmY = 10;
+    const int mmX = (m_windowWidth - mmW)/2, mmY = 10;
     SDL_SetRenderDrawColor(m_renderer, 0, 40, 80, 200);
     SDL_FRect mm = {(float)mmX, (float)mmY, (float)mmW, (float)mmH};
     SDL_RenderFillRect(m_renderer, &mm);
@@ -508,7 +501,7 @@ void Platform::renderMinimap(const GameStateData& state) {
     }
 
     float vx = state.cameraX * sx + mmX;
-    float vw = (float)state.worldWidth * sx;
+    float vw = (float)m_windowWidth * sx;
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 100);
     SDL_FRect vr = {vx, (float)mmY, vw, (float)mmH};
     SDL_RenderRect(m_renderer, &vr);
