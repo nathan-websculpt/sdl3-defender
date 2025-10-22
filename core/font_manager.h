@@ -5,6 +5,8 @@
 #include <unordered_map>
 #include <memory>
 
+// TODO: since copying/moving these managers is explicitly forbidden, the rule-of-five doesn't directly apply to the managers themselves?
+
 struct TTF_Font;
 
 class FontManager {

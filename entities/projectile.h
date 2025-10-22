@@ -3,6 +3,8 @@
 #include "../core/config.h"
 #include <cmath>
 
+// TODO: platform is implicitly non-copyable due to raw pointers - should I still follow the rule-of-5?
+
 class Projectile {
 public:
     // for player: fire horizontally
