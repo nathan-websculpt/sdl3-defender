@@ -9,9 +9,7 @@ int main(int argc, char* argv[]) {
         std::filesystem::path exePath = std::filesystem::absolute(argv[0]);
         std::filesystem::path exeDir  = exePath.parent_path();
         std::filesystem::current_path(exeDir);
-
-        std::cout << "Working directory set to: " 
-                  << std::filesystem::current_path().string() << std::endl;
+        std::cout << "Working directory set to: " << std::filesystem::current_path().string() << std::endl;
     } catch (const std::exception& e) {
         std::cerr << "Failed to set working directory: " << e.what() << std::endl;
     }
