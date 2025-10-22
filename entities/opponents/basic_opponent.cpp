@@ -16,7 +16,7 @@ BasicOpponent::BasicOpponent(float x, float y, float w, float h)
     m_scoreVal = 300;
 }
 
-void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) {
+void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) {
     if (m_health <= 0) return;
 
     m_rect.y += m_speed * deltaTime;

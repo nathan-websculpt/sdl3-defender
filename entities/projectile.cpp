@@ -43,5 +43,6 @@ SDL_FRect Projectile::getBounds() const {
 
 // check if the current position is off-screen
 bool Projectile::isOffScreen(int screenWidth, int screenHeight) const {
+    // TODO: use correct width/height
     return (m_rect.x < -50 || m_rect.x > m_worldWidth + 50 || m_rect.y < -50 || m_rect.y > m_worldHeight + 50);
 }

@@ -111,7 +111,7 @@ void Platform::run(Game& sim) {
 
         // fixed timestep update loop
         while (accumulator >= FIXED_DELTA_TIME) {
-            sim.update(FIXED_DELTA_TIME); // pass the fixed delta time
+            sim.update(FIXED_DELTA_TIME, m_windowWidth); // pass the fixed delta time
             accumulator -= FIXED_DELTA_TIME;
         }
 
@@ -319,7 +319,7 @@ GameInput Platform::pollInput(const GameStateData& state) {
         } else if (event.type == SDL_EVENT_TEXT_INPUT) { // for text input
             if (event.text.text[0] != '\0' && event.text.text[1] == '\0') { // ensure it's a single character
                 char c = event.text.text[0];
-                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9') || c == ' ') {
+                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
                     input.charInputEvent = true;
                     input.inputChar = c;
                 }

@@ -72,7 +72,7 @@ public:
     ~Game() = default;
 
     void handleInput(const GameInput& input);
-    void update(float deltaTime);
+    void update(float deltaTime, int screenWidth);
     const GameStateData& getState() const { return m_state; }
     GameStateData& getState() { return m_state; } 
 

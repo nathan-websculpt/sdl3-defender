@@ -20,8 +20,10 @@ SniperOpponent::SniperOpponent(float x, float y, float w, float h)
     m_scoreVal = 100;
 }
 
-void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) {
+void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) {
     if (m_health <= 0) return;
+
+    // SDL_Log("sniper:  world height: %d", screenHeight);
 
     // simple movement
     m_rect.y += m_speed * deltaTime;
@@ -30,8 +32,11 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
 
     m_fireTimer += deltaTime;
     bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, screenWidth);
+    // SDL_Log("sniper:isOnScreen: %d", opponentVisible);
+    // SDL_Log("sniper:screen width: %d", screenWidth);
     
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
+        // SDL_Log("________sniper firing");
         float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
         m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
@@ -45,7 +50,7 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
 
     for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
         projectile->update(deltaTime);
-        if (projectile->isOffScreen(800, 600)) { //TODO:
+        if (projectile->isOffScreen(screenWidth, screenHeight)) { //TODO:
             projectile = m_projectiles.erase(projectile);
         } else {
             ++projectile;

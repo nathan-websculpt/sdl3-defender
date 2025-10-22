@@ -181,7 +181,7 @@ void Game::resetForMenu() {
     m_state.state = GameStateData::State::MENU;
 }
 
-void Game::update(float deltaTime) {
+void Game::update(float deltaTime, int screenWidth) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
     if (m_state.player) {
@@ -207,8 +207,7 @@ void Game::update(float deltaTime) {
     for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
         if (!o || !o->isAlive()) continue; 
         SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
-        // o->update(deltaTime, playerPos, m_state.cameraX, m_windowWidth); // TODO: is window width still needed
-        o->update(deltaTime, playerPos, m_state.cameraX, m_state.worldWidth); 
+        o->update(deltaTime, playerPos, m_state.cameraX, screenWidth, m_state.worldHeight); // remember: world width is bigger than screen - height is same 
     }
 
     // erase opponents

@@ -12,7 +12,7 @@ public:
     BaseOpponent(float x, float y, float w, float h);
     virtual ~BaseOpponent() = default;
 
-    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) = 0;
+    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) = 0;
 
     SDL_FRect getBounds() const;
     bool isOffScreen(int screenHeight) const;
