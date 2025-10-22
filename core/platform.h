@@ -36,4 +36,7 @@ private:
     void renderHowToPlayScreen();
     void renderGameOverScreen(const GameStateData& state);
     void renderHighScoreEntryScreen(const GameStateData& state);
+
+    bool m_textInputActive = false; // track if text input is currently active
+    void updateTextInputState(const GameStateData& state);
 };

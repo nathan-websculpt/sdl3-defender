@@ -43,6 +43,12 @@ bool Platform::initialize() {
 }
 
 void Platform::shutdown() {
+    if (m_textInputActive) {
+        SDL_StopTextInput(m_window); // stop text input
+        m_textInputActive = false;
+        SDL_Log("Platform: Text input STOPPED during shutdown.");
+    }
+
     TextureManager::getInstance().clearCache();
     FontManager::getInstance().clearCache();
 
@@ -76,6 +82,8 @@ void Platform::run(Game& sim) {
             state.worldHeight = (float)m_windowHeight; // world height depends on window resize (width does not)
         }
 
+        updateTextInputState(state); // update text input state
+
         GameInput input = pollInput(state);
         sim.handleInput(input);
 
@@ -91,6 +99,13 @@ void Platform::run(Game& sim) {
         if (frameTime < FRAME_TARGET_TIME) {
             SDL_Delay((Uint32)(FRAME_TARGET_TIME - frameTime));
         }
+    }
+
+    // ensure text input is stopped when the loop exits
+    if (m_textInputActive) {
+        SDL_StopTextInput(m_window);
+        m_textInputActive = false;
+        SDL_Log("Platform: Text input STOPPED on shutdown.");
     }
 }
 
@@ -303,7 +318,10 @@ GameInput Platform::pollInput(const GameStateData& state) {
         input.moveDown  = keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S];
         input.shoot     = keys[SDL_SCANCODE_SPACE];
         input.boost     = keys[SDL_SCANCODE_C] || keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
-    } else if (state.state == GameStateData::State::GAME_OVER && state.waitingForHighScore) {
+    } 
+    
+    // TODO: needed???
+    else if (state.state == GameStateData::State::GAME_OVER && state.waitingForHighScore) {
         const bool* keys = SDL_GetKeyboardState(nullptr);
         // poll for backspace/delete specifically on the high score screen
         if (keys[SDL_SCANCODE_BACKSPACE] || keys[SDL_SCANCODE_DELETE]) {
@@ -312,6 +330,22 @@ GameInput Platform::pollInput(const GameStateData& state) {
     }
 
     return input;
+}
+
+void Platform::updateTextInputState(const GameStateData& state) {
+    bool shouldTextInputBeActive = (state.state == GameStateData::State::GAME_OVER && state.waitingForHighScore);
+
+    if (shouldTextInputBeActive && !m_textInputActive) {
+        // start text input
+        SDL_StartTextInput(m_window);
+        m_textInputActive = true;
+        SDL_Log("Platform: Text input STARTED for high score entry.");
+    } else if (!shouldTextInputBeActive && m_textInputActive) {
+        // stop text input
+        SDL_StopTextInput(m_window);
+        m_textInputActive = false;
+        SDL_Log("Platform: Text input STOPPED.");
+    }
 }
 
 bool Platform::pointInRect(int x, int y, const SDL_FRect& r) {

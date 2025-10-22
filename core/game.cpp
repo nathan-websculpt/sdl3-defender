@@ -48,6 +48,31 @@ void Game::handleInput(const GameInput& input) {
         return;
     }
 
+
+    // 'ESC' key
+    if (input.escape) {
+        if (m_state.state == GameStateData::State::MENU) {
+            m_state.running = false;
+        } else if (m_state.state == GameStateData::State::PLAYING) {
+            m_state.state = GameStateData::State::MENU;
+        } else if (m_state.state == GameStateData::State::GAME_OVER) {
+            if (m_state.waitingForHighScore) {
+                SDL_Log("yeet 1");
+                std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
+                submitHighScore(nameToSubmit);
+                m_state.waitingForHighScore = false;
+                m_state.state = GameStateData::State::MENU;
+            } else {
+                m_state.state = GameStateData::State::MENU;
+            }
+        } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
+             m_state.state = GameStateData::State::MENU;
+        }
+        return; // exit early, skipping any other input for this frame
+    }
+    // END: 'ESC' key
+
+
     if (m_state.state == GameStateData::State::MENU) {
         if (input.enter) {
             startNewGame();
@@ -129,8 +154,9 @@ void Game::handleInput(const GameInput& input) {
                 submitHighScore(trimmedName);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
-            } else if (input.escape) {
+            } else if (input.escape) { // TODO: handling 'esc' above this, could possibly remove
                 // use "ANON" if user cancels with escape and input was empty
+                SDL_Log("yeet 2");
                 std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
                 submitHighScore(nameToSubmit);
                 m_state.waitingForHighScore = false;
@@ -342,7 +368,7 @@ void Game::checkCollisions() {
                     if (isHighScore(m_state.playerScore)) {
                         m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
                         m_state.waitingForHighScore = true;
-                        m_state.highScoreNameInput = ""; // Initialize empty input
+                        m_state.highScoreNameInput = ""; // initialize empty input
                     }
                     return; // exit early if player dies
                 }
@@ -369,7 +395,7 @@ void Game::checkCollisions() {
                         if (isHighScore(m_state.playerScore)) {
                             m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
                             m_state.waitingForHighScore = true;
-                            m_state.highScoreNameInput = ""; // Initialize empty input
+                            m_state.highScoreNameInput = ""; // initialize empty input
                         }
                         return; // exit early if player dies
                     }
