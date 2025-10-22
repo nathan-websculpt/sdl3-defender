@@ -10,8 +10,7 @@ Player::Player(float x, float y, float w, float h)
       m_normalSpeed(200.0f),
       m_speedBoostActive(false),
       m_boostMultiplier(2.1f),
-      m_facing(Direction::RIGHT), 
-      m_spacePressed(false) {
+      m_facing(Direction::RIGHT) {
     m_speed = m_normalSpeed;
 }
 
@@ -30,34 +29,6 @@ void Player::update(float deltaTime, plf::colony<Particle>& particles) {
 
     if (m_speedBoostActive) 
         spawnBoosterParticles(particles);    
-}
-
-void Player::handleInput(const bool* keyboardState) {
-    bool boostActive = keyboardState[SDL_SCANCODE_C] || keyboardState[SDL_SCANCODE_RSHIFT] || keyboardState[SDL_SCANCODE_LSHIFT];
-    if (boostActive != m_speedBoostActive) {
-        m_speedBoostActive = boostActive;
-        m_speed = boostActive ? m_normalSpeed * m_boostMultiplier : m_normalSpeed;
-    }
-    float currentSpeed = m_speed * 0.016f;
-    if (keyboardState[SDL_SCANCODE_UP] || keyboardState[SDL_SCANCODE_W]) {
-        m_rect.y -= currentSpeed;
-    }
-    if (keyboardState[SDL_SCANCODE_DOWN] || keyboardState[SDL_SCANCODE_S]) {
-        m_rect.y += currentSpeed;
-    }
-    if (keyboardState[SDL_SCANCODE_LEFT] || keyboardState[SDL_SCANCODE_A]) {
-        m_rect.x -= currentSpeed;
-        m_facing = Direction::LEFT;
-    }
-    if (keyboardState[SDL_SCANCODE_RIGHT] || keyboardState[SDL_SCANCODE_D]) {
-        m_rect.x += currentSpeed;
-        m_facing = Direction::RIGHT;
-    }
-    bool currentSpaceState = keyboardState[SDL_SCANCODE_SPACE];
-    if (currentSpaceState && !m_spacePressed) {
-        shoot();
-    }
-    m_spacePressed = currentSpaceState;
 }
 
 SDL_FRect Player::getBounds() const {

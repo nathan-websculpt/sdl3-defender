@@ -19,8 +19,6 @@ public:
 
     void update(float deltaTime, plf::colony<Particle>& particles);
 
-    void handleInput(const bool* keyboardState);
-
     SDL_FRect getBounds() const;
     SDL_FPoint getFrontCenter() const;
     void setPosition(float x, float y);
@@ -49,7 +47,6 @@ private:
 
     plf::colony<Projectile> m_projectiles;
 
-    bool m_spacePressed;
     int m_health = 10; // TODO: use the var in Game instead
     float m_normalSpeed;
     float m_boostMultiplier;
