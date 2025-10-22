@@ -1,6 +1,25 @@
 ### Only tested in Fedora
 
-compile && run
+# Running Game
+
+### using build script
+build script (note: your highscores will be in `/build/bin/resources/`)
+```bash
+chmod +x build.sh # make executable
+./build.sh
+```
+
+### using cmake
+cmake (note: your highscores will be in `/build/bin/resources/`)
+```bash
+mkdir build && cd build
+cmake ..
+make -j
+./bin/SDL3Defender
+```
+
+### simple compile
+compile && run (note: your highscores will be in `/resources/`)
 ```bash
 g++ -std=c++17 core/*.cpp entities/*.cpp entities/opponents/*.cpp main.cpp `pkg-config --cflags --libs sdl3` -lSDL3_image -lSDL3_ttf -o m
 ./m
