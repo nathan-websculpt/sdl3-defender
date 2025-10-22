@@ -53,7 +53,7 @@ void Game::handleInput(const GameInput& input) {
         } else if (input.mouseClick) {
             int mx = input.mouseX;
             int my = input.mouseY;
-            int w = 800, h = 600; // assumed default; platform will provide real size
+            int w = 800, h = 600;// TODO: // assumed default; platform will provide real size
             SDL_FRect playBtn = { (float)(w/2 - 100), (float)(h/2 - 60), 200, 50 };
             SDL_FRect howToPlayBtn = { (float)(w/2 - 100), (float)(h/2), 200, 50 };
             SDL_FRect exitBtn = { (float)(w/2 - 100), (float)(h/2 + 60), 200, 50 };
@@ -142,6 +142,7 @@ void Game::handleInput(const GameInput& input) {
             } else if (input.mouseClick) {
                 // TODO:
                 // assume 'X' button at top-right (20x20)
+                //TODO: change 800
                 if (input.mouseX > 800 - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
@@ -152,6 +153,7 @@ void Game::handleInput(const GameInput& input) {
             }
         } else { // not waiting for high score
             if (input.escape || input.enter || input.mouseClick) {
+                // TODO: change 800
                 if (input.mouseClick && input.mouseX > 800 - 30 && input.mouseY < 30) {
                     m_state.state = GameStateData::State::MENU;
                 } else {
@@ -393,7 +395,7 @@ void Game::checkCollisions() {
 void Game::updateCamera() {
     if (!m_state.player) return;
     SDL_FRect pb = m_state.player->getBounds();
-    float target = pb.x - 800 / 2.0f;
+    float target = pb.x - 800 / 2.0f; // TODO: change 800
     if (target < 0) target = 0;
     if (target > m_state.worldWidth - 800) target = m_state.worldWidth - 800;
     m_state.cameraX = target;
