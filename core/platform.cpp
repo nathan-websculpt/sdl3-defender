@@ -38,6 +38,14 @@ bool Platform::initialize() {
         return false;
     }
 
+    // attempt to enable VSync using SDL_SetRenderVSync
+    if (SDL_SetRenderVSync(m_renderer, 1) != 0) { // 1 enables VSync, 0 disables
+        // if setting VSync fails, log it but continue (maybe VSync isn't supported on this display/driver)
+        SDL_Log("Warning: Failed to enable VSync: %s. Running without VSync.", SDL_GetError());
+    } else {
+        SDL_Log("VSync successfully enabled.");
+    }
+
     SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
     return true;
 }
@@ -66,16 +74,26 @@ void Platform::shutdown() {
 
 void Platform::run(Game& sim) {
     const int TARGET_FPS = 60;
-    const float FRAME_TARGET_TIME = 1000.0f / TARGET_FPS;
-    Uint64 lastFrameTime = SDL_GetTicks();
+    const float FRAME_TARGET_TIME_MS = 1000.0f / TARGET_FPS;
+    const float FIXED_DELTA_TIME = 1.0f / TARGET_FPS; // delta time for updates
+
+    // 64-bit integers for time values
+    Uint64 previousFrameTime = SDL_GetTicks(); // time of previous frame start
+    float accumulator = 0.0f; // accumulates elapsed time to control update frequency
 
     m_running = true;
     while (m_running) {
-        SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
+        Uint64 currentTime = SDL_GetTicks();
+        float deltaTimeMS = static_cast<float>(currentTime - previousFrameTime);
+        previousFrameTime = currentTime;
 
-        Uint64 frameStart = SDL_GetTicks();
-        float deltaTime = (frameStart - lastFrameTime) / 1000.0f;
-        lastFrameTime = frameStart;
+        // prevents "spiral of death" ... if frame takes too long
+        if (deltaTimeMS > 200.0f) 
+            deltaTimeMS = 200.0f; // cap at 200ms (5 FPS)
+        
+        accumulator += deltaTimeMS / 1000.0f; // convert to seconds, add to accumulator
+
+        SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
 
         auto& state = sim.getState();
         if (state.state == GameStateData::State::PLAYING) {
@@ -91,14 +109,14 @@ void Platform::run(Game& sim) {
             m_running = false;
         }
 
-        sim.update(deltaTime);
-        render(state);
-
-        Uint64 frameEnd = SDL_GetTicks();
-        int frameTime = (int)(frameEnd - frameStart);
-        if (frameTime < FRAME_TARGET_TIME) {
-            SDL_Delay((Uint32)(FRAME_TARGET_TIME - frameTime));
+        // fixed timestep update loop
+        while (accumulator >= FIXED_DELTA_TIME) {
+            sim.update(FIXED_DELTA_TIME); // pass the fixed delta time
+            accumulator -= FIXED_DELTA_TIME;
         }
+
+        // TODO: implement cap here, too??
+        render(state);
     }
 
     // ensure text input is stopped when the loop exits

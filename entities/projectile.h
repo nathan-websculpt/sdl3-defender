@@ -10,7 +10,7 @@ public:
 
     // for opponents: fire at a target point
     Projectile(float spawnX, float spawnY, float targetX, float targetY, float speed);
-    ~Projectile();
+    ~Projectile() = default;
 
     void update(float deltaTime);
 

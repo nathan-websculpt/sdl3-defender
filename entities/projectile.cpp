@@ -31,10 +31,6 @@ Projectile::Projectile(float spawnX, float spawnY, float targetX, float targetY,
     }
 }
 
-Projectile::~Projectile() {
-    // TODO: will there ever be dynamic resources here?
-}
-
 void Projectile::update(float deltaTime) {
     m_age += deltaTime;
     m_rect.x += m_velocity.x * deltaTime;

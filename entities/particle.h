@@ -4,7 +4,7 @@
 class Particle {
 public:
     Particle(float x, float y, float velocityX, float velocityY, Uint8 r, Uint8 g, Uint8 b, float initialSize = 2.0f, float lifetime = 0.2f);
-    ~Particle();
+    ~Particle() = default;
     void update(float deltaTime);
     bool isAlive() const;
     SDL_FRect getBounds() const;

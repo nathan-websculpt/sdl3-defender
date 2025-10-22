@@ -15,11 +15,6 @@ Player::Player(float x, float y, float w, float h)
     m_speed = m_normalSpeed;
 }
 
-Player::~Player() {
-    
-    
-}
-
 void Player::update(float deltaTime, plf::colony<Particle>& particles) {
     //TODO: make sure that these are getting erased
     // for (auto particle = m_boosterParticles.begin(); particle != m_boosterParticles.end(); ) {

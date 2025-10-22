@@ -10,7 +10,7 @@
 class BaseOpponent {
 public:
     BaseOpponent(float x, float y, float w, float h);
-    virtual ~BaseOpponent();
+    virtual ~BaseOpponent() = default;
 
     virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth) = 0;
 

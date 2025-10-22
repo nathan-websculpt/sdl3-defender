@@ -15,7 +15,7 @@ enum class Direction {
 class Player {
 public:
     Player(float x, float y, float w, float h);
-    ~Player();
+    ~Player() = default;
 
     void update(float deltaTime, plf::colony<Particle>& particles);
 

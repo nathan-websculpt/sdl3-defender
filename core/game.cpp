@@ -16,32 +16,6 @@ Game::Game()
     loadHighScores();
 }
 
-// Game::~Game() {
-//     // reset the player and opponents to release their shared_ptr textures
-//     m_state.player.reset(); 
-//     m_state.opponents.clear();
-//     m_state.particles.clear(); 
-
-//     // TODO: redundant but fixes segfault on close
-//     // clear the managers' caches before destroying the renderer
-//     TextureManager::getInstance().clearCache();
-//     FontManager::getInstance().clearCache();
-
-//     // ...now it's safe to destroy renderer and other SDL resources
-//     if (m_renderer) {
-//         SDL_DestroyRenderer(m_renderer);
-//         m_renderer = nullptr; //good practice
-//     }
-
-//     if (m_window) {
-//         SDL_DestroyWindow(m_window);
-//         m_window = nullptr; // good practice
-//     }
-
-//     TTF_Quit();
-//     SDL_Quit();
-// }
-
 void Game::handleInput(const GameInput& input) {
     if (input.quit) {
         m_state.running = false;

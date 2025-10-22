@@ -10,10 +10,6 @@ BaseOpponent::BaseOpponent(float x, float y, float w, float h)
       m_startX(x), m_maxHealth(3), m_health(3), m_fireTimer(0.0f), m_fireInterval(5.0f) 
       {}
 
-BaseOpponent::~BaseOpponent() {
-    
-}
-
 void BaseOpponent::takeDamage(int damage) {
     m_health -= damage;
     if (m_health < 0) m_health = 0;

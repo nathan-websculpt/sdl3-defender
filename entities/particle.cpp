@@ -13,10 +13,6 @@ Particle::Particle(float x, float y, float velocityX, float velocityY, Uint8 r, 
       m_fadeRate(0.8f)  // rate at which alpha decreases per second
     { }
 
-Particle::~Particle() {
-    // TODO:
-}
-
 void Particle::update(float deltaTime) {
     m_rect.x += m_velocity.x * deltaTime;
     m_rect.y += m_velocity.y * deltaTime;
