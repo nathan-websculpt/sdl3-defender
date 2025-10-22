@@ -86,10 +86,12 @@ private:
     GameStateData m_state;
     float m_opponentSpawnTimer = 0.0f;
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
+    bool m_prevShootState = false;
 
     void spawnOpponent();
     void checkCollisions();
     void updateCamera();
     bool isHighScore(int score) const;
     int getHighScoreIndex(int score) const;
+
 };

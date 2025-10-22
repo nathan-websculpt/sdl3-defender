@@ -72,9 +72,13 @@ void Game::handleInput(const GameInput& input) {
     } else if (m_state.state == GameStateData::State::PLAYING) {
         if (m_state.player) {
             m_state.player->setSpeedBoost(input.boost);
-            if (input.shoot) {
+
+            if (input.shoot && !m_prevShootState) { // current frame: pressed, previous frame: not pressed
                 m_state.player->shoot();
             }
+            // update the previous state for the next frame
+            m_prevShootState = input.shoot;
+
             float speed = m_state.player->getSpeed();
             float delta = 0.016f;
             float dx = 0, dy = 0;
