@@ -141,8 +141,8 @@ void Platform::render(const GameStateData& state) {
 
             if (state.player) {
                 // render player
-                auto playerTex = TextureManager::getInstance().getTexture(Config::Textures::PLAYER, m_renderer);
-                if (playerTex) {
+                auto playerTexture = TextureManager::getInstance().getTexture(Config::Textures::PLAYER, m_renderer);
+                if (playerTexture) {
                     SDL_FRect renderBounds = state.player->getBounds();
                     renderBounds.x -= state.cameraX;
                     
@@ -153,7 +153,7 @@ void Platform::render(const GameStateData& state) {
                         drawRect.w = -drawRect.w;
                     }
 
-                    SDL_RenderTexture(m_renderer, playerTex.get(), nullptr, &drawRect);
+                    SDL_RenderTexture(m_renderer, playerTexture.get(), nullptr, &drawRect);
 
                     // render player projectiles
                     const auto& pp = state.player->getProjectiles();
@@ -167,10 +167,8 @@ void Platform::render(const GameStateData& state) {
 
                         // player beam: from spawn to world edge
                         float startX = p.getSpawnX() - cameraOffsetX;
-                        float startY = p.getSpawnY();
                         float endX = (p.getVelocity().x > 0) ? (p.getWorldWidth() - cameraOffsetX) : (0.0f - cameraOffsetX);
-                        float endY = startY;
-                        SDL_RenderLine(m_renderer, startX, startY, endX, endY);                        
+                        SDL_RenderLine(m_renderer, startX, p.getSpawnY(), endX, p.getSpawnY()); // spawn x/y, end x/y                       
                     }
                 }
             }
@@ -178,17 +176,17 @@ void Platform::render(const GameStateData& state) {
             for (const auto& o : state.opponents) {
                 if (!o || !o->isAlive()) continue;
 
-                SDL_FRect or_ = o->getBounds();
-                or_.x -= state.cameraX;
+                SDL_FRect renderBounds = o->getBounds();
+                renderBounds.x -= state.cameraX;
 
                 // render opponent texture
-                auto opponentTex = TextureManager::getInstance().getTexture(o->getTextureKey(), m_renderer);
-                if (opponentTex) {
-                    SDL_RenderTexture(m_renderer, opponentTex.get(), nullptr, &or_);
+                auto opponentTexture = TextureManager::getInstance().getTexture(o->getTextureKey(), m_renderer);
+                if (opponentTexture) {
+                    SDL_RenderTexture(m_renderer, opponentTexture.get(), nullptr, &renderBounds);
                 } else {
                     // fallback rect
                     SDL_SetRenderDrawColor(m_renderer, 255, 0, 255, 255);
-                    SDL_RenderFillRect(m_renderer, &or_);
+                    SDL_RenderFillRect(m_renderer, &renderBounds);
                 }
 
                 //render opponent projectiles
@@ -196,7 +194,6 @@ void Platform::render(const GameStateData& state) {
                 for (const auto& p : op) { 
                     if (p.getAge() >= p.getLifetime()) continue;
                     float cameraOffsetX = state.cameraX;
-                    float cameraOffsetY = 0.0f; // TODO: remove
 
                     SDL_Color color = p.getColor();
                     SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
@@ -206,8 +203,8 @@ void Platform::render(const GameStateData& state) {
                     float dy = p.getCurrentY() - p.getSpawnY();
                     float endX = p.getSpawnX() + dx * 4.0f; // 4x extension
                     float endY = p.getSpawnY() + dy * 4.0f;
-                    SDL_FPoint start = { p.getSpawnX() - cameraOffsetX, p.getSpawnY() - cameraOffsetY };
-                    SDL_FPoint end   = { endX - cameraOffsetX, endY - cameraOffsetY };
+                    SDL_FPoint start = { p.getSpawnX() - cameraOffsetX, p.getSpawnY() };
+                    SDL_FPoint end   = { endX - cameraOffsetX, endY };
                     SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
                 }
             }
@@ -224,8 +221,8 @@ void Platform::render(const GameStateData& state) {
             }
 
             renderMinimap(state);
-
             renderHealthBars(state);
+
             break;
         case GameStateData::State::GAME_OVER:
             if (state.waitingForHighScore) {
@@ -318,9 +315,7 @@ GameInput Platform::pollInput(const GameStateData& state) {
         input.moveDown  = keys[SDL_SCANCODE_DOWN] || keys[SDL_SCANCODE_S];
         input.shoot     = keys[SDL_SCANCODE_SPACE];
         input.boost     = keys[SDL_SCANCODE_C] || keys[SDL_SCANCODE_LSHIFT] || keys[SDL_SCANCODE_RSHIFT];
-    } 
-    
-    // TODO: needed???
+    }
     else if (state.state == GameStateData::State::GAME_OVER && state.waitingForHighScore) {
         const bool* keys = SDL_GetKeyboardState(nullptr);
         // poll for backspace/delete specifically on the high score screen
