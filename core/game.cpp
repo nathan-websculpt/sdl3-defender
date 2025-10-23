@@ -160,9 +160,9 @@ void Game::startNewGame() {
     m_state.opponents.clear();
     m_state.particles.clear();
     m_state.cameraX = 0.0f;
-    float px = m_state.screenWidth / 2.0f - 40;
-    // float px = m_state.worldWidth / 2.0f - 40;
-    m_state.player = std::make_unique<Player>(px, 500, 80, 48);
+    float px = m_state.worldWidth / 2.0f - 40.0f;
+    float py = m_state.screenHeight / 2.0f - 24.0f;
+    m_state.player = std::make_unique<Player>(px, py, 80, 48);
     m_state.state = GameStateData::State::PLAYING;
     m_state.worldHealth = 10;
     m_state.playerScore = 0;
