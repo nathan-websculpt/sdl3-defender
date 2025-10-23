@@ -1,5 +1,0 @@
-n 3100
-ccc 1300
-nathan 600
-ANON 500
-tes 100

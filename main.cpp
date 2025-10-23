@@ -17,13 +17,10 @@ int main(int argc, char* argv[]) {
     Game sim;
     Platform platform;
 
-    if (!platform.initialize()) {
+    if (!platform.initialize()) 
         return -1;
-    }
-
-    sim.loadHighScores();
+    
     platform.run(sim);
-    sim.saveHighScores();
 
     platform.shutdown();
     return 0;
