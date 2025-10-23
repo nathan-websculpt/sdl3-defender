@@ -154,7 +154,6 @@ void Platform::render(const GameStateData& state) {
                         drawRect.x += drawRect.w;
                         drawRect.w = -drawRect.w;
                     }
-
                     SDL_RenderTexture(m_renderer, playerTexture.get(), nullptr, &drawRect);
 
                     // render player projectiles
@@ -511,7 +510,7 @@ void Platform::renderHealthBars(const GameStateData& state) {
 void Platform::renderMinimap(const GameStateData& state) {
     const int mmW = 210;
     const int mmH = 42;
-    const int mmX = (m_windowWidth - mmW)/2, mmY = 10;
+    const int mmX = (state.screenWidth - mmW)/2, mmY = 10;
     SDL_SetRenderDrawColor(m_renderer, 0, 40, 80, 200);
     SDL_FRect mm = {(float)mmX, (float)mmY, (float)mmW, (float)mmH};
     SDL_RenderFillRect(m_renderer, &mm);
@@ -542,7 +541,7 @@ void Platform::renderMinimap(const GameStateData& state) {
     }
 
     float vx = state.cameraX * sx + mmX;
-    float vw = (float)m_windowWidth * sx;
+    float vw = state.screenWidth * sx;
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 100);
     SDL_FRect vr = {vx, (float)mmY, vw, (float)mmH};
     SDL_RenderRect(m_renderer, &vr);

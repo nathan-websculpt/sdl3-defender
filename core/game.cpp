@@ -160,7 +160,8 @@ void Game::startNewGame() {
     m_state.opponents.clear();
     m_state.particles.clear();
     m_state.cameraX = 0.0f;
-    float px = m_state.worldWidth / 2.0f - 40;
+    float px = m_state.screenWidth / 2.0f - 40;
+    // float px = m_state.worldWidth / 2.0f - 40;
     m_state.player = std::make_unique<Player>(px, 500, 80, 48);
     m_state.state = GameStateData::State::PLAYING;
     m_state.worldHealth = 10;
@@ -388,9 +389,9 @@ void Game::checkCollisions() {
 void Game::updateCamera() {
     if (!m_state.player) return;
     SDL_FRect pb = m_state.player->getBounds();
-    float target = pb.x - 800 / 2.0f; // TODO: change 800
+    float target = pb.x - m_state.screenWidth / 2.0f;
     if (target < 0) target = 0;
-    if (target > m_state.worldWidth - 800) target = m_state.worldWidth - 800;
+    if (target > m_state.worldWidth - m_state.screenWidth) target = m_state.worldWidth - m_state.screenWidth;
     m_state.cameraX = target;
 
     // TODO: bring back window height and width?
