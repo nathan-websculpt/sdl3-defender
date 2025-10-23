@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "../particle.h"
 #include "../../core/texture_manager.h"
+#include "../../core/game.h" 
 
 SniperOpponent::SniperOpponent(float x, float y, float w, float h) 
     : BaseOpponent(x, y, w, h) {
@@ -20,7 +21,7 @@ SniperOpponent::SniperOpponent(float x, float y, float w, float h)
     m_scoreVal = 100;
 }
 
-void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) {
+void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
 
     // SDL_Log("sniper:  world height: %d", screenHeight);
@@ -31,7 +32,7 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     m_rect.x = m_startX + sin(m_angle + m_oscillationOffset) * m_oscillationAmplitude;
 
     m_fireTimer += deltaTime;
-    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, screenWidth);
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, state.screenWidth);
     // SDL_Log("sniper:isOnScreen: %d", opponentVisible);
     // SDL_Log("sniper:screen width: %d", screenWidth);
     
@@ -50,7 +51,7 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
 
     for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
         projectile->update(deltaTime);
-        if (projectile->isOffScreen(screenWidth, screenHeight)) { //TODO:
+        if (projectile->isOffScreen(state.screenWidth, state.screenHeight)) {
             projectile = m_projectiles.erase(projectile);
         } else {
             ++projectile;

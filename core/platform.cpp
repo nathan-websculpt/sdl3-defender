@@ -96,6 +96,9 @@ void Platform::run(Game& sim) {
         SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
 
         auto& state = sim.getState();
+        state.screenWidth = m_windowWidth;
+        state.screenHeight = m_windowHeight;
+
         if (state.state == GameStateData::State::PLAYING) {
             state.worldHeight = (float)m_windowHeight; // world height depends on window resize (width does not)
         }
@@ -111,11 +114,10 @@ void Platform::run(Game& sim) {
 
         // fixed timestep update loop
         while (accumulator >= FIXED_DELTA_TIME) {
-            sim.update(FIXED_DELTA_TIME, m_windowWidth); // pass the fixed delta time
+            sim.update(FIXED_DELTA_TIME); // pass the fixed delta time
             accumulator -= FIXED_DELTA_TIME;
         }
 
-        // TODO: implement cap here, too?? ^^^
         render(state);
     }
 

@@ -9,7 +9,6 @@
 
 Game::Game()
     : m_state{} {
-
     srand((unsigned int)time(nullptr));
     m_state.worldWidth = Config::Game::WORLD_WIDTH;
     m_state.worldHeight = Config::Game::WORLD_HEIGHT;
@@ -22,7 +21,6 @@ void Game::handleInput(const GameInput& input) {
         return;
     }
 
-
     // 'ESC' key
     if (input.escape) {
         if (m_state.state == GameStateData::State::MENU) {
@@ -31,7 +29,6 @@ void Game::handleInput(const GameInput& input) {
             m_state.state = GameStateData::State::MENU;
         } else if (m_state.state == GameStateData::State::GAME_OVER) {
             if (m_state.waitingForHighScore) {
-                SDL_Log("yeet 1");
                 std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
                 submitHighScore(nameToSubmit);
                 m_state.waitingForHighScore = false;
@@ -46,14 +43,14 @@ void Game::handleInput(const GameInput& input) {
     }
     // END: 'ESC' key
 
-
     if (m_state.state == GameStateData::State::MENU) {
         if (input.enter) {
             startNewGame();
         } else if (input.mouseClick) {
             int mx = input.mouseX;
             int my = input.mouseY;
-            int w = 800, h = 600;// TODO: // assumed default; platform will provide real size
+            int w = m_state.screenWidth;
+            int h = m_state.screenHeight;
             SDL_FRect playBtn = { (float)(w/2 - 100), (float)(h/2 - 60), 200, 50 };
             SDL_FRect howToPlayBtn = { (float)(w/2 - 100), (float)(h/2), 200, 50 };
             SDL_FRect exitBtn = { (float)(w/2 - 100), (float)(h/2 + 60), 200, 50 };
@@ -95,9 +92,7 @@ void Game::handleInput(const GameInput& input) {
                 if (m_state.highScoreNameInput.length() < 10 && (std::isalnum(static_cast<unsigned char>(c)) || c == ' ')) {
                     m_state.highScoreNameInput += c;
                 }
-            }
-            
-            // const bool* keys = SDL_GetKeyboardState(nullptr);
+            }           
             
             static float backspaceCooldown = 0.0f;
             const float BACKSPACE_DELAY = 0.1f; 
@@ -134,7 +129,6 @@ void Game::handleInput(const GameInput& input) {
                 m_state.state = GameStateData::State::MENU;
             } else if (input.escape) { // TODO: handling 'esc' above this, could possibly remove
                 // use "ANON" if user cancels with escape and input was empty
-                SDL_Log("yeet 2");
                 std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
                 submitHighScore(nameToSubmit);
                 m_state.waitingForHighScore = false;
@@ -142,8 +136,7 @@ void Game::handleInput(const GameInput& input) {
             } else if (input.mouseClick) {
                 // TODO:
                 // assume 'X' button at top-right (20x20)
-                //TODO: change 800
-                if (input.mouseX > 800 - 30 && input.mouseY < 30) {
+                if (input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
                     submitHighScore(nameToSubmit);
@@ -153,11 +146,10 @@ void Game::handleInput(const GameInput& input) {
             }
         } else { // not waiting for high score
             if (input.escape || input.enter || input.mouseClick) {
-                // TODO: change 800
-                if (input.mouseClick && input.mouseX > 800 - 30 && input.mouseY < 30) {
+                if (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
                     m_state.state = GameStateData::State::MENU;
                 } else {
-                    m_state.state = GameStateData::State::MENU;
+                    m_state.state = GameStateData::State::MENU; // TODO:
                 }
             }
         }
@@ -183,7 +175,7 @@ void Game::resetForMenu() {
     m_state.state = GameStateData::State::MENU;
 }
 
-void Game::update(float deltaTime, int screenWidth) {
+void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
     if (m_state.player) {
@@ -209,7 +201,7 @@ void Game::update(float deltaTime, int screenWidth) {
     for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
         if (!o || !o->isAlive()) continue; 
         SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
-        o->update(deltaTime, playerPos, m_state.cameraX, screenWidth, m_state.worldHeight); // remember: world width is bigger than screen - height is same 
+        o->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
     }
 
     // erase opponents
@@ -243,6 +235,7 @@ void Game::update(float deltaTime, int screenWidth) {
             SDL_FRect b = p_it->getBounds();
             float mx = 100.0f;
             float my = 100.0f;
+            // player can shoot across whole world
             if (b.x + b.w < -mx || b.x > m_state.worldWidth + mx || b.y + b.h < -my || b.y > m_state.worldHeight + my) {
                 p_it = pp.erase(p_it);
             } else {

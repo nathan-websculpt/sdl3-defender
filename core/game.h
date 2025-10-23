@@ -53,7 +53,9 @@ struct GameStateData {
     int playerScore = 0;
     float cameraX = 0.0f;
     float worldWidth;  // world width goes beyond window
-    float worldHeight; // height depends on window resize
+    float worldHeight; // height depends on window size
+    float screenWidth; 
+    float screenHeight;
 
     // entities
     std::unique_ptr<Player> player;
@@ -72,7 +74,7 @@ public:
     ~Game() = default;
 
     void handleInput(const GameInput& input);
-    void update(float deltaTime, int screenWidth);
+    void update(float deltaTime);
     const GameStateData& getState() const { return m_state; }
     GameStateData& getState() { return m_state; } 
 

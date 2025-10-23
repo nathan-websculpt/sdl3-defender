@@ -5,6 +5,7 @@
 #include <algorithm>
 #include "../particle.h"
 #include "../../core/texture_manager.h"
+#include "../../core/game.h" 
 
 AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h) 
     : BaseOpponent(x, y, w, h) {
@@ -17,7 +18,7 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h)
     m_scoreVal = 100;
 }
 
-void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) {
+void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
 
     // SDL_Log("aggressive:  world height: %d", screenHeight);
@@ -40,7 +41,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     }
 
     m_fireTimer += deltaTime;
-    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, screenWidth);
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, state.screenWidth);
     // SDL_Log("aggressive:isOnScreen: %d", opponentVisible);
     // SDL_Log("aggressive:screen width: %d", screenWidth);
 
@@ -59,7 +60,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 
     for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
         projectile->update(deltaTime);
-        if (projectile->isOffScreen(screenWidth, screenHeight)) {
+        if (projectile->isOffScreen(state.screenWidth, state.screenHeight)) {
             projectile = m_projectiles.erase(projectile);
         } else {
             ++projectile;

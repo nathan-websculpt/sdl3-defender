@@ -7,12 +7,14 @@
 #include "../../core/config.h"
 #include "../../plf/plf_colony.h" 
 
+struct GameStateData; // forward declaration
+
 class BaseOpponent {
 public:
     BaseOpponent(float x, float y, float w, float h);
     virtual ~BaseOpponent() = default;
 
-    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) = 0;
+    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) = 0;
 
     SDL_FRect getBounds() const;
     bool isOffScreen(int screenHeight) const;
@@ -33,7 +35,6 @@ public:
 
 protected:
     SDL_FRect m_rect;
-    // std::shared_ptr<SDL_Texture> m_texture;
 
     float m_speed;
     float m_angle;

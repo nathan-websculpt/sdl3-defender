@@ -4,6 +4,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
 #include <cstdlib>
+#include "../../core/game.h" 
 
 BasicOpponent::BasicOpponent(float x, float y, float w, float h) 
     : BaseOpponent(x, y, w, h) {
@@ -16,7 +17,7 @@ BasicOpponent::BasicOpponent(float x, float y, float w, float h)
     m_scoreVal = 300;
 }
 
-void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, int screenWidth, int screenHeight) {
+void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
 
     m_rect.y += m_speed * deltaTime;
