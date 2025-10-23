@@ -130,7 +130,7 @@ void Platform::run(Game& sim) {
 void Platform::render(const GameStateData& state) {
     switch (state.state) {
         case GameStateData::State::MENU:
-            renderMenu(state);
+            renderMenu();
             break;
         case GameStateData::State::HOW_TO_PLAY:
             renderHowToPlayScreen();
@@ -343,12 +343,12 @@ void Platform::updateTextInputState(const GameStateData& state) {
     }
 }
 
-bool Platform::pointInRect(int x, int y, const SDL_FRect& r) {
-    return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
-}
+// TODO: tie into collision refactor (no longer used, at this point)
+// bool Platform::pointInRect(int x, int y, const SDL_FRect& r) {
+//     return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
+// }
 
-// TODO: doesn't need state here
-void Platform::renderMenu(const GameStateData& state) {
+void Platform::renderMenu() {
     SDL_SetRenderDrawColor(m_renderer, 0, 20, 40, 255);
     SDL_RenderClear(m_renderer);
     
@@ -381,15 +381,14 @@ void Platform::renderHowToPlayScreen() {
     SDL_RenderClear(m_renderer);
 
     SDL_Color white = {255, 255, 255, 255};
-    SDL_Color yellow = {255, 255, 0, 255}; // for titles
+    SDL_Color yellow = {255, 255, 0, 255};
 
     int y_pos = 50; // starting Y position for text
-    const int line_spacing = 30; // space between lines of text
+    const int line_spacing = 30;
     const int opponent_image_size = 30;
 
     renderText("HOW TO PLAY", m_windowWidth/2 - 100, y_pos, yellow, FontSize::MEDIUM);
     y_pos += line_spacing + 20;
-
     renderText("CONTROLS:", m_windowWidth/2 - 80, y_pos, white, FontSize::SMALL);
     y_pos += line_spacing;
     renderText("- Move: Arrow Keys or WASD", m_windowWidth/2 - 150, y_pos, white, FontSize::SMALL);
@@ -398,7 +397,6 @@ void Platform::renderHowToPlayScreen() {
     y_pos += line_spacing;
     renderText("- Boost: Hold 'C' or Shift", m_windowWidth/2 - 150, y_pos, white, FontSize::SMALL);
     y_pos += line_spacing + 10;
-
     renderText("OPPONENTS:", m_windowWidth/2 - 80, y_pos, white, FontSize::SMALL);
     y_pos += line_spacing;
 
@@ -430,9 +428,7 @@ void Platform::renderHowToPlayScreen() {
     y_pos += line_spacing + 30; 
 
     renderText("Goal: Destroy opponents, prevent bombs from damaging world.", m_windowWidth/2 - 200, y_pos, white, FontSize::SMALL);
-
     y_pos += line_spacing + 20;
-
     renderText("Press ESC or ENTER to return to the menu.", m_windowWidth/2 - 150, y_pos, white, FontSize::SMALL);
 }
 

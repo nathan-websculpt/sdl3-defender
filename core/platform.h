@@ -27,13 +27,13 @@ private:
     void render(const GameStateData& state);
     void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
     GameInput pollInput(const GameStateData& state);
-    bool pointInRect(int x, int y, const SDL_FRect& rect);
+    // bool pointInRect(int x, int y, const SDL_FRect& rect);
 
     void renderHealthBars(const GameStateData& state);
     void renderMinimap(const GameStateData& state);
 
     // menus
-    void renderMenu(const GameStateData& state);
+    void renderMenu();
     void renderHowToPlayScreen();
     void renderGameOverScreen(const GameStateData& state);
     void renderHighScoreEntryScreen(const GameStateData& state);
