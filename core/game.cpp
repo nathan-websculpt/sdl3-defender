@@ -393,16 +393,6 @@ void Game::updateCamera() {
     if (target < 0) target = 0;
     if (target > m_state.worldWidth - m_state.screenWidth) target = m_state.worldWidth - m_state.screenWidth;
     m_state.cameraX = target;
-
-    // TODO: bring back window height and width?
-    // if (!m_state.player) return;
-
-    // SDL_FRect pb = m_state.player->getBounds();
-    // float target = pb.x - m_windowWidth/2.0f;
-
-    // if (target < 0) target = 0;
-    // if (target > m_state.worldWidth - m_windowWidth) target = m_state.worldWidth - m_windowWidth;
-    // m_state.cameraX = target;
 }
 
 void Game::loadHighScores() {
