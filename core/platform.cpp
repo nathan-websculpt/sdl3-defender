@@ -115,7 +115,7 @@ void Platform::run(Game& sim) {
             accumulator -= FIXED_DELTA_TIME;
         }
 
-        // TODO: implement cap here, too??
+        // TODO: implement cap here, too?? ^^^
         render(state);
     }
 
@@ -146,49 +146,31 @@ void Platform::render(const GameStateData& state) {
                     SDL_FRect renderBounds = state.player->getBounds();
                     renderBounds.x -= state.cameraX;
                     
-                    // apply flip based on facing
+                    // apply flip based on player's facing-direction
                     SDL_FRect drawRect = renderBounds;
-                    SDL_FlipMode flip = (state.player->getFacing() == Direction::LEFT) ? SDL_FLIP_HORIZONTAL : SDL_FLIP_NONE;
-                    if (flip == SDL_FLIP_HORIZONTAL) {
+                    if (state.player->getFacing() == Direction::LEFT) {
                         drawRect.x += drawRect.w;
                         drawRect.w = -drawRect.w;
                     }
+
                     SDL_RenderTexture(m_renderer, playerTex.get(), nullptr, &drawRect);
 
                     // render player projectiles
                     const auto& pp = state.player->getProjectiles();
                     for (const auto& p : pp) {
                         if (p.getAge() >= p.getLifetime()) continue;
-
-                        // SDL_FRect renderBounds = p.getBounds();
-                        // float cameraOffsetX = renderBounds.x - state.cameraX;
-                        // float cameraOffsetY = renderBounds.y - 0.0f; // currently assuming no vertical camera movement
+                        
                         float cameraOffsetX = state.cameraX;
-                        float cameraOffsetY = 0.0f;
 
-                        SDL_Color color = p.getColor(); // calculated color
+                        SDL_Color color = p.getColor();
                         SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 
-                        if (p.isHorizontal()) {
-                            // player beam: from spawn to world edge
-                            float startX = p.getSpawnX() - cameraOffsetX;
-                            float startY = p.getSpawnY() - cameraOffsetY;
-                            float endX = (p.getVelocity().x > 0) ? (p.getWorldWidth() - cameraOffsetX) : (0.0f - cameraOffsetX);
-                            float endY = startY;
-                            SDL_RenderLine(m_renderer, startX, startY, endX, endY);
-                        } else {
-                            // remove block
-                            SDL_Log("TEST"); // TODO: is this block still needed?
-                            // opponent beam
-                            // from spawn to current pos (then extended)
-                            float dx = p.getCurrentX() - p.getSpawnX();
-                            float dy = p.getCurrentY() - p.getSpawnY();
-                            float endX = p.getSpawnX() + dx * 4.0f; // 4x extension
-                            float endY = p.getSpawnY() + dy * 4.0f;
-                            SDL_FPoint start = { p.getSpawnX() - cameraOffsetX, p.getSpawnY() - cameraOffsetY };
-                            SDL_FPoint end   = { endX - cameraOffsetX, endY - cameraOffsetY };
-                            SDL_RenderLine(m_renderer, start.x, start.y, end.x, end.y);
-                        }
+                        // player beam: from spawn to world edge
+                        float startX = p.getSpawnX() - cameraOffsetX;
+                        float startY = p.getSpawnY();
+                        float endX = (p.getVelocity().x > 0) ? (p.getWorldWidth() - cameraOffsetX) : (0.0f - cameraOffsetX);
+                        float endY = startY;
+                        SDL_RenderLine(m_renderer, startX, startY, endX, endY);                        
                     }
                 }
             }

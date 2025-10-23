@@ -19,7 +19,7 @@ public:
 private:
     SDL_Window* m_window = nullptr;
     SDL_Renderer* m_renderer = nullptr;
-    int m_windowWidth = 800; // TODO: make sure this changes on resize
+    int m_windowWidth = 800;
     int m_windowHeight = 600;
     bool m_running = true;
     bool m_textInputActive = false; // track if text input is currently active
