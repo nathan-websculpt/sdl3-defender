@@ -25,6 +25,50 @@ g++ -std=c++17 core/*.cpp entities/*.cpp entities/opponents/*.cpp main.cpp `pkg-
 ./m
 ```
 
+## Analysis
+
+### clang-tidy
+generate a `compile_commands.json` file inside `/build/`
+```bash
+mkdir -p build
+cd build
+cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
+
+```
+
+run on single file
+```bash
+clang-tidy ../sdl3-defender/core/platform.cpp -- -I../sdl3-defender
+
+```
+
+run on project
+```bash
+run-clang-tidy -p build
+
+```
+
+see suppressed warnings
+```bash
+clang-tidy -p=build -checks='-*,clang-analyzer-*,performance-*,readability-*' core/game.cpp
+
+```
+
+### cppcheck
+Outputs to `cppcheck_report.txt`
+```bash
+cppcheck --enable=all --inline-suppr --check-library --project=build/compile_commands.json -I. -I.. --output-file=cppcheck_report.txt --verbose
+
+# most severe
+cppcheck --enable=warning,performance,portability --inline-suppr . 2> critical_issues.txt
+
+# memory and resource issues
+cppcheck --enable=style,performance --force . 2> style_performance.txt
+
+# unused functions and missing includes
+cppcheck --enable=unusedFunction,missingInclude --force . 2> unused_includes.txt
+```
+
 # NOTES: 
 `m_cameraX` is a *horizontal scroll offset* that defines how far the view has panned left or right across the larger game world -- implements a 2D side-scrolling camera that follows the player.
 The *camera* is not a separate object -- it’s implemented through the `m_cameraX` offset

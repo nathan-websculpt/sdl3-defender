@@ -57,6 +57,11 @@ main
 game
 m
 
+cppcheck_report.txt
+critical_issues.txt
+style_performance.txt
+unused_includes.txt
+
 notes.md
 
 notesTwo.md

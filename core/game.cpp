@@ -135,7 +135,7 @@ void Game::handleInput(const GameInput& input) {
                 m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
                 // TODO:
-                // assume 'X' button at top-right (20x20)
+                // place 'X' button at top-right (20x20)
                 if (input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
