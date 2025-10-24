@@ -38,7 +38,6 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         // SDL_Log("________sniper firing");
-        float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
         m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
             m_rect.y + m_rect.h/2,

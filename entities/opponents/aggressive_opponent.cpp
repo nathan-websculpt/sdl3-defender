@@ -47,7 +47,6 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         // SDL_Log("________aggressive firing");
-        float direction = (m_rect.x < playerPos.x) ? 1.0f : -1.0f;
         m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
             m_rect.y + m_rect.h/2,

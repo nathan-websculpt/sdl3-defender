@@ -11,11 +11,11 @@ Platform::Platform() = default;
 Platform::~Platform() { shutdown(); }
 
 bool Platform::initialize() {
-    if (SDL_Init(SDL_INIT_VIDEO) < 0) {
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("unable to initialize sdl: %s", SDL_GetError());
         return false;
     }
-    if (TTF_Init() < 0) {
+    if (!TTF_Init()) {
         SDL_Log("unable to initialize sdl_ttf: %s", SDL_GetError());
         SDL_Quit();
         return false;
