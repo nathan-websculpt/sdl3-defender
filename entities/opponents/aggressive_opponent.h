@@ -16,6 +16,4 @@ public:
 
 private:
     float m_fireInterval = 15.8f;
-
-    bool isOnScreen(float objX, float objY, float cameraX, int screenWidth) const;
 };

@@ -18,6 +18,4 @@ private:
     float m_oscillationSpeed;
     float m_oscillationOffset;
     float m_fireAccuracy;
-
-    bool isOnScreen(float objX, float objY, float cameraX, int screenWidth) const;
 };

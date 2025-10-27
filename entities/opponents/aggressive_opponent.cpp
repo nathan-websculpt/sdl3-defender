@@ -72,13 +72,3 @@ void AggressiveOpponent::explode(plf::colony<Particle>& gameParticles) const {
         gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.2f, 1.9f);
     }
 }
-
-bool AggressiveOpponent::isOnScreen(float objX, float objY, float cameraX, int screenWidth) const {
-    float screenMinX = cameraX;
-    float screenMaxX = cameraX + screenWidth;
-    // Y is always fully visible because:
-    // world height = 600px
-    // window height is enforced to be >= 600px
-    // no vertical camera movement
-    return (objX >= screenMinX && objX <= screenMaxX);
-}

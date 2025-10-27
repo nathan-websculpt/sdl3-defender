@@ -20,7 +20,6 @@ public:
 
     bool isAlive() const { return m_health > 0; }
     void takeDamage(int damage);
-    void reset();
 
     plf::colony<Projectile>& getProjectiles();
     const plf::colony<Projectile>& getProjectiles() const;
@@ -31,6 +30,8 @@ public:
 
     virtual const std::string& getTextureKey() const = 0;
 
+    bool isOnScreen(float objX, float objY, float cameraX, int screenWidth) const;
+
 protected:
     SDL_FRect m_rect;
 
@@ -40,7 +41,6 @@ protected:
     float m_oscillationAmplitude;
     float m_startX;
     int m_health;
-    int m_maxHealth; //TODO: remove
 
     plf::colony<Projectile> m_projectiles;
     float m_fireTimer;
