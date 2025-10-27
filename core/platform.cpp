@@ -110,11 +110,9 @@ void Platform::run(Game& sim) {
             GameInput input = pollInput(state);
             sim.handleInput(input, FIXED_DELTA_TIME);
 
-            if (input.quit || state.running == false) {
-                m_running = false;
-            }
-            
-            sim.update(FIXED_DELTA_TIME); // pass the fixed delta time
+            if (input.quit || state.running == false) m_running = false;            
+
+            sim.update(FIXED_DELTA_TIME);
             accumulator -= FIXED_DELTA_TIME;
         }
 

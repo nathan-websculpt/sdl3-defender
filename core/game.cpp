@@ -181,21 +181,32 @@ void Game::update(float deltaTime) {
 
     if (m_state.player) {
         m_state.player->update(deltaTime, m_state.particles);
-        auto& playerProjectiles = m_state.player->getProjectiles();
 
-        for (auto& p : playerProjectiles) { 
-            p.update(deltaTime);
-        }
+        // player projectiles
+        auto& playerProjectiles = m_state.player->getProjectiles();
+        for (auto projectile = playerProjectiles.begin(); projectile != playerProjectiles.end(); ) {
+            projectile->update(deltaTime);
+            SDL_FRect b = projectile->getBounds();
+            float mx = 100.0f;
+            float my = 100.0f;
+            // player can shoot across whole world
+            if (b.x + b.w < -mx || b.x > m_state.worldWidth + mx || b.y + b.h < -my || b.y > m_state.worldHeight + my) {
+                projectile = playerProjectiles.erase(projectile);
+            } else {
+                ++projectile;
+            }
+        }    
 
         SDL_FRect pb = m_state.player->getBounds();
 
+        
         float cx = pb.x;
         float cy = pb.y;
         if (cx < 0) cx = 0;
         if (cy < 0) cy = 0;
         if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
         if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
-        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
+        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy); // keep player in world and on-screen
     }
 
     // update opponents
@@ -228,22 +239,6 @@ void Game::update(float deltaTime) {
         }
     }
 
-    // player projectiles
-    if (m_state.player) {
-        auto& pp = m_state.player->getProjectiles();
-        for (auto p_it = pp.begin(); p_it != pp.end(); ) {
-            p_it->update(deltaTime);
-            SDL_FRect b = p_it->getBounds();
-            float mx = 100.0f;
-            float my = 100.0f;
-            // player can shoot across whole world
-            if (b.x + b.w < -mx || b.x > m_state.worldWidth + mx || b.y + b.h < -my || b.y > m_state.worldHeight + my) {
-                p_it = pp.erase(p_it);
-            } else {
-                ++p_it;
-            }
-        }
-    }
 
     // opponent projectiles
     for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
