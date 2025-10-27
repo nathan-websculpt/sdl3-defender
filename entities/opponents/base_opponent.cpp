@@ -23,6 +23,7 @@ SDL_FRect BaseOpponent::getBounds() const {
     return m_rect;
 }
 
+// TODO: only the overload is ever used and even it could be refactored w/ Game::isOutOfWorld
 bool BaseOpponent::isOffScreen(int screenHeight) const {
     return m_rect.y > screenHeight;
 }

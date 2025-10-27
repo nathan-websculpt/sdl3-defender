@@ -26,7 +26,7 @@ void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float c
 }
 
 void BasicOpponent::explode(plf::colony<Particle>& gameParticles) const {
-    const int numParticles = 120;
+    const int numParticles = 450;
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
 
     for (int i = 0; i < numParticles; ++i) {
@@ -40,6 +40,6 @@ void BasicOpponent::explode(plf::colony<Particle>& gameParticles) const {
         Uint8 g = static_cast<Uint8>(rand() % 100 + 55);
         Uint8 b = static_cast<Uint8>(rand() % 50);
 
-        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.02f, 2.8f);
+        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.005f, 2.2f);
     }
 }

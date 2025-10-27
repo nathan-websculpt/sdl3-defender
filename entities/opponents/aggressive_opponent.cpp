@@ -68,7 +68,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 }
 
 void AggressiveOpponent::explode(plf::colony<Particle>& gameParticles) const {
-    const int numParticles = 50;
+    const int numParticles = 220;
 
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
 

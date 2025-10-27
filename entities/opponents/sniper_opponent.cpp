@@ -59,7 +59,7 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
 }
 
 void SniperOpponent::explode(plf::colony<Particle>& gameParticles) const {
-    const int numParticles = 45;
+    const int numParticles = 345;
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
 
     for (int i = 0; i < numParticles; ++i) {
