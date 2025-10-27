@@ -26,13 +26,30 @@ public:
 
     const int& getScoreVal() const;
 
-    virtual void explode(plf::colony<Particle>& gameParticles) const = 0;
+    virtual void explode(plf::colony<Particle>& gameParticles) const;
 
     virtual const std::string& getTextureKey() const = 0;
 
     bool isOnScreen(float objX, float objY, float cameraX, int screenWidth) const;
 
 protected:
+    struct ExplosionConfig {
+        int numParticles = 200;
+        float speedMin = 50.0f;
+        float speedMax = 150.0f;
+        float angleJitter = 0.25f;
+        Uint8 rMin = 100;
+        Uint8 rMax = 255;
+        Uint8 gMin = 0;
+        Uint8 gMax = 255;
+        Uint8 bMin = 0; 
+        Uint8 bMax = 255;
+        float life = 0.1f;
+        float size = 1.0f;
+    };
+
+    ExplosionConfig m_explosionConfig;
+
     SDL_FRect m_rect;
 
     float m_speed;

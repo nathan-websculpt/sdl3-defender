@@ -40,3 +40,23 @@ bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX, int screenW
     // no vertical camera movement
     return (objX >= screenMinX && objX <= screenMaxX);
 }
+
+void BaseOpponent::explode(plf::colony<Particle>& gameParticles) const {
+    SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
+    const ExplosionConfig& cfg = m_explosionConfig;
+
+    for (int i = 0; i < cfg.numParticles; ++i) {
+        float baseAngle = (static_cast<float>(i) / cfg.numParticles) * 2.0f * M_PI;
+        float angle = baseAngle + (static_cast<float>(rand()) / RAND_MAX) * cfg.angleJitter;
+        float speed = cfg.speedMin + static_cast<float>(rand()) / RAND_MAX * (cfg.speedMax - cfg.speedMin);
+
+        float velX = cosf(angle) * speed;
+        float velY = sinf(angle) * speed;
+
+        Uint8 r = static_cast<Uint8>(cfg.rMin + (rand() % (cfg.rMax - cfg.rMin + 1)));
+        Uint8 g = static_cast<Uint8>(cfg.gMin + (rand() % (cfg.gMax - cfg.gMin + 1)));
+        Uint8 b = static_cast<Uint8>(cfg.bMin + (rand() % (cfg.bMax - cfg.bMin + 1)));
+
+        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, cfg.life, cfg.size);
+    }
+}

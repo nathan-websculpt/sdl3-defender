@@ -10,7 +10,6 @@ public:
     ~SniperOpponent() = default;
 
     void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) override;
-    void explode(plf::colony<Particle>& gameParticles) const override;
 
     const std::string& getTextureKey() const override { return Config::Textures::SNIPER_OPPONENT; }
 

@@ -15,6 +15,19 @@ BasicOpponent::BasicOpponent(float x, float y, float w, float h)
     m_fireInterval = 0.0f;
 
     m_scoreVal = 300;
+
+    m_explosionConfig.numParticles = 450;
+    m_explosionConfig.angleJitter = 0.2f;
+    m_explosionConfig.speedMin = 80.0f;
+    m_explosionConfig.speedMax = 230.0f; // rand()%150 + 80
+    m_explosionConfig.rMin = 155; 
+    m_explosionConfig.rMax = 254;
+    m_explosionConfig.gMin = 55;  
+    m_explosionConfig.gMax = 154;
+    m_explosionConfig.bMin = 0;   
+    m_explosionConfig.bMax = 49;
+    m_explosionConfig.life = 0.005f;
+    m_explosionConfig.size = 2.2f;
 }
 
 void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
@@ -23,23 +36,4 @@ void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float c
     m_rect.y += m_speed * deltaTime;
     m_angle += m_angularSpeed * deltaTime;
     m_rect.x = m_startX + sin(m_angle) * m_oscillationAmplitude;
-}
-
-void BasicOpponent::explode(plf::colony<Particle>& gameParticles) const {
-    const int numParticles = 450;
-    SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
-
-    for (int i = 0; i < numParticles; ++i) {
-        float angle = (static_cast<float>(i) / numParticles) * 2.0f * M_PI + (static_cast<float>(rand()) / RAND_MAX) * 0.2f;
-        float speed = static_cast<float>(rand() % 150) + 80.0f;
-        
-        float velX = cos(angle) * speed;
-        float velY = sin(angle) * speed;
-
-        Uint8 r = static_cast<Uint8>(rand() % 100 + 155);
-        Uint8 g = static_cast<Uint8>(rand() % 100 + 55);
-        Uint8 b = static_cast<Uint8>(rand() % 50);
-
-        gameParticles.emplace(center.x, center.y, velX, velY, r, g, b, 0.005f, 2.2f);
-    }
 }
