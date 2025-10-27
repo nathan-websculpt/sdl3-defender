@@ -27,7 +27,6 @@ private:
     void render(const GameStateData& state);
     void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
     GameInput pollInput(const GameStateData& state);
-    // bool pointInRect(int x, int y, const SDL_FRect& rect);
 
     void renderHealthBars(const GameStateData& state);
     void renderMinimap(const GameStateData& state);

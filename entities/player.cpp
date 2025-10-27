@@ -15,16 +15,6 @@ Player::Player(float x, float y, float w, float h)
 }
 
 void Player::update(float deltaTime, plf::colony<Particle>& particles) {
-    //TODO: make sure that these are getting erased
-    // for (auto particle = m_boosterParticles.begin(); particle != m_boosterParticles.end(); ) {
-    //     particle->update(deltaTime);
-    //     if (!particle->isAlive()) {
-    //         particle = m_boosterParticles.erase(particle);
-    //     } else {
-    //         ++particle;
-    //     }
-    // }
-
     spawnDefaultBoosterParticles(particles);
 
     if (m_speedBoostActive) 

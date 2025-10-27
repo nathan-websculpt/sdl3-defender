@@ -58,17 +58,6 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     }
 }
 
-// void SniperOpponent::render(SDL_Renderer* renderer, SDL_FRect* renderBounds) const {
-//     if (m_health <= 0) return;
-
-//     if (m_texture) {
-//         SDL_RenderTexture(renderer, m_texture.get(), nullptr, renderBounds);
-//     } else {
-//         SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
-//         SDL_RenderFillRect(renderer, renderBounds);
-//     }
-// }
-
 void SniperOpponent::explode(plf::colony<Particle>& gameParticles) const {
     const int numParticles = 45;
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };

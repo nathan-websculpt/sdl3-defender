@@ -342,11 +342,6 @@ void Platform::updateTextInputState(const GameStateData& state) {
     }
 }
 
-// TODO: tie into collision refactor (no longer used, at this point)
-// bool Platform::pointInRect(int x, int y, const SDL_FRect& r) {
-//     return x >= r.x && x < r.x + r.w && y >= r.y && y < r.y + r.h;
-// }
-
 void Platform::renderMenu() {
     SDL_SetRenderDrawColor(m_renderer, 0, 20, 40, 255);
     SDL_RenderClear(m_renderer);
