@@ -183,90 +183,64 @@ void Game::update(float deltaTime) {
         m_state.player->update(deltaTime, m_state.particles);
 
         // player projectiles
-        auto& playerProjectiles = m_state.player->getProjectiles();
-        for (auto projectile = playerProjectiles.begin(); projectile != playerProjectiles.end(); ) {
-            projectile->update(deltaTime);
-            SDL_FRect b = projectile->getBounds();
-            float mx = 100.0f;
-            float my = 100.0f;
-            // player can shoot across whole world
-            if (b.x + b.w < -mx || b.x > m_state.worldWidth + mx || b.y + b.h < -my || b.y > m_state.worldHeight + my) {
-                projectile = playerProjectiles.erase(projectile);
-            } else {
-                ++projectile;
-            }
-        }    
+        auto& playerProjectiles = m_state.player->getProjectiles();        
+        updateAndPruneProjectiles(playerProjectiles, deltaTime);   
 
-        SDL_FRect pb = m_state.player->getBounds();
-
-        
+        // keep player in world and on-screen
+        SDL_FRect pb = m_state.player->getBounds();        
         float cx = pb.x;
         float cy = pb.y;
         if (cx < 0) cx = 0;
         if (cy < 0) cy = 0;
         if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
         if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
-        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy); // keep player in world and on-screen
+        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
     }
 
-    // update opponents
-    for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
-        if (!o || !o->isAlive()) continue; 
-        SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
-        o->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
-    }
+    // opponents / projectiles
+    for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
+        auto& oppPtr = *opp_iter;
+        if(!oppPtr) {
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
+        }
 
-    // erase opponents
-    for (auto o_it = m_state.opponents.begin(); o_it != m_state.opponents.end(); ) {
-        if (!(*o_it) || (*o_it)->getBounds().y > m_state.worldHeight) {
-            BasicOpponent* b = dynamic_cast<BasicOpponent*>((*o_it).get()); //get() to get raw pointer for cast
-            if (b) { // only the basic opponents damage world
+        if(oppPtr->isAlive()) {
+            SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
+            oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
+            updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime);
+        }
+
+        SDL_FRect oppBounds = oppPtr->getBounds();
+        // fell past world
+        if (oppBounds.y > m_state.worldHeight) {
+            BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
+            if (b) { // only basic opponents damage world
                 m_state.worldHealth--;
                 if (m_state.worldHealth <= 0) {
+                    // world health too low; game over
                     m_state.state = GameStateData::State::GAME_OVER;
                     if (isHighScore(m_state.playerScore)) {
                         m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
                         m_state.waitingForHighScore = true;
-                        m_state.highScoreNameInput = ""; // initialize empty input
+                        m_state.highScoreNameInput.clear();
                     }
                 }
             }
-            o_it = m_state.opponents.erase(o_it);
-        } else if (!(*o_it)->isAlive()) {
-            o_it = m_state.opponents.erase(o_it);
-        } else {
-            ++o_it; // only increment if not erased
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
         }
+
+        if (!oppPtr->isAlive()) {
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
+        }
+
+        ++opp_iter;
     }
 
+    updateAndPruneParticles(deltaTime);
 
-    // opponent projectiles
-    for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
-        if (!o) continue; 
-        auto& op = o->getProjectiles(); 
-        for (auto& p : op) { 
-            p.update(deltaTime);
-        }
-        
-        for (auto p_it = op.begin(); p_it != op.end(); ) {
-            SDL_FRect b = p_it->getBounds();
-            float mx = 100.0f, my = 100.0f;
-            if (b.x + b.w < -mx || b.x > m_state.worldWidth + mx || b.y + b.h < -my || b.y > m_state.worldHeight + my) {
-                p_it = op.erase(p_it); 
-            } else {
-                ++p_it; 
-            }
-        }
-    }
-
-    for (auto particle = m_state.particles.begin(); particle != m_state.particles.end(); ) {
-        particle->update(deltaTime);
-        if (!particle->isAlive()) {
-            particle = m_state.particles.erase(particle);
-        } else {
-            ++particle; // only increment if not erasing
-        }
-    }
     checkCollisions();
     updateCamera();
 
@@ -463,4 +437,36 @@ void Game::submitHighScore(const std::string& name) {
     }
 }
 
+// helpers
+bool Game::rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const {
+    return (a.x < b.x + b.w &&
+            a.x + a.w > b.x &&
+            a.y < b.y + b.h &&
+            a.y + a.h > b.y);
+}
 
+bool Game::isOutOfWorld(const SDL_FRect& r, float mx, float my) const {
+    return (r.x + r.w < -mx || r.x > m_state.worldWidth + mx ||
+            r.y + r.h < -my || r.y > m_state.worldHeight + my);
+}
+
+void Game::updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float deltaTime) {
+    for (auto it = projectiles.begin(); it != projectiles.end(); ) {
+        it->update(deltaTime);
+        SDL_FRect b = it->getBounds();
+        if (isOutOfWorld(b)) 
+            it = projectiles.erase(it);
+          else 
+            ++it;
+    }
+}
+
+void Game::updateAndPruneParticles(float deltaTime) {
+    for (auto it = m_state.particles.begin(); it != m_state.particles.end(); ) {
+        it->update(deltaTime);
+        if (!it->isAlive()) 
+            it = m_state.particles.erase(it);
+        else 
+            ++it;
+    }
+}

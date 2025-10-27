@@ -96,4 +96,9 @@ private:
     bool isHighScore(int score) const;
     int getHighScoreIndex(int score) const;
 
+    bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
+    bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;
+    void updateAndPruneProjectiles(plf::colony<Projectile>& proj, float deltaTime);
+    void updateAndPruneParticles(float deltaTime);
+
 };
