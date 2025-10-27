@@ -221,6 +221,7 @@ void Platform::render(const GameStateData& state) {
 
             renderMinimap(state);
             renderHealthBars(state);
+            renderScore(state);
 
             break;
         case GameStateData::State::GAME_OVER:
@@ -469,35 +470,32 @@ void Platform::renderHealthBars(const GameStateData& state) {
     const int barX = 10;
     const int barY = 10;
     const int spacing = 5;
-    SDL_Color white = {255,255,255,255};
+    
+    SDL_Color white = {255, 255, 255, 255};
 
-    renderText("Player Health:", barX, barY, white, FontSize::SMALL);
-    float phr = state.player ? (float)state.player->getHealth() / 10.0f : 1.0f; // TODO: change 10 to a maxHealth
-    SDL_SetRenderDrawColor(m_renderer, 255,0,0,255);
-    SDL_FRect pbBg = {(float)barX, (float)(barY+20), (float)barW, (float)barH};
-    SDL_RenderFillRect(m_renderer, &pbBg);
-    SDL_SetRenderDrawColor(m_renderer, 0,255,0,255);
-    SDL_FRect pbFill = {(float)barX, (float)(barY+20), (float)(barW * phr), (float)barH};
-    SDL_RenderFillRect(m_renderer, &pbFill);
-    SDL_SetRenderDrawColor(m_renderer, 255,255,255,255);
-    SDL_RenderRect(m_renderer, &pbBg);
+    float playerHealthRatio = state.player ? (float)state.player->getHealth() / 10.0f : 1.0f;
+    renderHealthBar("Player Health:", barX, barY, barW, barH, playerHealthRatio, white);
+    
+    float worldHealthRatio = (float)state.worldHealth / 10.0f;
+    int worldBarY = barY + 20 + barH + spacing;
+    renderHealthBar("World Health:", barX, worldBarY, barW, barH, worldHealthRatio, white);    
+}
 
-    renderText("World Health:", barX, barY + 20 + barH + spacing, white, FontSize::SMALL);
-    float whr = (float)state.worldHealth / 10.0f; // TODO: change 10 to a maxHealth
-    SDL_SetRenderDrawColor(m_renderer, 255,0,0,255);
-    SDL_FRect wbBg = {(float)barX, (float)(barY + 20 + barH + spacing + 20), (float)barW, (float)barH};
-    SDL_RenderFillRect(m_renderer, &wbBg);
-    SDL_SetRenderDrawColor(m_renderer, 0,255,0,255);
-    SDL_FRect wbFill = {(float)barX, (float)(barY + 20 + barH + spacing + 20), (float)(barW * whr), (float)barH};
-    SDL_RenderFillRect(m_renderer, &wbFill);
-    SDL_SetRenderDrawColor(m_renderer, 255,255,255,255);
-    SDL_RenderRect(m_renderer, &wbBg);
-
-    // render player score
-    float rightOffset = m_windowWidth - 150;
-    renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
-    std::string scoreStr = std::to_string(state.playerScore);
-    renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
+void Platform::renderHealthBar(const char* label, int x, int y, int width, int height, float healthRatio, const SDL_Color& labelColor) {
+    renderText(label, x, y, labelColor, FontSize::SMALL);
+    
+    float fillWidth = std::max(0.0f, width * healthRatio);
+    
+    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
+    SDL_FRect bgRect = {(float)x, (float)(y + 20), (float)width, (float)height};
+    SDL_RenderFillRect(m_renderer, &bgRect);
+    
+    SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255);
+    SDL_FRect fillRect = {(float)x, (float)(y + 20), fillWidth, (float)height};
+    SDL_RenderFillRect(m_renderer, &fillRect);
+    
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_RenderRect(m_renderer, &bgRect);
 }
 
 void Platform::renderMinimap(const GameStateData& state) {
@@ -538,6 +536,16 @@ void Platform::renderMinimap(const GameStateData& state) {
     SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 100);
     SDL_FRect vr = {vx, (float)mmY, vw, (float)mmH};
     SDL_RenderRect(m_renderer, &vr);
+}
+
+void Platform::renderScore(const GameStateData& state) {
+    const int barY = 10;    
+    SDL_Color white = {255, 255, 255, 255};
+    float rightOffset = m_windowWidth - 150;
+    
+    renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
+    std::string scoreStr = std::to_string(state.playerScore);
+    renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
 }
 
 
