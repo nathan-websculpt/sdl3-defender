@@ -46,7 +46,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     if (std::abs(dx) > 1.0f) {
         m_rect.x += (dx > 0 ? 1 : -1) * m_speed * deltaTime;
     }
-    // go up/down]
+    // go up/down
     if (std::abs(dy) > 1.0f) {
         m_rect.y += (dy > 0 ? 1 : -1) * m_speed * deltaTime;
     }
