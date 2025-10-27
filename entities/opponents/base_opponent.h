@@ -22,7 +22,6 @@ public:
     bool isAlive() const { return m_health > 0; }
     void takeDamage(int damage);
     void reset();
-    bool isHit(const SDL_FRect& projectileBounds);
 
     plf::colony<Projectile>& getProjectiles();
     const plf::colony<Projectile>& getProjectiles() const;

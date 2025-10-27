@@ -272,7 +272,7 @@ void Game::checkCollisions() {
         bool projectileHit = false;
         for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
             if (!o || !o->isAlive()) continue;
-            if (o->isHit(pb)) {
+            if (rectsIntersect(o->getBounds(), pb)) {
                 o->takeDamage(1);
                 if (!o->isAlive()) {
                     m_state.playerScore += o->getScoreVal();
@@ -299,7 +299,7 @@ void Game::checkCollisions() {
             }
 
             // check player/opponent collision
-            if (m_state.player->isHit(o->getBounds())) { 
+            if (rectsIntersect(m_state.player->getBounds(), o->getBounds())) { 
                 m_state.player->takeDamage(1);
                 m_state.playerHealth = m_state.player->getHealth();
                 o->explode(m_state.particles); 
@@ -324,10 +324,7 @@ void Game::checkCollisions() {
                 SDL_FRect playerBounds = m_state.player->getBounds();
 
                 // collision check ... projectile and player
-                if (projBounds.x < playerBounds.x + playerBounds.w &&
-                    projBounds.x + projBounds.w > playerBounds.x &&
-                    projBounds.y < playerBounds.y + playerBounds.h &&
-                    projBounds.y + projBounds.h > playerBounds.y) {
+                if (rectsIntersect(projBounds, playerBounds)) {
                     m_state.player->takeDamage(1);
                     m_state.playerHealth = m_state.player->getHealth();
                     // erase the projectile that hit the player using the iterator
@@ -454,7 +451,7 @@ void Game::updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float
     for (auto it = projectiles.begin(); it != projectiles.end(); ) {
         it->update(deltaTime);
         SDL_FRect b = it->getBounds();
-        if (isOutOfWorld(b)) 
+        if (isOutOfWorld(b, 0.0f, 0.0f)) 
             it = projectiles.erase(it);
           else 
             ++it;

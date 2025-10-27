@@ -29,7 +29,6 @@ public:
     bool isAlive() const { return m_health > 0; }
     void takeDamage(int damage) { m_health -= damage; if (m_health < 0) m_health = 0; }
     int getHealth() const { return m_health; }
-    bool isHit(const SDL_FRect& opponentBounds);
     void setSpeedBoost(bool active);
 
     float getSpeed() const { return m_speed; }

@@ -27,16 +27,6 @@ bool BaseOpponent::isOffScreen(int screenHeight) const {
     return m_rect.y > screenHeight;
 }
 
-bool BaseOpponent::isHit(const SDL_FRect& projectileBounds) {
-    SDL_FRect oppBounds = getBounds();
- 
-    // TODO: refactor?
-    return (projectileBounds.x < oppBounds.x + oppBounds.w &&
-            projectileBounds.x + projectileBounds.w > oppBounds.x &&
-            projectileBounds.y < oppBounds.y + oppBounds.h &&
-            projectileBounds.y + projectileBounds.h > oppBounds.y);
-}
-
 plf::colony<Projectile>& BaseOpponent::getProjectiles() {
     return m_projectiles;
 }

@@ -63,16 +63,6 @@ void Player::shoot() {
     m_projectiles.emplace(spawn.x, spawn.y, dir, 600.0f);
 }
 
-bool Player::isHit(const SDL_FRect& opponentBounds) {
-    SDL_FRect playerBounds = getBounds();
-
-    // TODO: refactor
-    return (playerBounds.x < opponentBounds.x + opponentBounds.w &&
-            playerBounds.x + playerBounds.w > opponentBounds.x &&
-            playerBounds.y < opponentBounds.y + opponentBounds.h &&
-            playerBounds.y + playerBounds.h > opponentBounds.y);
-}
-
 void Player::setSpeedBoost(bool active) {
     m_speedBoostActive = active;
     m_speed = active ? m_normalSpeed * m_boostMultiplier : m_normalSpeed;
