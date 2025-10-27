@@ -15,7 +15,6 @@ public:
     void update(float deltaTime);
 
     SDL_FRect getBounds() const; // here this is just a hit box
-    bool isOffScreen(int screenWidth, int screenHeight) const;
 
     // for spawn position (to calculate beam start point)
     float getSpawnX() const { return m_spawnX; }

@@ -21,8 +21,6 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h)
 void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
 
-    // SDL_Log("aggressive:  world height: %d", screenHeight);
-
     // targeting inaccuracy
     float targetX = playerPos.x + (static_cast<float>(rand() % 200) - 100.0f);
     float targetY = playerPos.y;
@@ -42,11 +40,8 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 
     m_fireTimer += deltaTime;
     bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, state.screenWidth);
-    // SDL_Log("aggressive:isOnScreen: %d", opponentVisible);
-    // SDL_Log("aggressive:screen width: %d", screenWidth);
 
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
-        // SDL_Log("________aggressive firing");
         m_projectiles.emplace(
             m_rect.x + m_rect.w/2,
             m_rect.y + m_rect.h/2,
@@ -55,15 +50,6 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
             300.0f
         );
         m_fireTimer = 0.0f;
-    }
-
-    for (auto projectile = m_projectiles.begin(); projectile != m_projectiles.end(); ) {
-        projectile->update(deltaTime);
-        if (projectile->isOffScreen(state.screenWidth, state.screenHeight)) {
-            projectile = m_projectiles.erase(projectile);
-        } else {
-            ++projectile;
-        }
     }
 }
 

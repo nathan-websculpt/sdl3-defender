@@ -17,7 +17,6 @@ public:
     virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) = 0;
 
     SDL_FRect getBounds() const;
-    bool isOffScreen(int screenHeight) const;
 
     bool isAlive() const { return m_health > 0; }
     void takeDamage(int damage);
