@@ -14,5 +14,5 @@ public:
     const std::string& getTextureKey() const override { return Config::Textures::AGGRESSIVE_OPPONENT; }
 
 private:
-    float m_fireInterval = 15.8f;
+    float m_fireInterval;
 };

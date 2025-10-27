@@ -15,7 +15,6 @@ SniperOpponent::SniperOpponent(float x, float y, float w, float h)
     m_oscillationSpeed = 1.0f;
     m_oscillationOffset = static_cast<float>(rand()) / RAND_MAX * 2.0f * M_PI;
     m_fireInterval = 4.0f;
-    m_fireAccuracy = 0.1f;
     
     m_health = 1;
     m_scoreVal = 100;

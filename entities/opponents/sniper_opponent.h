@@ -16,5 +16,4 @@ public:
 private:
     float m_oscillationSpeed;
     float m_oscillationOffset;
-    float m_fireAccuracy;
 };

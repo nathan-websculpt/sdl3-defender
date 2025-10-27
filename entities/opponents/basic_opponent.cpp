@@ -11,7 +11,6 @@ BasicOpponent::BasicOpponent(float x, float y, float w, float h)
     m_speed = 30.0f;
     m_angularSpeed = 1.5f;
     m_oscillationAmplitude = 80.0f;
-    m_startY = y;
     m_fireInterval = 0.0f;
 
     m_scoreVal = 300;
