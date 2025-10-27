@@ -5,9 +5,8 @@
 #include "../../core/texture_manager.h"
 
 BaseOpponent::BaseOpponent(float x, float y, float w, float h) 
-    : m_rect{x, y, w, h}, m_speed(50.0f),
-      m_angle(0.0f), m_angularSpeed(2.0f), m_oscillationAmplitude(100.0f),
-      m_startX(x), m_health(3), m_fireTimer(0.0f), m_fireInterval(5.0f) 
+    : m_rect{x, y, w, h},
+      m_angle(0.0f), m_startX(x), m_health(3), m_fireTimer(0.0f)
       {}
 
 void BaseOpponent::takeDamage(int damage) {

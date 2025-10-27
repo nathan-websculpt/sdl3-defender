@@ -3,6 +3,15 @@
 #include <filesystem>
 #include <iostream>
 
+// void* operator new(std::size_t size) {
+//     std::cout << "Allocating " << size << " bytes\n";
+//     return malloc(size);
+// }
+// void operator delete(void* ptr) noexcept {
+//     std::cout << "Freeing memory\n";
+//     free(ptr);
+// }
+
 int main(int argc, char* argv[]) {
     try {
         // change working directory to the executable's directory
