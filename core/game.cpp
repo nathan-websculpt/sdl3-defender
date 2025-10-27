@@ -15,7 +15,7 @@ Game::Game()
     loadHighScores();
 }
 
-void Game::handleInput(const GameInput& input) {
+void Game::handleInput(const GameInput& input, float deltaTime) {
     if (input.quit) {
         m_state.running = false;
         return;
@@ -77,12 +77,12 @@ void Game::handleInput(const GameInput& input) {
             m_prevShootState = input.shoot;
 
             float speed = m_state.player->getSpeed();
-            float delta = 0.016f;
+            // float delta = 0.016f;
             float dx = 0, dy = 0;
-            if (input.moveLeft) { dx -= speed * delta; m_state.player->setFacing(Direction::LEFT); }
-            if (input.moveRight) { dx += speed * delta; m_state.player->setFacing(Direction::RIGHT); }
-            if (input.moveUp) dy -= speed * delta;
-            if (input.moveDown) dy += speed * delta;
+            if (input.moveLeft) { dx -= speed * deltaTime; m_state.player->setFacing(Direction::LEFT); }
+            if (input.moveRight) { dx += speed * deltaTime; m_state.player->setFacing(Direction::RIGHT); }
+            if (input.moveUp) dy -= speed * deltaTime;
+            if (input.moveDown) dy += speed * deltaTime;
             m_state.player->moveBy(dx, dy);
         }    
     } else if (m_state.state == GameStateData::State::GAME_OVER) {

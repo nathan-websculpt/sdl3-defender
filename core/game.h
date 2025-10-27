@@ -73,7 +73,7 @@ public:
     Game();
     ~Game() = default;
 
-    void handleInput(const GameInput& input);
+    void handleInput(const GameInput& input, float deltaTime);
     void update(float deltaTime);
     const GameStateData& getState() const { return m_state; }
     GameStateData& getState() { return m_state; } 

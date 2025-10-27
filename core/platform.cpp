@@ -105,15 +105,15 @@ void Platform::run(Game& sim) {
 
         updateTextInputState(state); // update text input state
 
-        GameInput input = pollInput(state);
-        sim.handleInput(input);
-
-        if (input.quit || state.running == false) {
-            m_running = false;
-        }
-
         // fixed timestep update loop
         while (accumulator >= FIXED_DELTA_TIME) {
+            GameInput input = pollInput(state);
+            sim.handleInput(input, FIXED_DELTA_TIME);
+
+            if (input.quit || state.running == false) {
+                m_running = false;
+            }
+            
             sim.update(FIXED_DELTA_TIME); // pass the fixed delta time
             accumulator -= FIXED_DELTA_TIME;
         }
