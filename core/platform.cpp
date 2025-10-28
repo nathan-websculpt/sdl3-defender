@@ -377,6 +377,8 @@ void Platform::renderHowToPlayScreen() {
     renderText("Goal: Destroy opponents, prevent bombs from damaging world.", m_windowWidth/2 - 200, y_pos, white, FontSize::SMALL);
     y_pos += line_spacing + 20;
     renderText("Press ESC or ENTER to return to the menu.", m_windowWidth/2 - 150, y_pos, white, FontSize::SMALL);
+
+    renderCloseButton();
 }
 
 void Platform::renderGameOverScreen(const GameStateData& state) {

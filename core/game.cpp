@@ -160,7 +160,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
             }
         }
     } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
-        if (input.enter || input.mouseClick) {
+        if (input.enter || (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30)) {
             m_state.state = GameStateData::State::MENU;
         }
     } else if (m_state.state == GameStateData::State::PLAYING) {
