@@ -130,7 +130,7 @@ void Platform::run(Game& sim) {
 void Platform::render(const GameStateData& state) {
     switch (state.state) {
         case GameStateData::State::MENU:
-            renderMenu();
+            renderMainMenu();
             break;
         case GameStateData::State::HOW_TO_PLAY:
             renderHowToPlayScreen();
@@ -343,32 +343,37 @@ void Platform::updateTextInputState(const GameStateData& state) {
     }
 }
 
-void Platform::renderMenu() {
+void Platform::renderMainMenu() {
     SDL_SetRenderDrawColor(m_renderer, 0, 20, 40, 255);
-    SDL_RenderClear(m_renderer);
-    
-    SDL_Color white = {255, 255, 255, 255};
+    SDL_RenderClear(m_renderer);    
+    SDL_Color white = {255, 255, 255, 255};    
     renderText("SDL3 DEFENDER", m_windowWidth/2 - 100, m_windowHeight/2 - 120, white, FontSize::MEDIUM);
 
-    // button rectangles
-    SDL_FRect playBg = { (float)(m_windowWidth/2 - 100), (float)(m_windowHeight/2 - 60), 200, 50 };
-    SDL_FRect howToPlayBg = { (float)(m_windowWidth/2 - 100), (float)(m_windowHeight/2), 200, 50 };
-    SDL_FRect exitBg = { (float)(m_windowWidth/2 - 100), (float)(m_windowHeight/2 + 60), 200, 50 };
+    // button positions
+    int buttonWidth = 200;
+    int buttonHeight = 50;
+    int centerX = m_windowWidth / 2 - buttonWidth / 2;
+    int startY = m_windowHeight / 2 - 60;
+    int buttonSpacing = 60;
 
-    // button backgrounds and borders
-    SDL_SetRenderDrawColor(m_renderer, 0, 100, 200, 200); 
-    SDL_RenderFillRect(m_renderer, &playBg);
-    SDL_RenderFillRect(m_renderer, &howToPlayBg); 
-    SDL_RenderFillRect(m_renderer, &exitBg);
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255); 
-    SDL_RenderRect(m_renderer, &playBg);
-    SDL_RenderRect(m_renderer, &howToPlayBg); 
-    SDL_RenderRect(m_renderer, &exitBg);
+    renderMenuButton(centerX, startY, buttonWidth, buttonHeight, white, "Play");
+    renderMenuButton(centerX, startY + buttonSpacing, buttonWidth, buttonHeight, white, "How to Play");
+    renderMenuButton(centerX, startY + buttonSpacing * 2, buttonWidth, buttonHeight, white, "Exit");
+}
 
-    // render button text
-    renderText("Play", m_windowWidth/2 - 40, m_windowHeight/2 - 50, white, FontSize::MEDIUM); 
-    renderText("How to Play", m_windowWidth/2 - 80, m_windowHeight/2 + 10, white, FontSize::MEDIUM);
-    renderText("Exit", m_windowWidth/2 - 40, m_windowHeight/2 + 70, white, FontSize::MEDIUM);
+void Platform::renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text) {
+    SDL_FRect bgRect = {(float)x, (float)y, (float)width, (float)height};
+    
+    SDL_SetRenderDrawColor(m_renderer, 0, 100, 200, 200);
+    SDL_RenderFillRect(m_renderer, &bgRect);
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_RenderRect(m_renderer, &bgRect);
+    
+    //centering text
+    int textX = x + (width - static_cast<int>(text.length()) * 14) / 2;
+    int textY = y + (height - 24) / 2;
+    
+    renderText(text.c_str(), textX, textY, textColor, FontSize::MEDIUM);
 }
 
 void Platform::renderHowToPlayScreen() {

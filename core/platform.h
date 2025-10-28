@@ -34,7 +34,8 @@ private:
     void renderScore(const GameStateData& state);
 
     // menus
-    void renderMenu();
+    void renderMainMenu();
+    void renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text);
     void renderHowToPlayScreen();
     void renderGameOverScreen(const GameStateData& state);
     void renderHighScoreEntryScreen(const GameStateData& state);
