@@ -477,8 +477,10 @@ void Platform::renderHealthBars(const GameStateData& state) {
     const int spacing = 5;
     
     SDL_Color white = {255, 255, 255, 255};
-
-    float playerHealthRatio = state.player ? (float)state.player->getHealth() / 10.0f : 1.0f;
+    float pHealth = (float)state.player->getHealth();
+    float pMaxHealth = (float)state.player->getMaxHealth();
+    float playerHealthRatio = pHealth / pMaxHealth;
+    
     renderHealthBar("Player Health:", barX, barY, barW, barH, playerHealthRatio, white);
     
     float worldHealthRatio = (float)state.worldHealth / 10.0f;

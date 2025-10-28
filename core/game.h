@@ -48,10 +48,10 @@ struct GameStateData {
     static const int MAX_HIGH_SCORES = 10;
 
     // game state
-    int worldHealth = 10;
-    int playerHealth = 10;
-    int playerScore = 0;
-    float cameraX = 0.0f;
+    int maxWorldHealth = 10;
+    int worldHealth;
+    int playerScore;
+    float cameraX;
     float worldWidth;  // world width goes beyond window
     float worldHeight; // height depends on window size
     float screenWidth; 
@@ -86,7 +86,7 @@ public:
 
 private:
     GameStateData m_state;
-    float m_opponentSpawnTimer = 0.0f;
+    float m_opponentSpawnTimer;
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
     bool m_prevShootState = false;
 

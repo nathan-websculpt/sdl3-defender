@@ -29,10 +29,11 @@ public:
     bool isAlive() const { return m_health > 0; }
     void takeDamage(int damage) { m_health -= damage; if (m_health < 0) m_health = 0; }
     int getHealth() const { return m_health; }
+    int getMaxHealth() const { return m_maxHealth; }
     void setSpeedBoost(bool active);
 
     float getSpeed() const { return m_speed; }
-    void setFacing(Direction dir) { m_facing = dir; } // TODO: needed?
+    void setFacing(Direction dir) { m_facing = dir; }
     Direction getFacing() const { return m_facing; }
     void moveBy(float dx, float dy) {
         m_rect.x += dx;
@@ -46,7 +47,8 @@ private:
 
     plf::colony<Projectile> m_projectiles;
 
-    int m_health = 10; // TODO: use the var in Game instead
+    int m_maxHealth;
+    int m_health;
     float m_normalSpeed;
     float m_boostMultiplier;
     bool m_speedBoostActive;

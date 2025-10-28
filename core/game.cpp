@@ -164,7 +164,7 @@ void Game::startNewGame() {
     float py = m_state.screenHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
     m_state.state = GameStateData::State::PLAYING;
-    m_state.worldHealth = 10;
+    m_state.worldHealth = m_state.maxWorldHealth;
     m_state.playerScore = 0;
     m_opponentSpawnTimer = 0.0f;
 }
@@ -301,7 +301,6 @@ void Game::checkCollisions() {
             // check player/opponent collision
             if (rectsIntersect(m_state.player->getBounds(), o->getBounds())) { 
                 m_state.player->takeDamage(1);
-                m_state.playerHealth = m_state.player->getHealth();
                 o->explode(m_state.particles); 
                 m_state.playerScore += o->getScoreVal();
                 o_it = m_state.opponents.erase(o_it);
@@ -326,7 +325,6 @@ void Game::checkCollisions() {
                 // collision check ... projectile and player
                 if (rectsIntersect(projBounds, playerBounds)) {
                     m_state.player->takeDamage(1);
-                    m_state.playerHealth = m_state.player->getHealth();
                     // erase the projectile that hit the player using the iterator
                     op_it = op.erase(op_it);
                     if (!m_state.player->isAlive()) {

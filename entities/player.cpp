@@ -10,8 +10,10 @@ Player::Player(float x, float y, float w, float h)
       m_normalSpeed(200.0f),
       m_speedBoostActive(false),
       m_boostMultiplier(2.1f),
-      m_facing(Direction::RIGHT) {
+      m_facing(Direction::RIGHT),
+      m_maxHealth(10.0f) {
     m_speed = m_normalSpeed;
+    m_health = m_maxHealth;
 }
 
 void Player::update(float deltaTime, plf::colony<Particle>& particles) {
