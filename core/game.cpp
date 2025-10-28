@@ -15,6 +15,103 @@ Game::Game()
     loadHighScores();
 }
 
+void Game::startNewGame() {
+    m_state.opponents.clear();
+    m_state.particles.clear();
+    m_state.cameraX = 0.0f;
+    float px = m_state.worldWidth / 2.0f - 40.0f;
+    float py = m_state.screenHeight / 2.0f - 24.0f;
+    m_state.player = std::make_unique<Player>(px, py, 80, 48);
+    m_state.state = GameStateData::State::PLAYING;
+    m_state.worldHealth = m_state.maxWorldHealth;
+    m_state.playerScore = 0;
+    m_opponentSpawnTimer = 0.0f;
+}
+
+void Game::update(float deltaTime) {
+    if (m_state.state != GameStateData::State::PLAYING) return;
+
+    if (m_state.player) {
+        m_state.player->update(deltaTime, m_state.particles);
+
+        // player projectiles
+        auto& playerProjectiles = m_state.player->getProjectiles();        
+        updateAndPruneProjectiles(playerProjectiles, deltaTime);   
+
+        // keep player in world and on-screen
+        SDL_FRect pb = m_state.player->getBounds();        
+        float cx = pb.x;
+        float cy = pb.y;
+        if (cx < 0) cx = 0;
+        if (cy < 0) cy = 0;
+        if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
+        if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
+        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
+    }
+
+    // opponents / projectiles
+    for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
+        auto& oppPtr = *opp_iter;
+        if(!oppPtr) {
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
+        }
+
+        if(oppPtr->isAlive()) {
+            SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
+            oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
+            updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime);
+        }
+
+        SDL_FRect oppBounds = oppPtr->getBounds();
+        // fell past world
+        if (oppBounds.y > m_state.worldHeight) {
+            BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
+            if (b) { // only basic opponents damage world
+                m_state.worldHealth--;
+                if (m_state.worldHealth <= 0) {
+                    // world health too low; game over
+                    m_state.state = GameStateData::State::GAME_OVER;
+                    if (isHighScore(m_state.playerScore)) {
+                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                        m_state.waitingForHighScore = true;
+                        m_state.highScoreNameInput.clear();
+                    }
+                }
+            }
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
+        }
+
+        if (!oppPtr->isAlive()) {
+            opp_iter = m_state.opponents.erase(opp_iter);
+            continue;
+        }
+
+        ++opp_iter;
+    }
+
+    updateAndPruneParticles(deltaTime);
+
+    checkCollisions();
+    updateCamera();
+
+    m_opponentSpawnTimer += deltaTime;
+    if (m_opponentSpawnTimer >= OPPONENT_SPAWN_INTERVAL) {
+        spawnOpponent();
+        m_opponentSpawnTimer = 0.0f;
+    }
+}
+
+void Game::updateCamera() {
+    if (!m_state.player) return;
+    SDL_FRect pb = m_state.player->getBounds();
+    float target = pb.x - m_state.screenWidth / 2.0f;
+    if (target < 0) target = 0;
+    if (target > m_state.worldWidth - m_state.screenWidth) target = m_state.worldWidth - m_state.screenWidth;
+    m_state.cameraX = target;
+}
+
 void Game::handleInput(const GameInput& input, float deltaTime) {
     if (input.quit) {
         m_state.running = false;
@@ -143,112 +240,6 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
     }
 }
 
-void Game::startNewGame() {
-    m_state.opponents.clear();
-    m_state.particles.clear();
-    m_state.cameraX = 0.0f;
-    float px = m_state.worldWidth / 2.0f - 40.0f;
-    float py = m_state.screenHeight / 2.0f - 24.0f;
-    m_state.player = std::make_unique<Player>(px, py, 80, 48);
-    m_state.state = GameStateData::State::PLAYING;
-    m_state.worldHealth = m_state.maxWorldHealth;
-    m_state.playerScore = 0;
-    m_opponentSpawnTimer = 0.0f;
-}
-
-void Game::resetForMenu() {
-    m_state.player.reset();
-    m_state.opponents.clear();
-    m_state.particles.clear();
-    m_state.state = GameStateData::State::MENU;
-}
-
-void Game::update(float deltaTime) {
-    if (m_state.state != GameStateData::State::PLAYING) return;
-
-    if (m_state.player) {
-        m_state.player->update(deltaTime, m_state.particles);
-
-        // player projectiles
-        auto& playerProjectiles = m_state.player->getProjectiles();        
-        updateAndPruneProjectiles(playerProjectiles, deltaTime);   
-
-        // keep player in world and on-screen
-        SDL_FRect pb = m_state.player->getBounds();        
-        float cx = pb.x;
-        float cy = pb.y;
-        if (cx < 0) cx = 0;
-        if (cy < 0) cy = 0;
-        if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
-        if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
-        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
-    }
-
-    // opponents / projectiles
-    for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
-        auto& oppPtr = *opp_iter;
-        if(!oppPtr) {
-            opp_iter = m_state.opponents.erase(opp_iter);
-            continue;
-        }
-
-        if(oppPtr->isAlive()) {
-            SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
-            oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
-            updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime);
-        }
-
-        SDL_FRect oppBounds = oppPtr->getBounds();
-        // fell past world
-        if (oppBounds.y > m_state.worldHeight) {
-            BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
-            if (b) { // only basic opponents damage world
-                m_state.worldHealth--;
-                if (m_state.worldHealth <= 0) {
-                    // world health too low; game over
-                    m_state.state = GameStateData::State::GAME_OVER;
-                    if (isHighScore(m_state.playerScore)) {
-                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
-                        m_state.waitingForHighScore = true;
-                        m_state.highScoreNameInput.clear();
-                    }
-                }
-            }
-            opp_iter = m_state.opponents.erase(opp_iter);
-            continue;
-        }
-
-        if (!oppPtr->isAlive()) {
-            opp_iter = m_state.opponents.erase(opp_iter);
-            continue;
-        }
-
-        ++opp_iter;
-    }
-
-    updateAndPruneParticles(deltaTime);
-
-    checkCollisions();
-    updateCamera();
-
-    m_opponentSpawnTimer += deltaTime;
-    if (m_opponentSpawnTimer >= OPPONENT_SPAWN_INTERVAL) {
-        spawnOpponent();
-        m_opponentSpawnTimer = 0.0f;
-    }
-}
-
-void Game::spawnOpponent() {
-    int type = rand() % 3;
-    float x = (float)(rand() % (int)(m_state.worldWidth - 50));
-    float y = -50.0f;
-    switch (type) {
-        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
-        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
-        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
-    }
-}
-
 void Game::checkCollisions() {
     if (!m_state.player) return;
 
@@ -337,15 +328,18 @@ void Game::checkCollisions() {
     }
 }
 
-void Game::updateCamera() {
-    if (!m_state.player) return;
-    SDL_FRect pb = m_state.player->getBounds();
-    float target = pb.x - m_state.screenWidth / 2.0f;
-    if (target < 0) target = 0;
-    if (target > m_state.worldWidth - m_state.screenWidth) target = m_state.worldWidth - m_state.screenWidth;
-    m_state.cameraX = target;
+void Game::spawnOpponent() {
+    int type = rand() % 3;
+    float x = (float)(rand() % (int)(m_state.worldWidth - 50));
+    float y = -50.0f;
+    switch (type) {
+        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
+        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
+        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
+    }
 }
 
+// handle high scores
 void Game::loadHighScores() {
     m_state.highScores.clear();
     std::ifstream file(Config::Game::HIGH_SCORES_PATH);
@@ -390,8 +384,8 @@ bool Game::isHighScore(int score) const {
     return m_state.highScores.size() < m_state.MAX_HIGH_SCORES || score > m_state.highScores.back().score;
 }
 
-// finds the index where new score should be inserted (0 is highest)
 int Game::getHighScoreIndex(int score) const {
+    // finds the index where new score should be inserted (0 is highest)
     for (size_t i = 0; i < m_state.highScores.size(); ++i) {
         if (score > m_state.highScores[i].score) {
             return static_cast<int>(i);
@@ -418,6 +412,7 @@ void Game::submitHighScore(const std::string& name) {
         saveHighScores();
     }
 }
+// END: handle high scores
 
 // helpers
 bool Game::rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const {
@@ -452,3 +447,4 @@ void Game::updateAndPruneParticles(float deltaTime) {
             ++it;
     }
 }
+// END: helpers

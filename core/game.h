@@ -73,13 +73,12 @@ public:
     Game();
     ~Game() = default;
 
-    void handleInput(const GameInput& input, float deltaTime);
+    void startNewGame();
     void update(float deltaTime);
+    void handleInput(const GameInput& input, float deltaTime);
     const GameStateData& getState() const { return m_state; }
     GameStateData& getState() { return m_state; } 
 
-    void startNewGame();
-    void resetForMenu();
     void submitHighScore(const std::string& name);
     void loadHighScores();
     void saveHighScores();
@@ -90,12 +89,14 @@ private:
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
     bool m_prevShootState = false;
 
-    void spawnOpponent();
-    void checkCollisions();
     void updateCamera();
+    void checkCollisions();
+    void spawnOpponent();
+
     bool isHighScore(int score) const;
     int getHighScoreIndex(int score) const;
 
+    // helpers
     bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
     bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;
     void updateAndPruneProjectiles(plf::colony<Projectile>& proj, float deltaTime);

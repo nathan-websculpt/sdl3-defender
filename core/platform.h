@@ -25,22 +25,25 @@ private:
     bool m_textInputActive = false; // track if text input is currently active
 
     void render(const GameStateData& state);
-    void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
-    GameInput pollInput(const GameStateData& state);
 
+    // input
+    GameInput pollInput(const GameStateData& state);
+    void updateTextInputState(const GameStateData& state);
+
+    // menus and screens
+    void renderMainMenu();
+    void renderHowToPlayScreen();
+    void renderGameOverScreen(const GameStateData& state);
+    void renderHighScoreEntryScreen(const GameStateData& state);
+
+    // HUD (top bar)
     void renderHealthBars(const GameStateData& state);
     void renderHealthBar(const char* label, int x, int y, int width, int height, float healthRatio, const SDL_Color& labelColor = {255, 255, 255, 255});
     void renderMinimap(const GameStateData& state);
     void renderScore(const GameStateData& state);
 
-    // menus
-    void renderMainMenu();
+    // helpers
+    void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
     void renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text);
-    void renderHowToPlayScreen();
-    void renderGameOverScreen(const GameStateData& state);
-    void renderHighScoreEntryScreen(const GameStateData& state);
-
-    void updateTextInputState(const GameStateData& state);
-
     void renderCloseButton();
 };

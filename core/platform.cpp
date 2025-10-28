@@ -10,6 +10,7 @@ Platform::Platform() = default;
 
 Platform::~Platform() { shutdown(); }
 
+// public usage
 bool Platform::initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO)) {
         SDL_Log("unable to initialize sdl: %s", SDL_GetError());
@@ -126,6 +127,7 @@ void Platform::run(Game& sim) {
         SDL_Log("Platform: Text input STOPPED on shutdown.");
     }
 }
+// END: public usage
 
 void Platform::render(const GameStateData& state) {
     switch (state.state) {
@@ -493,7 +495,6 @@ void Platform::renderScore(const GameStateData& state) {
     renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
 }
 // END: HUD (top-bar)
-
 
 // helpers
 void Platform::renderText(const char* text, int x, int y, const SDL_Color& color, FontSize sizeEnum) {
