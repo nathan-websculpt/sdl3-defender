@@ -41,4 +41,6 @@ private:
     void renderHighScoreEntryScreen(const GameStateData& state);
 
     void updateTextInputState(const GameStateData& state);
+
+    void renderCloseButton();
 };

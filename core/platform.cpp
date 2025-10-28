@@ -235,49 +235,7 @@ void Platform::render(const GameStateData& state) {
     SDL_RenderPresent(m_renderer);
 }
 
-void Platform::renderText(const char* text, int x, int y, const SDL_Color& color, FontSize sizeEnum) {
-    int fontSize{16}; 
-    switch (sizeEnum) {
-        case FontSize::SMALL:
-            fontSize = 16;
-            break;
-        case FontSize::MEDIUM: 
-            fontSize = 24;
-            break;        
-        case FontSize::LARGE:
-            fontSize = 36;
-            break;        
-        case FontSize::GRANDELOCO:
-            fontSize = 52;
-            break;        
-    }
-
-    auto font = FontManager::getInstance().getFont(Config::Fonts::DEFAULT_FONT_FILE, fontSize);
-    if (!font) {
-        SDL_Log("Failed to get font from manager");
-        return; 
-    }
-
-    SDL_Surface* fontSurface = TTF_RenderText_Solid(font.get(), text, strlen(text), color);
-    if (!fontSurface) {
-        SDL_Log("Text Render failed: %s", SDL_GetError());
-        return;
-    }
-
-    SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(m_renderer, fontSurface);
-    if (!fontTexture) {
-        SDL_DestroySurface(fontSurface);
-        SDL_Log("Failed to create texture from font surface: %s", SDL_GetError());
-        return;
-    }
-
-    SDL_FRect dst = { (float)x, (float)y, (float)fontSurface->w, (float)fontSurface->h };
-    SDL_RenderTexture(m_renderer, fontTexture, nullptr, &dst);
-
-    SDL_DestroyTexture(fontTexture);
-    SDL_DestroySurface(fontSurface);
-}
-
+// input
 GameInput Platform::pollInput(const GameStateData& state) {
     GameInput input{};
     SDL_Event event;
@@ -342,7 +300,9 @@ void Platform::updateTextInputState(const GameStateData& state) {
         SDL_Log("Platform: Text input STOPPED.");
     }
 }
+// END: input
 
+// screens and menus
 void Platform::renderMainMenu() {
     SDL_SetRenderDrawColor(m_renderer, 0, 20, 40, 255);
     SDL_RenderClear(m_renderer);    
@@ -359,21 +319,6 @@ void Platform::renderMainMenu() {
     renderMenuButton(centerX, startY, buttonWidth, buttonHeight, white, "Play");
     renderMenuButton(centerX, startY + buttonSpacing, buttonWidth, buttonHeight, white, "How to Play");
     renderMenuButton(centerX, startY + buttonSpacing * 2, buttonWidth, buttonHeight, white, "Exit");
-}
-
-void Platform::renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text) {
-    SDL_FRect bgRect = {(float)x, (float)y, (float)width, (float)height};
-    
-    SDL_SetRenderDrawColor(m_renderer, 0, 100, 200, 200);
-    SDL_RenderFillRect(m_renderer, &bgRect);
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    SDL_RenderRect(m_renderer, &bgRect);
-    
-    //centering text
-    int textX = x + (width - static_cast<int>(text.length()) * 14) / 2;
-    int textY = y + (height - 24) / 2;
-    
-    renderText(text.c_str(), textX, textY, textColor, FontSize::MEDIUM);
 }
 
 void Platform::renderHowToPlayScreen() {
@@ -436,24 +381,13 @@ void Platform::renderGameOverScreen(const GameStateData& state) {
     SDL_Color white = {255, 255, 255, 255};
     SDL_Color red = {255, 0, 0, 255};
 
-    const int xButtonSize = 20;
-    SDL_FRect xButtonRect = {
-        static_cast<float>(m_windowWidth - xButtonSize - 10),
-        10.0f,
-        static_cast<float>(xButtonSize),
-        static_cast<float>(xButtonSize)
-    };
-
     SDL_SetRenderDrawColor(m_renderer, 0, 0, 0, 255);
     SDL_RenderClear(m_renderer);
+    
     renderText("GAME OVER", m_windowWidth / 2 - 100, m_windowHeight / 2 - 60, red, FontSize::LARGE);
     renderText(("Score: " + std::to_string(state.playerScore)).c_str(), m_windowWidth / 2 - 60, m_windowHeight / 2, white, FontSize::MEDIUM);
 
-    SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
-    SDL_RenderLine(m_renderer, xButtonRect.x, xButtonRect.y, xButtonRect.x + xButtonRect.w, xButtonRect.y + xButtonRect.h);
-    SDL_RenderLine(m_renderer, xButtonRect.x, xButtonRect.y + xButtonRect.h, xButtonRect.x + xButtonRect.w, xButtonRect.y);
-    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
-    SDL_RenderRect(m_renderer, &xButtonRect);
+    renderCloseButton();
 }
 
 void Platform::renderHighScoreEntryScreen(const GameStateData& state) {
@@ -467,8 +401,12 @@ void Platform::renderHighScoreEntryScreen(const GameStateData& state) {
     renderText(("Score: " + std::to_string(state.playerScore)).c_str(), m_windowWidth / 2 - 60, m_windowHeight / 2 - 20, white, FontSize::MEDIUM);
     renderText("Enter Name (max 10 chars):", m_windowWidth / 2 - 140, m_windowHeight / 2 + 20, white, FontSize::SMALL);
     renderText((state.highScoreNameInput + "_").c_str(), m_windowWidth / 2 - 40, m_windowHeight / 2 + 50, white, FontSize::MEDIUM);
-}
 
+    renderCloseButton();
+}
+// END: screens and menus
+
+// HUD (top-bar)
 void Platform::renderHealthBars(const GameStateData& state) {
     const int barW = 200;
     const int barH = 10;
@@ -554,5 +492,90 @@ void Platform::renderScore(const GameStateData& state) {
     std::string scoreStr = std::to_string(state.playerScore);
     renderText(scoreStr.c_str(), m_windowWidth - 90, barY, white, FontSize::SMALL);
 }
+// END: HUD (top-bar)
 
 
+// helpers
+void Platform::renderText(const char* text, int x, int y, const SDL_Color& color, FontSize sizeEnum) {
+    int fontSize{16}; 
+    switch (sizeEnum) {
+        case FontSize::SMALL:
+            fontSize = 16;
+            break;
+        case FontSize::MEDIUM: 
+            fontSize = 24;
+            break;        
+        case FontSize::LARGE:
+            fontSize = 36;
+            break;        
+        case FontSize::GRANDELOCO:
+            fontSize = 52;
+            break;        
+    }
+
+    auto font = FontManager::getInstance().getFont(Config::Fonts::DEFAULT_FONT_FILE, fontSize);
+    if (!font) {
+        SDL_Log("Failed to get font from manager");
+        return; 
+    }
+
+    SDL_Surface* fontSurface = TTF_RenderText_Solid(font.get(), text, strlen(text), color);
+    if (!fontSurface) {
+        SDL_Log("Text Render failed: %s", SDL_GetError());
+        return;
+    }
+
+    SDL_Texture* fontTexture = SDL_CreateTextureFromSurface(m_renderer, fontSurface);
+    if (!fontTexture) {
+        SDL_DestroySurface(fontSurface);
+        SDL_Log("Failed to create texture from font surface: %s", SDL_GetError());
+        return;
+    }
+
+    SDL_FRect dst = { (float)x, (float)y, (float)fontSurface->w, (float)fontSurface->h };
+    SDL_RenderTexture(m_renderer, fontTexture, nullptr, &dst);
+
+    SDL_DestroyTexture(fontTexture);
+    SDL_DestroySurface(fontSurface);
+}
+
+void Platform::renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text) {
+    SDL_FRect bgRect = {(float)x, (float)y, (float)width, (float)height};
+    
+    SDL_SetRenderDrawColor(m_renderer, 0, 100, 200, 200);
+    SDL_RenderFillRect(m_renderer, &bgRect);
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_RenderRect(m_renderer, &bgRect);
+    
+    //centering text
+    int textX = x + (width - static_cast<int>(text.length()) * 14) / 2;
+    int textY = y + (height - 24) / 2;
+    
+    renderText(text.c_str(), textX, textY, textColor, FontSize::MEDIUM);
+}
+
+void Platform::renderCloseButton() {
+    const float size = 20.0f;
+    const float y = 10.0f;
+    const float x = static_cast<float>(m_windowWidth) - size - y;
+
+    SDL_Color white = {255, 255, 255, 255};
+    
+    SDL_FRect buttonRect = { x, y, size, size };
+    
+    // draw background
+    SDL_SetRenderDrawColor(m_renderer, 40, 40, 40, 200);
+    SDL_RenderFillRect(m_renderer, &buttonRect);
+    
+    // draw border
+    SDL_SetRenderDrawColor(m_renderer, 255, 255, 255, 255);
+    SDL_RenderRect(m_renderer, &buttonRect);
+    
+    FontSize closeButtonFontSize = FontSize::SMALL;
+    
+    int textX = x + (size - 12) / 2;  // approx centering
+    int textY = y + (size - 20) / 2;
+    
+    renderText("X", textX, textY, white, closeButtonFontSize);
+}
+// END: helpers
