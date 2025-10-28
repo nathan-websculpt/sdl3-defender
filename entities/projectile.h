@@ -14,7 +14,7 @@ public:
 
     void update(float deltaTime);
 
-    SDL_FRect getBounds() const; // here this is just a hit box
+    SDL_FRect getBounds() const; // just a hit box
 
     // for spawn position (to calculate beam start point)
     float getSpawnX() const { return m_spawnX; }
@@ -26,7 +26,6 @@ public:
 
     float getAge() const { return m_age; }
     float getLifetime() const { return m_lifetime; }
-    float getWorldWidth() const { return m_worldWidth; } // for beam length calculation
     SDL_FPoint getVelocity() const { return m_velocity; } // for direction of beam
     bool isHorizontal() const { return m_isHorizontal; } // for beam type
 
@@ -56,8 +55,6 @@ private:
 
     float m_age; // how long projectile has existed
     const float m_lifetime; // lifetime of the projectile
-    const float m_worldWidth;
-    const float m_worldHeight;
 
     bool m_isHorizontal = false; // true for player shots
 };

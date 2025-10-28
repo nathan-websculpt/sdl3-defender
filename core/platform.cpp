@@ -166,7 +166,7 @@ void Platform::render(const GameStateData& state) {
 
                         // player beam: from spawn to world edge
                         float startX = p.getSpawnX() - cameraOffsetX;
-                        float endX = (p.getVelocity().x > 0) ? (p.getWorldWidth() - cameraOffsetX) : (0.0f - cameraOffsetX);
+                        float endX = (p.getVelocity().x > 0) ? (state.worldWidth - cameraOffsetX) : (0.0f - cameraOffsetX);
                         SDL_RenderLine(m_renderer, startX, p.getSpawnY(), endX, p.getSpawnY()); // spawn x/y, end x/y                       
                     }
                 }
