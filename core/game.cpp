@@ -63,7 +63,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
             }
         }
     } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
-        if (input.escape || input.enter || input.mouseClick) {
+        if (input.enter || input.mouseClick) {
             m_state.state = GameStateData::State::MENU;
         }
     } else if (m_state.state == GameStateData::State::PLAYING) {
@@ -77,7 +77,6 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
             m_prevShootState = input.shoot;
 
             float speed = m_state.player->getSpeed();
-            // float delta = 0.016f;
             float dx = 0, dy = 0;
             if (input.moveLeft) { dx -= speed * deltaTime; m_state.player->setFacing(Direction::LEFT); }
             if (input.moveRight) { dx += speed * deltaTime; m_state.player->setFacing(Direction::RIGHT); }
@@ -107,7 +106,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                 backspaceCooldown = 0.0f;
             }
 
-            // process enter/esc/click for submission/cancellation
+            // process enter/click for submission/cancellation
             if (input.enter) {
                 // trim leading/trailing spaces
                 std::string trimmedName = m_state.highScoreNameInput;
@@ -127,15 +126,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                 submitHighScore(trimmedName);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
-            } else if (input.escape) { // TODO: handling 'esc' above this, could possibly remove
-                // use "ANON" if user cancels with escape and input was empty
-                std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
-                submitHighScore(nameToSubmit);
-                m_state.waitingForHighScore = false;
-                m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
-                // TODO:
-                // place 'X' button at top-right (20x20)
                 if (input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
@@ -144,13 +135,9 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                     m_state.state = GameStateData::State::MENU;
                 }
             }
-        } else { // not waiting for high score
-            if (input.escape || input.enter || input.mouseClick) {
-                if (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
+        } else { // not waiting for high score - game over screen
+            if (input.enter || (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30)) {
                     m_state.state = GameStateData::State::MENU;
-                } else {
-                    m_state.state = GameStateData::State::MENU; // TODO:
-                }
             }
         }
     }
