@@ -12,7 +12,7 @@ Platform::~Platform() { shutdown(); }
 
 // public usage
 bool Platform::initialize() {
-    if (!SDL_Init(SDL_INIT_VIDEO)) {
+    if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         SDL_Log("unable to initialize sdl: %s", SDL_GetError());
         return false;
     }
@@ -48,6 +48,38 @@ bool Platform::initialize() {
     }
 
     SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
+
+    // audio device initialization
+    // define the desired audio format using SDL3 enums
+    SDL_AudioSpec desired_spec;
+    SDL_zero(desired_spec);
+    desired_spec.freq = 44100; 
+    desired_spec.format = SDL_AUDIO_F32; // SDL3 enum for floating point format
+    desired_spec.channels = 2; // stereo
+
+    m_audioDeviceID = SDL_OpenAudioDevice(SDL_AUDIO_DEVICE_DEFAULT_PLAYBACK, &desired_spec);
+    if (!m_audioDeviceID) {
+        SDL_Log("Failed to open default audio device! SDL_GetError: %s", SDL_GetError());
+        SDL_Log("Desired audio spec: %d Hz, %s, %d channels", desired_spec.freq, SDL_GetAudioFormatName(desired_spec.format), desired_spec.channels);
+    } else {
+        m_audioSpec = desired_spec;
+        SDL_Log("Successfully opened audio device %d with actual spec: %d Hz, %s, %d channels", m_audioDeviceID, m_audioSpec.freq, SDL_GetAudioFormatName(m_audioSpec.format), m_audioSpec.channels);
+
+        SDL_PauseAudioDevice(m_audioDeviceID); // unpauses (starts) the device
+        SDL_Log("Started audio device %d (unpaused).", m_audioDeviceID);
+    }
+
+    // sound manager initialization
+    if (m_audioDeviceID) {
+        if (!SoundManager::getInstance().initialize(m_audioDeviceID, m_audioSpec)) {
+            SDL_Log("Failed to initialize SoundManager even though audio device was opened.");
+        } else {
+             SDL_Log("SoundManager initialized successfully.");
+        }
+    } else {
+        SDL_Log("Skipping SoundManager initialization due to audio device failure.");
+    }
+
     return true;
 }
 
@@ -58,8 +90,21 @@ void Platform::shutdown() {
         SDL_Log("Platform: Text input STOPPED during shutdown.");
     }
 
+    SoundManager::getInstance().shutdown();
+
     TextureManager::getInstance().clearCache();
     FontManager::getInstance().clearCache();
+
+     //audio device shutdown
+    if (m_audioDeviceID) {
+        // explicitly pause the audio device before closing it.
+        SDL_PauseAudioDevice(m_audioDeviceID);
+        SDL_Log("Paused audio device %d before closing.", m_audioDeviceID);
+
+        SDL_CloseAudioDevice(m_audioDeviceID);
+        m_audioDeviceID = 0;
+        SDL_Log("Closed audio device %d.", m_audioDeviceID);
+    }
 
     if (m_renderer) {
         SDL_DestroyRenderer(m_renderer);

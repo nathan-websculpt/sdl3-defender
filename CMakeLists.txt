@@ -29,11 +29,13 @@ endif()
 # SDL3_image & SDL3_ttf
 find_package(SDL3_image REQUIRED CONFIG)
 find_package(SDL3_ttf REQUIRED CONFIG)
+find_package(SDL3_mixer REQUIRED CONFIG)
 
 target_link_libraries(${PROJECT_NAME}
     PRIVATE SDL3::SDL3
     SDL3_image::SDL3_image
     SDL3_ttf::SDL3_ttf
+    SDL3_mixer::SDL3_mixer
 )
 
 # Filesystem support for older GCC versions

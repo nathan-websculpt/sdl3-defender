@@ -6,6 +6,7 @@
 #include "game.h"
 #include "texture_manager.h"
 #include "font_manager.h"
+#include "sound_manager.h"
 
 class Platform {
 public:
@@ -23,6 +24,9 @@ private:
     int m_windowHeight = 600;
     bool m_running = true;
     bool m_textInputActive = false; // track if text input is currently active
+
+    SDL_AudioDeviceID m_audioDeviceID = 0;
+    SDL_AudioSpec m_audioSpec;
 
     void render(const GameStateData& state);
 

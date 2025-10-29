@@ -26,4 +26,8 @@ namespace Config {
         const std::string HIGH_SCORES_PATH = "resources/highscores.txt";
     }
 
+    namespace Sounds {
+        const std::string PLAYER_SHOOT = "assets/audio/95933__robinhood76__01665-thin-laser-blast.wav";
+        const std::string OPPONENT_EXPLODE = "assets/opponent_explode.wav";
+    }
 }
