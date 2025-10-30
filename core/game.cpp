@@ -26,27 +26,59 @@ void Game::startNewGame() {
     m_state.worldHealth = m_state.maxWorldHealth;
     m_state.playerScore = 0;
     m_opponentSpawnTimer = 0.0f;
+
+    m_state.landscape = {
+        {0, m_state.worldHeight - 20},
+        {m_state.worldWidth * 0.1f, m_state.worldHeight - 28},
+        {m_state.worldWidth * 0.18f, m_state.worldHeight - 38},
+        {m_state.worldWidth * 0.225f, m_state.worldHeight - 50},
+        {m_state.worldWidth * 0.25f, m_state.worldHeight - 40},
+        {m_state.worldWidth * 0.32f, m_state.worldHeight - 120},
+        {m_state.worldWidth * 0.41f, m_state.worldHeight - 100},
+        {m_state.worldWidth * 0.48f, m_state.worldHeight - 140},
+        {m_state.worldWidth * 0.52f, m_state.worldHeight - 95},
+        {m_state.worldWidth * 0.61f, m_state.worldHeight - 120},
+        {m_state.worldWidth * 0.61f, m_state.worldHeight - 80},
+        {m_state.worldWidth * 0.71f, m_state.worldHeight - 110},
+        {m_state.worldWidth * 0.75f, m_state.worldHeight - 90},
+        {m_state.worldWidth * 0.81f, m_state.worldHeight - 70},
+        {m_state.worldWidth * 0.86f, m_state.worldHeight - 110},
+        {m_state.worldWidth * 0.90f, m_state.worldHeight - 75},
+        {m_state.worldWidth * 0.93f, m_state.worldHeight - 90},
+        {m_state.worldWidth * 0.98f, m_state.worldHeight - 60},
+        {m_state.worldWidth, m_state.worldHeight - 40}
+    };
 }
 
 void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
+    SDL_FRect pb;
     if (m_state.player) {
-        m_state.player->update(deltaTime, m_state.particles);
+        pb = m_state.player->getBounds();
+    }
 
-        // player projectiles
-        auto& playerProjectiles = m_state.player->getProjectiles();        
-        updateAndPruneProjectiles(playerProjectiles, deltaTime);   
+    m_state.player->update(deltaTime, m_state.particles);
 
-        // keep player in world and on-screen
-        SDL_FRect pb = m_state.player->getBounds();        
-        float cx = pb.x;
-        float cy = pb.y;
-        if (cx < 0) cx = 0;
-        if (cy < 0) cy = 0;
-        if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
-        if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
-        if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
+    // player projectiles
+    auto& playerProjectiles = m_state.player->getProjectiles();        
+    updateAndPruneProjectiles(playerProjectiles, deltaTime);   
+
+    // keep player in world and on-screen
+    float cx = pb.x;
+    float cy = pb.y;
+    if (cx < 0) cx = 0;
+    if (cy < 0) cy = 0;
+    if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
+    if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
+    if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
+
+    // TODO: ^^^ really no longer needs to check the bottom of the world
+    // new: player can't go below the landscape
+    float groundY = getGroundYAt(pb.x + pb.w / 2.0f);
+    float playerBottom = pb.y + pb.h;
+    if (playerBottom > groundY) {
+        m_state.player->setPosition(pb.x, groundY - pb.h);
     }
 
     // opponents / projectiles
@@ -58,14 +90,16 @@ void Game::update(float deltaTime) {
         }
 
         if(oppPtr->isAlive()) {
-            SDL_FPoint playerPos = { m_state.player->getBounds().x, m_state.player->getBounds().y };
+            SDL_FPoint playerPos = { pb.x, pb.y };
             oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
             updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime);
         }
 
+        // new: check if opponent hit landscape
         SDL_FRect oppBounds = oppPtr->getBounds();
-        // fell past world
-        if (oppBounds.y > m_state.worldHeight) {
+        float oppCenterX = oppBounds.x + oppBounds.w / 2.0f;
+        float groundY = getGroundYAt(oppCenterX);
+        if (oppBounds.y + oppBounds.h >= groundY) {
             BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
             if (b) { // only basic opponents damage world
                 m_state.worldHealth--;
@@ -79,7 +113,10 @@ void Game::update(float deltaTime) {
                     }
                 }
             }
+            // opponent touched ground - explode
+            oppPtr->explode(m_state.particles);
             opp_iter = m_state.opponents.erase(opp_iter);
+
             continue;
         }
 
@@ -446,5 +483,23 @@ void Game::updateAndPruneParticles(float deltaTime) {
         else 
             ++it;
     }
+}
+
+float Game::getGroundYAt(float x) const {
+    const auto& land = m_state.landscape;
+    if (land.empty()) return m_state.worldHeight;
+
+    // clamp x to landscape bounds
+    if (x <= land.front().x) return land.front().y;
+    if (x >= land.back().x) return land.back().y;
+
+    for (size_t i = 0; i < land.size() - 1; ++i) {
+        if (x >= land[i].x && x <= land[i + 1].x) {
+            // linear interpolation between land[i] and land[i+1]
+            float t = (x - land[i].x) / (land[i + 1].x - land[i].x);
+            return land[i].y + t * (land[i + 1].y - land[i].y);
+        }
+    }
+    return land.back().y; // fallback
 }
 // END: helpers

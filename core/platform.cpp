@@ -266,6 +266,16 @@ void Platform::render(const GameStateData& state) {
                 }
             }
 
+            // render landscape
+            if (!state.landscape.empty()) {
+                SDL_SetRenderDrawColor(m_renderer, 100, 80, 60, 255);
+                for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
+                    SDL_FPoint p1 = { state.landscape[i].x - state.cameraX, state.landscape[i].y };
+                    SDL_FPoint p2 = { state.landscape[i + 1].x - state.cameraX, state.landscape[i + 1].y };
+                    SDL_RenderLine(m_renderer, p1.x, p1.y, p2.x, p2.y);
+                }
+            }
+
             renderMinimap(state);
             renderHealthBars(state);
             renderScore(state);
@@ -522,6 +532,20 @@ void Platform::renderMinimap(const GameStateData& state) {
             SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
             SDL_FRect od = {ox, oy, 3, 3};
             SDL_RenderFillRect(m_renderer, &od);
+        }
+    }
+
+    // render landscape
+    if (!state.landscape.empty()) {
+        SDL_SetRenderDrawColor(m_renderer, 180, 150, 100, 200);
+        float sx = (float)mmW / state.worldWidth;
+        float sy = (float)mmH / state.worldHeight;
+        for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
+            float x1 = state.landscape[i].x * sx + mmX;
+            float y1 = state.landscape[i].y * sy + mmY;
+            float x2 = state.landscape[i + 1].x * sx + mmX;
+            float y2 = state.landscape[i + 1].y * sy + mmY;
+            SDL_RenderLine(m_renderer, x1, y1, x2, y2);
         }
     }
 

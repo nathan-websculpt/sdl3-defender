@@ -66,6 +66,8 @@ struct GameStateData {
     bool waitingForHighScore = false;
     int highScoreIndex = -1;
     std::string highScoreNameInput;
+
+    std::vector<SDL_FPoint> landscape;
 };
 
 class Game {
@@ -101,5 +103,5 @@ private:
     bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;
     void updateAndPruneProjectiles(plf::colony<Projectile>& proj, float deltaTime);
     void updateAndPruneParticles(float deltaTime);
-
+    float getGroundYAt(float x) const; // for landscape
 };
