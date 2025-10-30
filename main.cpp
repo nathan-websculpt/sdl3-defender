@@ -2,6 +2,7 @@
 #include "core/game.h"
 #include <filesystem>
 #include <iostream>
+#include <ctime>
 
 // void* operator new(std::size_t size) {
 //     std::cout << "Allocating " << size << " bytes\n";
@@ -22,6 +23,8 @@ int main(int argc, char* argv[]) {
     } catch (const std::exception& e) {
         std::cerr << "Failed to set working directory: " << e.what() << std::endl;
     }
+
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     Game sim;
     Platform platform;
