@@ -95,8 +95,8 @@ private:
 
     float m_playerHealthItemSpawnTimer = 0.0f;
     float m_worldHealthItemSpawnTimer = 0.0f;
-    const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 60.0f; // Every 60 seconds
-    const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 120.0f; // Every 120 seconds 
+    const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
+    const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
 
     void spawnHealthItem(HealthItemType type);
     void updateAndPruneHealthItems(float deltaTime);

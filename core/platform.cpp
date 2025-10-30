@@ -560,23 +560,37 @@ void Platform::renderMinimap(const GameStateData& state) {
     float sx = (float)mmW / state.worldWidth;
     float sy = (float)mmH / state.worldHeight;
 
+    // goldish dot for player
     if (state.player) {
         SDL_FRect pb = state.player->getBounds();
-        float px = pb.x * sx + mmX;
+        float px = (pb.x * sx + mmX) - 1.0f;
         float py = pb.y * sy + mmY;
-        SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255);
-        SDL_FRect pd = {px, py, 4, 4};
+        SDL_SetRenderDrawColor(m_renderer, 223, 245, 39, 200);
+        SDL_FRect pd = {px, py, 3, 3};
         SDL_RenderFillRect(m_renderer, &pd);
     }
 
+    // red dots for opponents
     for (const auto& o : state.opponents) {
         if (o && o->isAlive()) {
             SDL_FRect ob = o->getBounds();
-            float ox = ob.x * sx + mmX;
+            float ox = (ob.x * sx + mmX) - 1.0f;
             float oy = ob.y * sy + mmY;
             SDL_SetRenderDrawColor(m_renderer, 255, 0, 0, 255);
             SDL_FRect od = {ox, oy, 3, 3};
             SDL_RenderFillRect(m_renderer, &od);
+        }
+    }
+
+    // green dots for health
+    for (const auto& h : state.healthItems) {
+        if (h && h->isAlive()) {
+            SDL_FRect hb = h->getBounds();
+            float hx = (hb.x * sx + mmX) - 1.0f;
+            float hy = hb.y * sy + mmY;
+            SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255);
+            SDL_FRect hd = {hx, hy, 3, 3};
+            SDL_RenderFillRect(m_renderer, &hd);
         }
     }
 
