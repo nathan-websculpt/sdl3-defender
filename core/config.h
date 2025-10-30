@@ -14,6 +14,8 @@ namespace Config {
         const std::string BASIC_OPPONENT = "assets/bang.png";
         const std::string AGGRESSIVE_OPPONENT = "assets/aggressive_opponent.png";
         const std::string SNIPER_OPPONENT = "assets/sniper_opponent.png";
+        const std::string PLAYER_HEALTH_ITEM = "assets/health_player.png";
+        const std::string WORLD_HEALTH_ITEM = "assets/health_world.png";
     } 
 
     namespace Fonts {

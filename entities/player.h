@@ -30,6 +30,7 @@ public:
     void takeDamage(int damage) { m_health -= damage; if (m_health < 0) m_health = 0; }
     int getHealth() const { return m_health; }
     int getMaxHealth() const { return m_maxHealth; }
+    void restoreHealth() { m_health = getMaxHealth(); }
     void setSpeedBoost(bool active);
 
     float getSpeed() const { return m_speed; }
