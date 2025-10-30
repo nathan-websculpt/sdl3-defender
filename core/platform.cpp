@@ -175,6 +175,7 @@ void Platform::run(Game& sim) {
 // END: public usage
 
 void Platform::render(const GameStateData& state) {
+    float cameraOffsetX = state.cameraX;
     switch (state.state) {
         case GameStateData::State::MENU:
             renderMainMenu();
@@ -191,7 +192,7 @@ void Platform::render(const GameStateData& state) {
                 auto playerTexture = TextureManager::getInstance().getTexture(Config::Textures::PLAYER, m_renderer);
                 if (playerTexture) {
                     SDL_FRect renderBounds = state.player->getBounds();
-                    renderBounds.x -= state.cameraX;
+                    renderBounds.x -= cameraOffsetX;
                     
                     // apply flip based on player's facing-direction
                     SDL_FRect drawRect = renderBounds;
@@ -206,15 +207,20 @@ void Platform::render(const GameStateData& state) {
                     for (const auto& p : pp) {
                         if (p.getAge() >= p.getLifetime()) continue;
                         
-                        float cameraOffsetX = state.cameraX;
+                        float beamY = p.getSpawnY();
+                        float startX = p.getSpawnX();
+                        bool goingRight = (p.getVelocity().x > 0);
+
+                        // find visual end point
+                        float rawEndX = goingRight ? state.worldWidth : 0.0f;
+                        float landscapeEndX = findBeamLandscapeIntersection(startX, beamY, goingRight, state.landscape, state.worldWidth);
+
+                        // use the closer endpoint (landscape or world edge)
+                        float endX = goingRight ? std::min(rawEndX, landscapeEndX) : std::max(0.0f, landscapeEndX);
 
                         SDL_Color color = p.getColor();
                         SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
-
-                        // player beam: from spawn to world edge
-                        float startX = p.getSpawnX() - cameraOffsetX;
-                        float endX = (p.getVelocity().x > 0) ? (state.worldWidth - cameraOffsetX) : (0.0f - cameraOffsetX);
-                        SDL_RenderLine(m_renderer, startX, p.getSpawnY(), endX, p.getSpawnY()); // spawn x/y, end x/y                       
+                        SDL_RenderLine(m_renderer, startX - cameraOffsetX, beamY, endX - cameraOffsetX,beamY); // render player beam
                     }
                 }
             }
@@ -223,7 +229,7 @@ void Platform::render(const GameStateData& state) {
                 if (!o || !o->isAlive()) continue;
 
                 SDL_FRect renderBounds = o->getBounds();
-                renderBounds.x -= state.cameraX;
+                renderBounds.x -= cameraOffsetX;
 
                 // render opponent texture
                 auto opponentTexture = TextureManager::getInstance().getTexture(o->getTextureKey(), m_renderer);
@@ -239,8 +245,6 @@ void Platform::render(const GameStateData& state) {
                 const auto& op = o->getProjectiles();
                 for (const auto& p : op) { 
                     if (p.getAge() >= p.getLifetime()) continue;
-                    float cameraOffsetX = state.cameraX;
-
                     SDL_Color color = p.getColor();
                     SDL_SetRenderDrawColor(m_renderer, color.r, color.g, color.b, color.a);
 
@@ -259,7 +263,7 @@ void Platform::render(const GameStateData& state) {
             for (const auto& particle : state.particles) {
                 if (particle.isAlive()) { 
                     SDL_FRect renderBounds = { particle.getX(), particle.getY(), particle.getCurrentSize(), particle.getCurrentSize() };
-                    renderBounds.x -= state.cameraX; // apply camera offset
+                    renderBounds.x -= cameraOffsetX; // apply camera offset
 
                     SDL_SetRenderDrawColor(m_renderer, particle.getR(), particle.getG(), particle.getB(), particle.getAlpha());
                     SDL_RenderFillRect(m_renderer, &renderBounds);
@@ -270,8 +274,8 @@ void Platform::render(const GameStateData& state) {
             if (!state.landscape.empty()) {
                 SDL_SetRenderDrawColor(m_renderer, 100, 80, 60, 255);
                 for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
-                    SDL_FPoint p1 = { state.landscape[i].x - state.cameraX, state.landscape[i].y };
-                    SDL_FPoint p2 = { state.landscape[i + 1].x - state.cameraX, state.landscape[i + 1].y };
+                    SDL_FPoint p1 = { state.landscape[i].x - cameraOffsetX, state.landscape[i].y };
+                    SDL_FPoint p2 = { state.landscape[i + 1].x - cameraOffsetX, state.landscape[i + 1].y };
                     SDL_RenderLine(m_renderer, p1.x, p1.y, p2.x, p2.y);
                 }
             }
@@ -649,5 +653,78 @@ void Platform::renderCloseButton() {
     int textY = y + (size - 20) / 2;
     
     renderText("X", textX, textY, white, closeButtonFontSize);
+}
+
+float Platform::findBeamLandscapeIntersection(float startX, float beamY, bool goingRight, const std::vector<SDL_FPoint>& landscape, float worldWidth) {
+    if (landscape.empty()) return goingRight ? worldWidth : 0.0f;
+
+    // clamp beamY
+    if (beamY <= 0) return goingRight ? worldWidth : 0.0f;
+
+    // determine search range
+    size_t startIdx = 0;
+    size_t endIdx = landscape.size() - 1;
+
+    if (goingRight) {
+        // find first segment where x >= startX
+        for (size_t i = 0; i < landscape.size() - 1; ++i) {
+            float x0 = landscape[i].x;
+            float x1 = landscape[i + 1].x;
+            if (x1 < startX) continue;
+
+            // this segment or next may contain intersection
+            float y0 = landscape[i].y;
+            float y1 = landscape[i + 1].y;
+
+            // if beam is above both points, beam continues
+            if (beamY < y0 && beamY < y1) {
+                // no intersection in this segment
+                continue;
+            }
+
+            // if beam is below both, it is already on ground - shouldn't happen if projectile was alive
+            if (beamY >= y0 && beamY >= y1)                 
+                return std::max(startX, x0);// beam hits ground at segment start
+            
+            // otherwise... interpolate intersection
+            // find X where the horizontal beam crosses the straight line segment between (x0,y0) and (x1,y1) 
+            // ground line: y = y0 + t*(y1 - y0), x = x0 + t*(x1 - x0)
+            float t = (beamY - y0) / (y1 - y0);
+            if (t >= 0.0f && t <= 1.0f) {
+                float intersectX = x0 + t * (x1 - x0);
+                if (intersectX >= startX) {
+                    return intersectX;
+                }
+            }
+        }
+        // if no intersection found, the beam goes to world edge
+        return worldWidth;
+    } else {
+        // going left: search backward
+        for (size_t i = landscape.size() - 1; i > 0; --i) {
+            float x0 = landscape[i - 1].x;
+            float x1 = landscape[i].x;
+            if (x0 > startX) continue;
+
+            float y0 = landscape[i - 1].y;
+            float y1 = landscape[i].y;
+
+            if (beamY < y0 && beamY < y1) {
+                continue;
+            }
+            if (beamY >= y0 && beamY >= y1) {
+                return std::min(startX, x1);
+            }
+
+            float t = (beamY - y0) / (y1 - y0);
+            if (t >= 0.0f && t <= 1.0f) {
+                float intersectX = x0 + t * (x1 - x0);
+                if (intersectX <= startX) {
+                    return intersectX;
+                }
+            }
+        }
+        return 0.0f;
+    }
 }
 // END: helpers

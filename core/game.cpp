@@ -37,7 +37,7 @@ void Game::startNewGame() {
         {m_state.worldWidth * 0.41f, m_state.worldHeight - 100},
         {m_state.worldWidth * 0.48f, m_state.worldHeight - 140},
         {m_state.worldWidth * 0.52f, m_state.worldHeight - 95},
-        {m_state.worldWidth * 0.61f, m_state.worldHeight - 120},
+        {m_state.worldWidth * 0.61f, m_state.worldHeight - 520},
         {m_state.worldWidth * 0.61f, m_state.worldHeight - 80},
         {m_state.worldWidth * 0.71f, m_state.worldHeight - 110},
         {m_state.worldWidth * 0.75f, m_state.worldHeight - 90},
@@ -285,8 +285,22 @@ void Game::checkCollisions() {
     for (auto p_it = pp.begin(); p_it != pp.end(); ) {
         SDL_FRect pb = p_it->getBounds();
         bool projectileHit = false;
+
+        // for horizontal beams, find visual end X
+        float beamY = p_it->getSpawnY();
+        float startX = p_it->getSpawnX();
+        bool goingRight = (p_it->getVelocity().x > 0);
+        // new: landscape stops beam
+        float visualEndX = getBeamVisualEndX(startX, beamY, goingRight);
+
         for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
             if (!o || !o->isAlive()) continue;
+
+            // new: skip if opponent is beyond the beam's visual range (landscape stopped it)
+            float oppCenterX = o->getBounds().x + o->getBounds().w / 2.0f;
+            if (goingRight && oppCenterX > visualEndX) continue;
+            if (!goingRight && oppCenterX < visualEndX) continue;
+
             if (rectsIntersect(o->getBounds(), pb)) {
                 o->takeDamage(1);
                 if (!o->isAlive()) {
@@ -501,5 +515,76 @@ float Game::getGroundYAt(float x) const {
         }
     }
     return land.back().y; // fallback
+}
+
+float Game::getBeamVisualEndX(float startX, float beamY, bool goingRight) const {
+    if (m_state.landscape.empty()) {
+        return goingRight ? m_state.worldWidth : 0.0f;
+    }
+
+    const auto& land = m_state.landscape;
+
+    if (goingRight) {
+        // find first segment where x >= startX
+        for (size_t i = 0; i < land.size() - 1; ++i) {
+            float x0 = land[i].x;
+            float x1 = land[i + 1].x;
+            if (x1 < startX) continue;
+
+            float y0 = land[i].y;
+            float y1 = land[i + 1].y;
+
+            // if beam is above both points, it passes through
+            if (beamY < y0 && beamY < y1) {
+                continue;
+            }
+
+            // if beam is below or at both, it hits at segment start
+            if (beamY >= y0 && beamY >= y1) {
+                return std::max(startX, x0);
+            }
+
+            // interpolate intersection
+            // find X where the horizontal beam crosses the straight line segment between (x0,y0) and (x1,y1) 
+            if (y1 != y0) {
+                float t = (beamY - y0) / (y1 - y0);
+                if (t >= 0.0f && t <= 1.0f) {
+                    float intersectX = x0 + t * (x1 - x0);
+                    if (intersectX >= startX) {
+                        return intersectX;
+                    }
+                }
+            }
+        }
+        return m_state.worldWidth;
+    } else {
+        // going left
+        for (size_t i = land.size() - 1; i > 0; --i) {
+            float x0 = land[i - 1].x;
+            float x1 = land[i].x;
+            if (x0 > startX) continue;
+
+            float y0 = land[i - 1].y;
+            float y1 = land[i].y;
+
+            if (beamY < y0 && beamY < y1) {
+                continue;
+            }
+            if (beamY >= y0 && beamY >= y1) {
+                return std::min(startX, x1);
+            }
+
+            if (y1 != y0) {
+                float t = (beamY - y0) / (y1 - y0);
+                if (t >= 0.0f && t <= 1.0f) {
+                    float intersectX = x0 + t * (x1 - x0);
+                    if (intersectX <= startX) {
+                        return intersectX;
+                    }
+                }
+            }
+        }
+        return 0.0f;
+    }
 }
 // END: helpers

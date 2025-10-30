@@ -50,4 +50,5 @@ private:
     void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
     void renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text);
     void renderCloseButton();
+    float findBeamLandscapeIntersection(float startX, float beamY, bool goingRight, const std::vector<SDL_FPoint>& landscape, float worldWidth);
 };
