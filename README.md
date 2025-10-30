@@ -95,6 +95,23 @@ m_cameraX = target;
 ```
 The camera tries to keep the player centered horizontally.
 It is clamped so you never see outside the world bounds (0 to m_worldWidth - screen_width).
+
+# World Landscape
+
+World now has a piecewise-linear landscape defined by a small array of (x, y) control points (std::vector<SDL_FPoint>). This "mountain range" is as a physical boundary. Opponent projectiles and the player's beams are clipped both visually and logically when they intersect the terrain.
+
+For any entity or projectile at horizontal position x, the ground height is computed via linear interpolation between the two nearest landscape points: 
+```cpp
+float groundY = getGroundYAt(x);
+``` 
+
+If the bottom of a hitbox (y + height) is >= groundY, it is considered in solid ground and is either: 
+
+   - Erased (projectiles), and/or
+   - Exploded (opponents), or
+   - Repositioned (player).
+     
+     
      
 
 ## questions/TODO

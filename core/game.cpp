@@ -37,8 +37,8 @@ void Game::startNewGame() {
         {m_state.worldWidth * 0.41f, m_state.worldHeight - 100},
         {m_state.worldWidth * 0.48f, m_state.worldHeight - 140},
         {m_state.worldWidth * 0.52f, m_state.worldHeight - 95},
-        {m_state.worldWidth * 0.61f, m_state.worldHeight - 520},
-        {m_state.worldWidth * 0.61f, m_state.worldHeight - 80},
+        {m_state.worldWidth * 0.61f, m_state.worldHeight - 120},
+        {m_state.worldWidth * 0.68f, m_state.worldHeight - 80},
         {m_state.worldWidth * 0.71f, m_state.worldHeight - 110},
         {m_state.worldWidth * 0.75f, m_state.worldHeight - 90},
         {m_state.worldWidth * 0.81f, m_state.worldHeight - 70},
@@ -482,10 +482,24 @@ void Game::updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float
     for (auto it = projectiles.begin(); it != projectiles.end(); ) {
         it->update(deltaTime);
         SDL_FRect b = it->getBounds();
-        if (isOutOfWorld(b, 0.0f, 0.0f)) 
+        
+        if (isOutOfWorld(b, 0.0f, 0.0f)) {
             it = projectiles.erase(it);
-          else 
-            ++it;
+            continue;
+        }
+
+        // TODO: this part could be restricted to !it->isHorizontal because this is just for opponent projectiles
+        float projCenterX = b.x + b.w / 2.0f;
+        float groundY = getGroundYAt(projCenterX);
+        float projBottom = b.y + b.h;
+
+        // if projectile is at or below ground - remove it
+        if (projBottom >= groundY) {
+            it = projectiles.erase(it);
+            continue;
+        }
+
+        ++it;
     }
 }
 
