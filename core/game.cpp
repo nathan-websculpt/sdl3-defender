@@ -6,6 +6,7 @@
 #include <sstream>
 #include <cctype>
 #include "../core/config.h"
+#include "../entities/health_item.h"
 
 Game::Game()
     : m_state{} {
@@ -18,6 +19,7 @@ Game::Game()
 void Game::startNewGame() {
     m_state.opponents.clear();
     m_state.particles.clear();
+    m_state.healthItems.clear();
     m_state.cameraX = 0.0f;
     float px = m_state.worldWidth / 2.0f - 40.0f;
     float py = m_state.screenHeight / 2.0f - 24.0f;
@@ -26,6 +28,9 @@ void Game::startNewGame() {
     m_state.worldHealth = m_state.maxWorldHealth;
     m_state.playerScore = 0;
     m_opponentSpawnTimer = 0.0f;
+
+    m_playerHealthItemSpawnTimer = 0.0f;
+    m_worldHealthItemSpawnTimer = 0.0f;
 
     m_state.landscape = {
         {0, m_state.worldHeight - 20},
@@ -129,6 +134,21 @@ void Game::update(float deltaTime) {
     }
 
     updateAndPruneParticles(deltaTime);
+
+    updateAndPruneHealthItems(deltaTime);
+
+    // spawn health items
+    m_playerHealthItemSpawnTimer += deltaTime;
+    if (m_playerHealthItemSpawnTimer >= PLAYER_HEALTH_ITEM_SPAWN_INTERVAL) {
+        spawnHealthItem(HealthItemType::PLAYER);
+        m_playerHealthItemSpawnTimer = 0.0f;
+    }
+
+    m_worldHealthItemSpawnTimer += deltaTime;
+    if (m_worldHealthItemSpawnTimer >= WORLD_HEALTH_ITEM_SPAWN_INTERVAL) {
+        spawnHealthItem(HealthItemType::WORLD);
+        m_worldHealthItemSpawnTimer = 0.0f;
+    }
 
     checkCollisions();
     updateCamera();
@@ -376,6 +396,25 @@ void Game::checkCollisions() {
             }
             // ... if state is GAME_OVER or o_it was invalidated by erase in the inner loop, the outer loop will terminate
         }
+
+        // player / health collisions (restores player or world health)
+        for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
+            auto& item = *it;
+            if (!item || !item->isAlive() || item->isBlinking()) { // don't collide if blinking or dead
+                ++it;
+                continue;
+            }
+            if (rectsIntersect(m_state.player->getBounds(), item->getBounds())) {
+                if (item->getType() == HealthItemType::PLAYER) {
+                    m_state.player->restoreHealth();
+                } else if (item->getType() == HealthItemType::WORLD) {
+                    m_state.worldHealth = m_state.maxWorldHealth;
+                }
+                it = m_state.healthItems.erase(it);
+                continue;
+            }
+            ++it;
+        }
     }
 }
 
@@ -388,6 +427,15 @@ void Game::spawnOpponent() {
         case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
         case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
     }
+}
+
+void Game::spawnHealthItem(HealthItemType type) {
+    float x = static_cast<float>(rand() % static_cast<int>(m_state.worldWidth - 50)); // random X within world
+    float y = -50.0f; // start from top
+    float w = 30.0f;
+    float h = 30.0f;
+    const std::string& textureKey = (type == HealthItemType::PLAYER) ? Config::Textures::PLAYER_HEALTH_ITEM : Config::Textures::WORLD_HEALTH_ITEM;
+    m_state.healthItems.emplace(std::make_unique<HealthItem>(x, y, w, h, type, textureKey));
 }
 
 // handle high scores
@@ -599,6 +647,31 @@ float Game::getBeamVisualEndX(float startX, float beamY, bool goingRight) const 
             }
         }
         return 0.0f;
+    }
+}
+
+void Game::updateAndPruneHealthItems(float deltaTime) {
+    for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
+        auto& item = *it;
+        if (!item) {
+             ++it;
+             continue;
+        }
+        item->update(deltaTime);
+
+        // check if item hit the landscape
+        float groundY = getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
+        float itemBottom = item->getBounds().y + item->getBounds().h;
+        if (itemBottom >= groundY && !item->isBlinking()) {
+            item->startBlinking();
+        }
+
+        // remove dead items (finished blinking)
+        if (!item->isAlive()) {
+            it = m_state.healthItems.erase(it);
+            continue;
+        }
+        ++it;
     }
 }
 // END: helpers

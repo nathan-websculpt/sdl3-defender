@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "../entities/player.h"
+#include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"
 #include "../entities/opponents/basic_opponent.h"
 #include "../entities/opponents/aggressive_opponent.h"
@@ -59,8 +60,9 @@ struct GameStateData {
 
     // entities
     std::unique_ptr<Player> player;
-    plf::colony<std::unique_ptr<BaseOpponent>> opponents;
     plf::colony<Particle> particles;
+    plf::colony<std::unique_ptr<BaseOpponent>> opponents;
+    plf::colony<std::unique_ptr<HealthItem>> healthItems;
 
     // ui state (needed for menus)
     bool waitingForHighScore = false;
@@ -90,6 +92,14 @@ private:
     float m_opponentSpawnTimer;
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
     bool m_prevShootState = false;
+
+    float m_playerHealthItemSpawnTimer = 0.0f;
+    float m_worldHealthItemSpawnTimer = 0.0f;
+    const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 60.0f; // Every 60 seconds
+    const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 120.0f; // Every 120 seconds 
+
+    void spawnHealthItem(HealthItemType type);
+    void updateAndPruneHealthItems(float deltaTime);
 
     void updateCamera();
     void checkCollisions();

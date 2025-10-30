@@ -5,6 +5,7 @@
 #include <cctype>
 #include <cstring>
 #include <sstream>
+#include "../entities/health_item.h"
 
 Platform::Platform() = default;
 
@@ -283,6 +284,40 @@ void Platform::render(const GameStateData& state) {
                     SDL_FPoint p1 = { state.landscape[i].x - cameraOffsetX, state.landscape[i].y };
                     SDL_FPoint p2 = { state.landscape[i + 1].x - cameraOffsetX, state.landscape[i + 1].y };
                     SDL_RenderLine(m_renderer, p1.x, p1.y, p2.x, p2.y);
+                }
+            }
+
+            // render health items
+            for (const auto& item : state.healthItems) {
+                if (!item || !item->isAlive()) continue;
+
+                SDL_FRect renderBounds = item->getBounds();
+                renderBounds.x -= cameraOffsetX;
+
+                auto itemTexture = TextureManager::getInstance().getTexture(item->getTextureKey(), m_renderer);
+                if (itemTexture) {
+                    // handle blinking
+                    Uint8 originalAlpha = 255;
+                    if (item->isBlinking()) {
+                         originalAlpha = static_cast<Uint8>(item->getBlinkAlpha());
+                    }
+                    SDL_SetTextureAlphaMod(itemTexture.get(), originalAlpha);
+                    SDL_RenderTexture(m_renderer, itemTexture.get(), nullptr, &renderBounds);
+                    SDL_SetTextureAlphaMod(itemTexture.get(), 255); // ...resets alpha for next item
+                } else {
+                    // fallback rectangle
+                    SDL_SetRenderDrawColor(m_renderer, 0, 255, 0, 255);
+                    if (item->getType() == HealthItemType::WORLD) {
+                        SDL_SetRenderDrawColor(m_renderer, 255, 255, 0, 255);
+                    }
+                    if (item->isBlinking()) {
+                        // blinking effect
+                        if (static_cast<int>(SDL_GetTicks() / (static_cast<int>(HealthItem::BLINK_DURATION * 1000) / 2)) % 2 == 0) {
+                             SDL_RenderFillRect(m_renderer, &renderBounds);
+                        }
+                    } else {
+                         SDL_RenderFillRect(m_renderer, &renderBounds);
+                    }
                 }
             }
 
