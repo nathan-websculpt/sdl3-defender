@@ -12,7 +12,7 @@ Game::Game()
     : m_state{} {
     srand((unsigned int)time(nullptr));
     m_state.worldWidth = Config::Game::WORLD_WIDTH;
-    m_state.worldHeight = Config::Game::WORLD_HEIGHT;
+    m_state.worldHeight = Config::Game::WORLD_HEIGHT; // TODO
     loadHighScores();
 }
 
@@ -27,6 +27,7 @@ void Game::startNewGame() {
     m_state.cameraX = 0.0f;
 
     m_lastWindowHeight = m_state.screenHeight;
+    m_state.worldHeight = m_state.screenHeight;
     float px = m_state.worldWidth / 2.0f - 40.0f;
     float py = m_state.screenHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
