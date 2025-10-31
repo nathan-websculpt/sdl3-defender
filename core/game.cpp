@@ -143,6 +143,7 @@ void Game::update(float deltaTime) {
                         m_state.waitingForHighScore = true;
                         m_state.highScoreNameInput.clear();
                     }
+                    return; // exit early if world health too low
                 }
             }
             // opponent touched ground - explode
