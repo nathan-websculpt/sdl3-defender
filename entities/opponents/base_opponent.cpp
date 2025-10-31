@@ -3,6 +3,7 @@
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
 #include "../../core/texture_manager.h"
+#include "../../core/sound_manager.h"
 
 BaseOpponent::BaseOpponent(float x, float y, float w, float h) 
     : m_rect{x, y, w, h},
@@ -41,6 +42,10 @@ bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX, int screenW
 }
 
 void BaseOpponent::explode(plf::colony<Particle>& gameParticles) const {
+    MIX_Mixer* mixer = SoundManager::getInstance().getMixerInstance();
+    if (mixer) 
+        SoundManager::getInstance().playSound(Config::Sounds::OPPONENT_EXPLODE, mixer);
+
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
     const ExplosionConfig& cfg = m_explosionConfig;
 

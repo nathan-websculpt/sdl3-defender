@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
+#include "../core/sound_manager.h"
 #include "../entities/player.h"
 #include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"
@@ -98,6 +99,8 @@ private:
     float m_worldHealthItemSpawnTimer = 0.0f;
     const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
     const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
+
+    MIX_Mixer* m_mixer;
 
     void setLandscape();
 

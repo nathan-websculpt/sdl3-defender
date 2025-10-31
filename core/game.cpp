@@ -17,6 +17,10 @@ Game::Game()
 }
 
 void Game::startNewGame() {
+    m_mixer = SoundManager::getInstance().getMixerInstance();
+    if (m_mixer) 
+        SoundManager::getInstance().playSound(Config::Sounds::GAME_START, m_mixer);
+
     m_state.opponents.clear();
     m_state.particles.clear();
     m_state.healthItems.clear();
@@ -130,6 +134,9 @@ void Game::update(float deltaTime) {
                 m_state.worldHealth--;
                 if (m_state.worldHealth <= 0) {
                     // world health too low; game over
+                    if (m_mixer) 
+                        SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
+
                     m_state.state = GameStateData::State::GAME_OVER;
                     if (isHighScore(m_state.playerScore)) {
                         m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
@@ -374,6 +381,9 @@ void Game::checkCollisions() {
                 m_state.playerScore += o->getScoreVal();
                 o_it = m_state.opponents.erase(o_it);
                 if (!m_state.player->isAlive()) {
+                    if (m_mixer) 
+                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
+                            
                     m_state.state = GameStateData::State::GAME_OVER;
                     if (isHighScore(m_state.playerScore)) {
                         m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
@@ -397,6 +407,9 @@ void Game::checkCollisions() {
                     // erase the projectile that hit the player using the iterator
                     op_it = op.erase(op_it);
                     if (!m_state.player->isAlive()) {
+                        if (m_mixer) 
+                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
+
                         m_state.state = GameStateData::State::GAME_OVER;
                         if (isHighScore(m_state.playerScore)) {
                             m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
