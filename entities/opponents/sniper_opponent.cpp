@@ -9,7 +9,7 @@
 
 SniperOpponent::SniperOpponent(float x, float y, float w, float h) 
     : BaseOpponent(x, y, w, h) {
-    m_speed = 20.0f;
+    m_speed = 30.0f;
     m_angularSpeed = 0.8f;
     m_oscillationAmplitude = 60.0f;
     m_oscillationSpeed = 1.0f;

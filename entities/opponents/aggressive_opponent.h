@@ -12,4 +12,7 @@ public:
     void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) override;
 
     const std::string& getTextureKey() const override { return Config::Textures::AGGRESSIVE_OPPONENT; }
+
+private:
+    float m_lifetime;
 };

@@ -9,6 +9,7 @@
 
 AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h) 
     : BaseOpponent(x, y, w, h) {
+    m_lifetime = 0.0f;
     m_speed = 70.0f;
     m_angularSpeed = 0.0f;
     m_oscillationAmplitude = 0.0f;
@@ -33,6 +34,16 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h)
 
 void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
+    m_lifetime += deltaTime;
+
+    // these opponents go fast at first
+    float speed;
+    if(m_lifetime <= 0.4f)
+        speed = m_speed * 3.0f;
+    else if (m_lifetime > 100.0f)
+        speed = m_speed * 3.8f;
+    else
+        speed = m_speed;
 
     // targeting inaccuracy
     float targetX = playerPos.x + (static_cast<float>(rand() % 200) - 100.0f);
@@ -44,11 +55,11 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
 
     // go left/right
     if (std::abs(dx) > 1.0f) {
-        m_rect.x += (dx > 0 ? 1 : -1) * m_speed * deltaTime;
+        m_rect.x += (dx > 0 ? 1 : -1) * speed * deltaTime;
     }
     // go up/down
     if (std::abs(dy) > 1.0f) {
-        m_rect.y += (dy > 0 ? 1 : -1) * m_speed * deltaTime;
+        m_rect.y += (dy > 0 ? 1 : -1) * speed * deltaTime;
     }
 
     m_fireTimer += deltaTime;
