@@ -121,4 +121,5 @@ private:
     void updateAndPruneParticles(float deltaTime);
     float getGroundYAt(float x) const; // for landscape
     float getBeamVisualEndX(float startX, float beamY, bool goingRight) const; // landscape stops player's beam
+    void keepPlayerInBounds(SDL_FRect& pb);
 };

@@ -9,7 +9,7 @@
 
 Player::Player(float x, float y, float w, float h) 
     : m_rect{x, y, w, h}, 
-      m_normalSpeed(200.0f),
+      m_normalSpeed(220.0f),
       m_speedBoostActive(false),
       m_boostMultiplier(2.1f),
       m_facing(Direction::RIGHT),

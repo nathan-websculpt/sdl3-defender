@@ -88,28 +88,7 @@ void Game::update(float deltaTime) {
     auto& playerProjectiles = m_state.player->getProjectiles();        
     updateAndPruneProjectiles(playerProjectiles, deltaTime);   
 
-    // TODO: place after all other checks
-    // new: top boundary (for HUD)
-    if (pb.y < static_cast<float>(Config::Game::HUD_HEIGHT)) {
-        m_state.player->setPosition(pb.x, static_cast<float>(Config::Game::HUD_HEIGHT));
-    } // TODO: unify with old code below
-
-    // keep player in world and on-screen
-    float cx = pb.x;
-    float cy = pb.y;
-    if (cx < 0) cx = 0;
-    if (cy < 0) cy = 0;
-    if (cx + pb.w > m_state.worldWidth) cx = m_state.worldWidth - pb.w;
-    if (cy + pb.h > m_state.worldHeight) cy = m_state.worldHeight - pb.h;
-    if (cx != pb.x || cy != pb.y) m_state.player->setPosition(cx, cy);
-
-    // TODO: ^^^ really no longer needs to check the bottom of the world
-    // new: player can't go below the landscape
-    float groundY = getGroundYAt(pb.x + pb.w / 2.0f);
-    float playerBottom = pb.y + pb.h;
-    if (playerBottom > groundY) {
-        m_state.player->setPosition(pb.x, groundY - pb.h);
-    }
+    keepPlayerInBounds(pb);
 
     // opponents / projectiles
     for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
@@ -707,6 +686,36 @@ void Game::updateAndPruneHealthItems(float deltaTime) {
             continue;
         }
         ++it;
+    }
+}
+
+void Game::keepPlayerInBounds(SDL_FRect& pb) {
+    // keeps player beneath HUD, above landscape, and in-world
+
+    float desiredX = pb.x;
+    float desiredY = pb.y;
+
+    // left and right (world) boundaries
+    if (desiredX < 0) desiredX = 0;
+    if (desiredX + pb.w > m_state.worldWidth) desiredX = m_state.worldWidth - pb.w;
+
+    // top (HUD) boundary
+    desiredY = std::max(desiredY, static_cast<float>(Config::Game::HUD_HEIGHT));
+
+    // landscape constraint (bottom)
+    float playerBottomX = desiredX + pb.w / 2.0f; 
+    float groundYAtPlayerX = getGroundYAt(playerBottomX);
+    float absoluteWorldBottom = m_state.worldHeight - pb.h; // absolute bottom of the world
+
+    // player's bottom Y should not exceed the landscape height at their X position
+    float effectiveGroundY = std::min(groundYAtPlayerX, absoluteWorldBottom);
+    float maxAllowedY = effectiveGroundY - pb.h;
+
+    // ensure desiredY is not below the calculated maximum
+    desiredY = std::min(desiredY, maxAllowedY);
+    
+    if (pb.x != desiredX || pb.y != desiredY) {
+        m_state.player->setPosition(desiredX, desiredY); // apply the final calculated position
     }
 }
 // END: helpers
