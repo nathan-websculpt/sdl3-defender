@@ -89,6 +89,7 @@ public:
 
 private:
     GameStateData m_state;
+    float m_lastWindowHeight = 0.0f;
     float m_opponentSpawnTimer;
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
     bool m_prevShootState = false;
@@ -97,6 +98,8 @@ private:
     float m_worldHealthItemSpawnTimer = 0.0f;
     const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
     const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
+
+    void setLandscape();
 
     void spawnHealthItem(HealthItemType type);
     void updateAndPruneHealthItems(float deltaTime);

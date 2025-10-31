@@ -21,9 +21,12 @@ void Game::startNewGame() {
     m_state.particles.clear();
     m_state.healthItems.clear();
     m_state.cameraX = 0.0f;
+
+    m_lastWindowHeight = m_state.screenHeight;
     float px = m_state.worldWidth / 2.0f - 40.0f;
     float py = m_state.screenHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
+
     m_state.state = GameStateData::State::PLAYING;
     m_state.worldHealth = m_state.maxWorldHealth;
     m_state.playerScore = 0;
@@ -32,6 +35,10 @@ void Game::startNewGame() {
     m_playerHealthItemSpawnTimer = 0.0f;
     m_worldHealthItemSpawnTimer = 0.0f;
 
+    setLandscape();
+}
+
+void Game::setLandscape() {
     m_state.landscape = {
         {0, m_state.worldHeight - 20},
         {m_state.worldWidth * 0.1f, m_state.worldHeight - 28},
@@ -58,6 +65,13 @@ void Game::startNewGame() {
 void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
+    // detect window resize for landscape
+    if (m_state.screenHeight != m_lastWindowHeight) {
+        m_lastWindowHeight = m_state.screenHeight;
+        m_state.worldHeight = m_state.screenHeight; // for consistency, but not necessary
+        setLandscape();
+    }
+
     SDL_FRect pb;
     if (m_state.player) {
         pb = m_state.player->getBounds();
@@ -68,6 +82,12 @@ void Game::update(float deltaTime) {
     // player projectiles
     auto& playerProjectiles = m_state.player->getProjectiles();        
     updateAndPruneProjectiles(playerProjectiles, deltaTime);   
+
+    // TODO: place after all other checks
+    // new: top boundary (for HUD)
+    if (pb.y < static_cast<float>(Config::Game::HUD_HEIGHT)) {
+        m_state.player->setPosition(pb.x, static_cast<float>(Config::Game::HUD_HEIGHT));
+    } // TODO: unify with old code below
 
     // keep player in world and on-screen
     float cx = pb.x;
