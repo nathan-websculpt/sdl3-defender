@@ -48,7 +48,7 @@ bool Platform::initialize() {
         SDL_Log("VSync successfully enabled.");
     }
 
-    SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight);
+    SDL_GetWindowSize(m_window, &m_windowWidth, &m_windowHeight); // TODO: count occurances
 
     // audio device initialization
     // define the desired audio format using SDL3 enums
@@ -148,11 +148,12 @@ void Platform::run(Game& sim) {
 
         if (state.state == GameStateData::State::PLAYING) {
             state.worldHeight = (float)m_windowHeight; // world height depends on window resize (width does not)
+            // TODO: unify and use if like in game.cpp
         }
 
         updateTextInputState(state); // update text input state
 
-        // fixed timestep update loop
+        // timestep update loop
         while (accumulator >= FIXED_DELTA_TIME) {
             GameInput input = pollInput(state);
             sim.handleInput(input, FIXED_DELTA_TIME);
@@ -163,7 +164,7 @@ void Platform::run(Game& sim) {
             accumulator -= FIXED_DELTA_TIME;
         }
 
-        render(state);
+        render(state); // todo: should render go into while loop? ^^^
     }
 
     // ensure text input is stopped when the loop exits
@@ -838,3 +839,6 @@ SDL_FPoint Platform::clipRayToLandscape(float startX, float startY, float endX, 
     };
 }
 // END: helpers
+
+// TODO:
+//      all renderXYZ methods need to be moved out, and I may just make a render class for all rendering?

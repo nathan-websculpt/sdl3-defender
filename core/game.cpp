@@ -70,6 +70,7 @@ void Game::setLandscape() {
 void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
+    // TODO: unify with other todo
     // detect window resize for landscape
     if (m_state.screenHeight != m_lastWindowHeight) {
         m_lastWindowHeight = m_state.screenHeight;
@@ -90,6 +91,7 @@ void Game::update(float deltaTime) {
 
     keepPlayerInBounds(pb);
 
+    // TODO: move out
     // opponents / projectiles
     for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
         auto& oppPtr = *opp_iter;
@@ -145,6 +147,7 @@ void Game::update(float deltaTime) {
 
     updateAndPruneHealthItems(deltaTime);
 
+    // TODO: move with spawn opps
     // spawn health items
     m_playerHealthItemSpawnTimer += deltaTime;
     if (m_playerHealthItemSpawnTimer >= PLAYER_HEALTH_ITEM_SPAWN_INTERVAL) {
@@ -719,3 +722,9 @@ void Game::keepPlayerInBounds(SDL_FRect& pb) {
     }
 }
 // END: helpers
+
+// TODO: 
+//      updateAndPrune methods go into sep place
+//      rest of helpers separated
+//      5 highscore methods
+//      handleInput, update, and checkCollisions need to be broken up some
