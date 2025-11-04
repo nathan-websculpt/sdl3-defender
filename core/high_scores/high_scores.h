@@ -1,9 +1,7 @@
 #pragma once
 
 #include "../config.h"
-#include "../game_state_data.h" // for the GameStateData forward declaration
-
-struct GameStateData; // forward declaration needed because Game and HighScores both need the GameStateData::HighScore struct
+#include "../game_state_data.h"
 
 class HighScores {
 public:
