@@ -2,7 +2,6 @@
 
 RenderHud::RenderHud() = default;
 
-// HUD (top-bar)
 void RenderHud::renderHealthBars(const GameStateData& state) {
     const int barW = 200;
     const int barH = 10;
@@ -24,7 +23,7 @@ void RenderHud::renderHealthBars(const GameStateData& state) {
 
 // TODO: this one could be private
 void RenderHud::renderHealthBar(const char* label, int x, int y, int width, int height, float healthRatio, const SDL_Color& labelColor) {
-    m_renderHelper.renderText(label, x, y, labelColor, FontSize::SMALL);
+    RenderHelper::renderText(label, x, y, labelColor, FontSize::SMALL);
     
     float fillWidth = std::max(0.0f, width * healthRatio);
     
@@ -114,8 +113,7 @@ void RenderHud::renderScore(const GameStateData& state) {
     SDL_Color white = {255, 255, 255, 255};
     float rightOffset = globals.windowWidth - 150;
     
-    m_renderHelper.renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
+    RenderHelper::renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
     std::string scoreStr = std::to_string(state.playerScore);
-    m_renderHelper.renderText(scoreStr.c_str(), globals.windowWidth - 90, barY, white, FontSize::SMALL);
+    RenderHelper::renderText(scoreStr.c_str(), globals.windowWidth - 90, barY, white, FontSize::SMALL);
 }
-// END: HUD (top-bar)

@@ -1,7 +1,5 @@
 #include "render_helper.h"
 
-RenderHelper::RenderHelper() = default;
-
 void RenderHelper::renderCloseButton() {
     const float size = 20.0f;
     const float y = 10.0f;

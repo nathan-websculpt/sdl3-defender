@@ -8,9 +8,7 @@
 
 class RenderHelper {
 public:
-    RenderHelper();
-
-    void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
-    void renderCloseButton();
-    void renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text);
+    static void renderCloseButton();
+    static void renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text);
+    static void renderText(const char* text, int x, int y, const SDL_Color& color, FontSize size);
 };
