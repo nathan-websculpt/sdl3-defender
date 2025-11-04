@@ -42,7 +42,7 @@ void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float 
     m_rect.x = m_startX + sin(m_angle + m_oscillationOffset) * m_oscillationAmplitude;
 
     m_fireTimer += deltaTime;
-    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, state.screenWidth);
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, globals.windowWidth);
     
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         m_projectiles.emplace(

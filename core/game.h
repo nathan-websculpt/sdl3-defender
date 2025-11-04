@@ -54,10 +54,8 @@ struct GameStateData {
     int worldHealth;
     int playerScore;
     float cameraX;
-    float worldWidth;  // world width goes beyond window
-    float worldHeight; // height depends on window size
-    float screenWidth; 
-    float screenHeight;
+    float worldWidth;  // world width goes beyond window // TODO:
+    float worldHeight; // height depends on window size  // TODO:
 
     // entities
     std::unique_ptr<Player> player;

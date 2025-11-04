@@ -3,6 +3,7 @@
 #include <vector>
 #include <memory>
 #include "../particle.h"
+#include "../../core/globals.h"
 
 class SniperOpponent : public BaseOpponent {
 public:

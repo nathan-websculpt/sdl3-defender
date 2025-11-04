@@ -32,6 +32,7 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h)
     m_explosionConfig.size = 1.9f;
 }
 
+// TODO: no longer needs state?
 void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
     if (m_health <= 0) return;
     m_lifetime += deltaTime;
@@ -63,7 +64,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     }
 
     m_fireTimer += deltaTime;
-    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, state.screenWidth);
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, globals.windowWidth);
 
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         m_projectiles.emplace(

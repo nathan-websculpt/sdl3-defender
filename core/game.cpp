@@ -6,7 +6,15 @@
 #include <sstream>
 #include <cctype>
 #include "../core/config.h"
+#include "../core/globals.h"
 #include "../entities/health_item.h"
+
+// TODO:
+//remove
+    // float screenWidth; 
+    // float screenHeight;
+    // float worldWidth;  // world width goes beyond window
+    // float worldHeight;
 
 Game::Game()
     : m_state{} {
@@ -26,10 +34,10 @@ void Game::startNewGame() {
     m_state.healthItems.clear();
     m_state.cameraX = 0.0f;
 
-    m_lastWindowHeight = m_state.screenHeight;
-    m_state.worldHeight = m_state.screenHeight;
+    m_lastWindowHeight = globals.windowHeight;
+    m_state.worldHeight = globals.windowHeight;
     float px = m_state.worldWidth / 2.0f - 40.0f;
-    float py = m_state.screenHeight / 2.0f - 24.0f;
+    float py = globals.windowHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
 
     m_state.state = GameStateData::State::PLAYING;
@@ -72,9 +80,9 @@ void Game::update(float deltaTime) {
 
     // TODO: unify with other todo
     // detect window resize for landscape
-    if (m_state.screenHeight != m_lastWindowHeight) {
-        m_lastWindowHeight = m_state.screenHeight;
-        m_state.worldHeight = m_state.screenHeight; // for consistency, but not necessary
+    if (globals.windowHeight != m_lastWindowHeight) {
+        m_lastWindowHeight = globals.windowHeight;
+        m_state.worldHeight = globals.windowHeight; // for consistency, but not necessary
         setLandscape();
     }
 
@@ -174,9 +182,9 @@ void Game::update(float deltaTime) {
 void Game::updateCamera() {
     if (!m_state.player) return;
     SDL_FRect pb = m_state.player->getBounds();
-    float target = pb.x - m_state.screenWidth / 2.0f;
+    float target = pb.x - globals.windowWidth / 2.0f;
     if (target < 0) target = 0;
-    if (target > m_state.worldWidth - m_state.screenWidth) target = m_state.worldWidth - m_state.screenWidth;
+    if (target > m_state.worldWidth - globals.windowWidth) target = m_state.worldWidth - globals.windowWidth;
     m_state.cameraX = target;
 }
 
@@ -214,8 +222,8 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
         } else if (input.mouseClick) {
             int mx = input.mouseX;
             int my = input.mouseY;
-            int w = m_state.screenWidth;
-            int h = m_state.screenHeight;
+            int w = globals.windowWidth;
+            int h = globals.windowHeight;
             SDL_FRect playBtn = { (float)(w/2 - 100), (float)(h/2 - 60), 200, 50 };
             SDL_FRect howToPlayBtn = { (float)(w/2 - 100), (float)(h/2), 200, 50 };
             SDL_FRect exitBtn = { (float)(w/2 - 100), (float)(h/2 + 60), 200, 50 };
@@ -228,7 +236,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
             }
         }
     } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
-        if (input.enter || (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30)) {
+        if (input.enter || (input.mouseClick && input.mouseX > globals.windowWidth - 30 && input.mouseY < 30)) {
             m_state.state = GameStateData::State::MENU;
         }
     } else if (m_state.state == GameStateData::State::PLAYING) {
@@ -292,7 +300,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
-                if (input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30) {
+                if (input.mouseX > globals.windowWidth - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
                     submitHighScore(nameToSubmit);
@@ -301,7 +309,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                 }
             }
         } else { // not waiting for high score - game over screen
-            if (input.enter || (input.mouseClick && input.mouseX > m_state.screenWidth - 30 && input.mouseY < 30)) {
+            if (input.enter || (input.mouseClick && input.mouseX > globals.windowWidth - 30 && input.mouseY < 30)) {
                     m_state.state = GameStateData::State::MENU;
             }
         }

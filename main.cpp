@@ -37,3 +37,6 @@ int main(int argc, char* argv[]) {
     platform.shutdown();
     return 0;
 }
+
+// TODO: 
+//      move colors into config
