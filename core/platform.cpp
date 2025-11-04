@@ -330,9 +330,9 @@ void Platform::render(const GameStateData& state) {
                 }
             }
 
-            m_renderHud.renderMinimap(state);
-            m_renderHud.renderHealthBars(state);
-            m_renderHud.renderScore(state);
+            RenderHud::renderMinimap(state);
+            RenderHud::renderHealthBars(state);
+            RenderHud::renderScore(state);
         }
             break;
         case GameStateData::State::GAME_OVER:

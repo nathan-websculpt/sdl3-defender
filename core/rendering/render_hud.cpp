@@ -1,7 +1,5 @@
 #include "render_hud.h"
 
-RenderHud::RenderHud() = default;
-
 void RenderHud::renderHealthBars(const GameStateData& state) {
     const int barW = 200;
     const int barH = 10;
@@ -21,7 +19,6 @@ void RenderHud::renderHealthBars(const GameStateData& state) {
     renderHealthBar("World Health:", barX, worldBarY, barW, barH, worldHealthRatio, white);    
 }
 
-// TODO: this one could be private
 void RenderHud::renderHealthBar(const char* label, int x, int y, int width, int height, float healthRatio, const SDL_Color& labelColor) {
     RenderHelper::renderText(label, x, y, labelColor, FontSize::SMALL);
     
