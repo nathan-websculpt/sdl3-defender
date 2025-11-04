@@ -2,6 +2,7 @@
 #include <vector>
 #include <memory>
 #include "../core/managers/sound_manager.h"
+#include "../core/high_scores/high_scores.h"
 #include "../entities/player.h"
 #include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"
@@ -9,67 +10,7 @@
 #include "../entities/opponents/aggressive_opponent.h"
 #include "../entities/opponents/sniper_opponent.h"
 #include "../plf/plf_colony.h" 
-
-struct GameInput {
-    bool moveLeft = false;
-    bool moveRight = false;
-    bool moveUp = false;
-    bool moveDown = false;
-    bool shoot = false;
-    bool boost = false;
-    bool quit = false;
-    bool escape = false;
-    bool enter = false;
-    bool mouseClick = false;
-    int mouseX = 0;
-    int mouseY = 0;
-
-    // for text input
-    bool charInputEvent = false; // flag indicating a character input event occurred
-    char inputChar = 0;
-    bool backspacePressed = false;
-};
-
-struct GameStateData {
-    enum class State {
-        MENU,
-        PLAYING,
-        GAME_OVER,
-        HOW_TO_PLAY
-    };
-
-    State state = State::MENU;
-    bool running = true;
-
-    // high score
-    struct HighScore {
-        std::string name;
-        int score;
-    };
-    std::vector<HighScore> highScores;
-    static const int MAX_HIGH_SCORES = 10;
-
-    // game state
-    int maxWorldHealth = 10;
-    int worldHealth;
-    int playerScore;
-    float cameraX;
-    float worldWidth;  // world width goes beyond window // TODO:
-    float worldHeight; // height depends on window size  // TODO:
-
-    // entities
-    std::unique_ptr<Player> player;
-    plf::colony<Particle> particles;
-    plf::colony<std::unique_ptr<BaseOpponent>> opponents;
-    plf::colony<std::unique_ptr<HealthItem>> healthItems;
-
-    // ui state (needed for menus)
-    bool waitingForHighScore = false;
-    int highScoreIndex = -1;
-    std::string highScoreNameInput;
-
-    std::vector<SDL_FPoint> landscape;
-};
+#include "game_state_data.h"
 
 class Game {
 public:
@@ -80,11 +21,7 @@ public:
     void update(float deltaTime);
     void handleInput(const GameInput& input, float deltaTime);
     const GameStateData& getState() const { return m_state; }
-    GameStateData& getState() { return m_state; } 
-
-    void submitHighScore(const std::string& name);
-    void loadHighScores();
-    void saveHighScores();
+    GameStateData& getState() { return m_state; }    
 
 private:
     GameStateData m_state;
@@ -107,10 +44,7 @@ private:
 
     void updateCamera();
     void checkCollisions();
-    void spawnOpponent();
-
-    bool isHighScore(int score) const;
-    int getHighScoreIndex(int score) const;
+    void spawnOpponent();    
 
     // helpers
     bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
@@ -120,4 +54,6 @@ private:
     float getGroundYAt(float x) const; // for landscape
     float getBeamVisualEndX(float startX, float beamY, bool goingRight) const; // landscape stops player's beam
     void keepPlayerInBounds(SDL_FRect& pb);
+
+    HighScores m_highScores;
 };

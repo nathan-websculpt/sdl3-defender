@@ -97,7 +97,7 @@ void Platform::shutdown() {
     TextureManager::getInstance().clearCache();
     FontManager::getInstance().clearCache();
 
-     //audio device shutdown
+    //audio device shutdown
     if (m_audioDeviceID) {
         // explicitly pause the audio device before closing it.
         SDL_PauseAudioDevice(m_audioDeviceID);
@@ -534,4 +534,4 @@ SDL_FPoint Platform::clipRayToLandscape(float startX, float startY, float endX, 
 // END: helpers
 
 // TODO:
-//      all renderXYZ methods need to be moved out, and I may just make a render class for all rendering?
+//      render is still too big; either break it up, or move some of it into /rendering/

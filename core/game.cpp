@@ -2,17 +2,15 @@
 #include <cstdlib>
 #include <ctime>
 #include <algorithm>
-#include <fstream>
-#include <sstream>
+#include <fstream> //TODO
+#include <sstream> //
 #include <cctype>
-#include "../core/config.h"
+#include "../core/config.h" // TODO
 #include "../core/globals.h"
 #include "../entities/health_item.h"
 
 // TODO:
 //remove
-    // float screenWidth; 
-    // float screenHeight;
     // float worldWidth;  // world width goes beyond window
     // float worldHeight;
 
@@ -21,7 +19,7 @@ Game::Game()
     srand((unsigned int)time(nullptr));
     m_state.worldWidth = Config::Game::WORLD_WIDTH;
     m_state.worldHeight = Config::Game::WORLD_HEIGHT; // TODO
-    loadHighScores();
+    m_highScores.loadHighScores(m_state);
 }
 
 void Game::startNewGame() {
@@ -128,8 +126,8 @@ void Game::update(float deltaTime) {
                         SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
 
                     m_state.state = GameStateData::State::GAME_OVER;
-                    if (isHighScore(m_state.playerScore)) {
-                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                    if (m_highScores.isHighScore(m_state)) {
+                        m_state.highScoreIndex = m_highScores.getHighScoreIndex(m_state);
                         m_state.waitingForHighScore = true;
                         m_state.highScoreNameInput.clear();
                     }
@@ -203,7 +201,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
         } else if (m_state.state == GameStateData::State::GAME_OVER) {
             if (m_state.waitingForHighScore) {
                 std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
-                submitHighScore(nameToSubmit);
+                m_highScores.submitHighScore(nameToSubmit, m_state);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else {
@@ -296,14 +294,14 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
                 if (trimmedName.empty()) {
                     trimmedName = "ANON";
                 }
-                submitHighScore(trimmedName);
+                m_highScores.submitHighScore(trimmedName, m_state);
                 m_state.waitingForHighScore = false;
                 m_state.state = GameStateData::State::MENU;
             } else if (input.mouseClick) {
                 if (input.mouseX > globals.windowWidth - 30 && input.mouseY < 30) {
                     // use "ANON" if user cancels with 'X' and input was empty
                     std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
-                    submitHighScore(nameToSubmit);
+                    m_highScores.submitHighScore(nameToSubmit, m_state);
                     m_state.waitingForHighScore = false;
                     m_state.state = GameStateData::State::MENU;
                 }
@@ -377,8 +375,8 @@ void Game::checkCollisions() {
                             SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
                             
                     m_state.state = GameStateData::State::GAME_OVER;
-                    if (isHighScore(m_state.playerScore)) {
-                        m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                    if (m_highScores.isHighScore(m_state)) {
+                        m_state.highScoreIndex = m_highScores.getHighScoreIndex(m_state);
                         m_state.waitingForHighScore = true;
                         m_state.highScoreNameInput = ""; // initialize empty input
                     }
@@ -403,8 +401,8 @@ void Game::checkCollisions() {
                             SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
 
                         m_state.state = GameStateData::State::GAME_OVER;
-                        if (isHighScore(m_state.playerScore)) {
-                            m_state.highScoreIndex = getHighScoreIndex(m_state.playerScore);
+                        if (m_highScores.isHighScore(m_state)) {
+                            m_state.highScoreIndex = m_highScores.getHighScoreIndex(m_state);
                             m_state.waitingForHighScore = true;
                             m_state.highScoreNameInput = ""; // initialize empty input
                         }
@@ -463,80 +461,7 @@ void Game::spawnHealthItem(HealthItemType type) {
     m_state.healthItems.emplace(std::make_unique<HealthItem>(x, y, w, h, type, textureKey));
 }
 
-// handle high scores
-void Game::loadHighScores() {
-    m_state.highScores.clear();
-    std::ifstream file(Config::Game::HIGH_SCORES_PATH);
-    if (file.is_open()) {
-        std::string line;
-        while (std::getline(file, line) && m_state.highScores.size() < m_state.MAX_HIGH_SCORES) {
-            std::istringstream iss(line);
-            std::string name;
-            int score;
-            if (iss >> name >> score) { // format: "NAME SCORE"
-                 GameStateData::HighScore entry;
-                 entry.name = name;
-                 entry.score = score;
-                 m_state.highScores.push_back(entry);
-            }
-        }
-        file.close();
-    }
 
-    // list is sorted (highest first) and capped at MAX_HIGH_SCORES
-    std::sort(m_state.highScores.begin(), m_state.highScores.end(),
-              [](const GameStateData::HighScore& a, const GameStateData::HighScore& b) { return a.score > b.score; });
-    if (m_state.highScores.size() > m_state.MAX_HIGH_SCORES) {
-        m_state.highScores.resize(m_state.MAX_HIGH_SCORES);
-    }
-}
-
-void Game::saveHighScores() {
-    std::ofstream file(Config::Game::HIGH_SCORES_PATH);
-    if (file.is_open()) {
-        for (const auto& entry : m_state.highScores) {
-            file << entry.name << " " << entry.score << "\n"; //Format: "NAME SCORE"
-        }
-        file.close();
-        SDL_Log("High scores saved.");
-    } else {
-        SDL_Log("Warning: Could not save high scores to file.");
-    }
-}
-
-bool Game::isHighScore(int score) const {
-    return m_state.highScores.size() < m_state.MAX_HIGH_SCORES || score > m_state.highScores.back().score;
-}
-
-int Game::getHighScoreIndex(int score) const {
-    // finds the index where new score should be inserted (0 is highest)
-    for (size_t i = 0; i < m_state.highScores.size(); ++i) {
-        if (score > m_state.highScores[i].score) {
-            return static_cast<int>(i);
-        }
-    }
-    //if loop finishes without returning, the score is not higher than any existing score, but also need to check if the list is not full yet
-    if (m_state.highScores.size() < m_state.MAX_HIGH_SCORES) {
-        return static_cast<int>(m_state.highScores.size());
-    }
-
-    return -1;
-}
-
-void Game::submitHighScore(const std::string& name) {
-    int index = getHighScoreIndex(m_state.playerScore);
-    if (index != -1) {
-        GameStateData::HighScore newEntry;
-        newEntry.name = name.empty() ? "ANON" : name;
-        newEntry.score = m_state.playerScore;
-        m_state.highScores.insert(m_state.highScores.begin() + index, newEntry);
-        if (m_state.highScores.size() > m_state.MAX_HIGH_SCORES) {
-            m_state.highScores.pop_back();
-        }
-        saveHighScores();
-    }
-}
-// END: handle high scores
 
 // helpers
 bool Game::rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const {
@@ -583,6 +508,31 @@ void Game::updateAndPruneParticles(float deltaTime) {
             it = m_state.particles.erase(it);
         else 
             ++it;
+    }
+}
+
+void Game::updateAndPruneHealthItems(float deltaTime) {
+    for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
+        auto& item = *it;
+        if (!item) {
+             ++it;
+             continue;
+        }
+        item->update(deltaTime);
+
+        // check if item hit the landscape
+        float groundY = getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
+        float itemBottom = item->getBounds().y + item->getBounds().h;
+        if (itemBottom >= groundY && !item->isBlinking()) {
+            item->startBlinking();
+        }
+
+        // remove dead items (finished blinking)
+        if (!item->isAlive()) {
+            it = m_state.healthItems.erase(it);
+            continue;
+        }
+        ++it;
     }
 }
 
@@ -672,31 +622,6 @@ float Game::getBeamVisualEndX(float startX, float beamY, bool goingRight) const 
             }
         }
         return 0.0f;
-    }
-}
-
-void Game::updateAndPruneHealthItems(float deltaTime) {
-    for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
-        auto& item = *it;
-        if (!item) {
-             ++it;
-             continue;
-        }
-        item->update(deltaTime);
-
-        // check if item hit the landscape
-        float groundY = getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
-        float itemBottom = item->getBounds().y + item->getBounds().h;
-        if (itemBottom >= groundY && !item->isBlinking()) {
-            item->startBlinking();
-        }
-
-        // remove dead items (finished blinking)
-        if (!item->isAlive()) {
-            it = m_state.healthItems.erase(it);
-            continue;
-        }
-        ++it;
     }
 }
 

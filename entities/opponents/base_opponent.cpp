@@ -31,6 +31,7 @@ const int& BaseOpponent::getScoreVal() const {
     return m_scoreVal;
 }
 
+// TODO: use global windowWidth instead of sending screenWidth in
 bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX, int screenWidth) const {
     float screenMinX = cameraX;
     float screenMaxX = cameraX + screenWidth;
