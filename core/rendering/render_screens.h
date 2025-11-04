@@ -4,10 +4,8 @@
 
 class RenderScreens {
 public:
-    RenderScreens();
-    
-    void renderMainMenu();
-    void renderHowToPlayScreen();
-    void renderGameOverScreen(const GameStateData& state);
-    void renderHighScoreEntryScreen(const GameStateData& state);
+    static void renderMainMenu();
+    static void renderHowToPlayScreen();
+    static void renderGameOverScreen(const GameStateData& state);
+    static void renderHighScoreEntryScreen(const GameStateData& state);
 };

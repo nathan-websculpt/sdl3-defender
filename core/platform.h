@@ -36,6 +36,6 @@ private:
     float findBeamLandscapeIntersection(float startX, float beamY, bool goingRight, const std::vector<SDL_FPoint>& landscape, float worldWidth); // for player beams (horizontal)
     SDL_FPoint clipRayToLandscape(float startX, float startY, float endX, float endY, const std::vector<SDL_FPoint>& landscape) const; // for opponent projectiles
 
-    RenderScreens m_renderScreens;
+    // RenderScreens m_renderScreens;
     RenderHud m_renderHud;
 };

@@ -1,7 +1,5 @@
 #include "render_screens.h"
 
-RenderScreens::RenderScreens() = default;
-
 void RenderScreens::renderMainMenu() {
     SDL_SetRenderDrawColor(globals.renderer, 0, 20, 40, 255);
     SDL_RenderClear(globals.renderer);    

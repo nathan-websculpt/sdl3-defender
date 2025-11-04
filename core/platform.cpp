@@ -179,10 +179,10 @@ void Platform::render(const GameStateData& state) {
     float cameraOffsetX = state.cameraX;
     switch (state.state) {
         case GameStateData::State::MENU:
-            m_renderScreens.renderMainMenu();
+            RenderScreens::renderMainMenu();
             break;
         case GameStateData::State::HOW_TO_PLAY: 
-            m_renderScreens.renderHowToPlayScreen();
+            RenderScreens::renderHowToPlayScreen();
             break;
         case GameStateData::State::PLAYING: {
             SDL_SetRenderDrawColor(globals.renderer, 0, 20, 40, 255);
@@ -337,9 +337,9 @@ void Platform::render(const GameStateData& state) {
             break;
         case GameStateData::State::GAME_OVER:
             if (state.waitingForHighScore) {
-                m_renderScreens.renderHighScoreEntryScreen(state);
+                RenderScreens::renderHighScoreEntryScreen(state);
             } else {
-                m_renderScreens.renderGameOverScreen(state);
+                RenderScreens::renderGameOverScreen(state);
             }
             break;
     }
