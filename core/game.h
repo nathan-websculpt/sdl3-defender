@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "../core/sound_manager.h"
+#include "../core/managers/sound_manager.h"
 #include "../entities/player.h"
 #include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"

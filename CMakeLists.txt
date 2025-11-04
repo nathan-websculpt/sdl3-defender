@@ -8,8 +8,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # Collect sources
 file(GLOB_RECURSE SOURCES
     "${CMAKE_SOURCE_DIR}/core/*.cpp"
+    "${CMAKE_SOURCE_DIR}/core/**/*.cpp"
     "${CMAKE_SOURCE_DIR}/entities/*.cpp"
-    "${CMAKE_SOURCE_DIR}/entities/opponents/*.cpp"
+    "${CMAKE_SOURCE_DIR}/entities/**/*.cpp"
     "${CMAKE_SOURCE_DIR}/main.cpp"
 )
 add_executable(${PROJECT_NAME} ${SOURCES})

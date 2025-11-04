@@ -4,7 +4,7 @@
 #include <cmath>
 #include <algorithm>
 #include "../particle.h"
-#include "../../core/texture_manager.h"
+#include "../../core/managers/texture_manager.h"
 #include "../../core/game.h" 
 
 SniperOpponent::SniperOpponent(float x, float y, float w, float h) 

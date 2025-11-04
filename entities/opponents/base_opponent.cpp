@@ -2,8 +2,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <cmath>
-#include "../../core/texture_manager.h"
-#include "../../core/sound_manager.h"
+#include "../../core/managers/texture_manager.h"
+#include "../../core/managers/sound_manager.h"
 
 BaseOpponent::BaseOpponent(float x, float y, float w, float h) 
     : m_rect{x, y, w, h},

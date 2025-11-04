@@ -3,8 +3,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3_image/SDL_image.h>
 #include <algorithm>
-#include "../core/texture_manager.h"
-#include "../core/sound_manager.h"
+#include "../core/managers/texture_manager.h"
+#include "../core/managers/sound_manager.h"
 #include "../core/config.h"
 
 Player::Player(float x, float y, float w, float h) 

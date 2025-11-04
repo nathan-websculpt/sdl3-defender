@@ -4,9 +4,9 @@
 #include <memory>
 #include <string>
 #include "game.h"
-#include "texture_manager.h"
-#include "font_manager.h"
-#include "sound_manager.h"
+#include "managers/texture_manager.h"
+#include "managers/font_manager.h"
+#include "managers/sound_manager.h"
 
 class Platform {
 public:
