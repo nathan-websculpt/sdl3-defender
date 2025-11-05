@@ -4,6 +4,7 @@
 
 class RenderHud {
 public:
+    static void renderHudBackground();
     static void renderHealthBars(const GameStateData& state);
     static void renderMinimap(const GameStateData& state);
     static void renderScore(const GameStateData& state);

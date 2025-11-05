@@ -12,7 +12,6 @@ Platform::Platform() = default;
 
 Platform::~Platform() { shutdown(); } // TODO: main could just call this
 
-// public usage
 bool Platform::initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         SDL_Log("unable to initialize sdl: %s", SDL_GetError());
@@ -173,9 +172,7 @@ void Platform::run(Game& sim) {
         SDL_Log("Platform: Text input STOPPED on shutdown.");
     }
 }
-// END: public usage
 
-// input
 GameInput Platform::pollInput(const GameStateData& state) {
     GameInput input{};
     SDL_Event event;
@@ -240,4 +237,3 @@ void Platform::updateTextInputState(const GameStateData& state) {
         SDL_Log("Platform: Text input STOPPED.");
     }
 }
-// END: input

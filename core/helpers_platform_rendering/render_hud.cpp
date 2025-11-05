@@ -1,5 +1,16 @@
 #include "render_hud.h"
 
+void RenderHud::renderHudBackground() {
+    // background
+    SDL_SetRenderDrawColor(globals.renderer, 0, 30, 50, 220);
+    SDL_FRect hudBg = {0.0f, 0.0f, static_cast<float>(globals.windowWidth), static_cast<float>(Config::Game::HUD_HEIGHT)};
+    SDL_RenderFillRect(globals.renderer, &hudBg);
+
+    // separator line
+    SDL_SetRenderDrawColor(globals.renderer, 200, 200, 200, 255);
+    SDL_RenderLine(globals.renderer, 0.0f, static_cast<float>(Config::Game::HUD_HEIGHT), static_cast<float>(globals.windowWidth), static_cast<float>(Config::Game::HUD_HEIGHT));
+}
+
 void RenderHud::renderHealthBars(const GameStateData& state) {
     const int barW = 200;
     const int barH = 10;
