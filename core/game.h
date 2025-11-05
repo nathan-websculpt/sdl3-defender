@@ -26,7 +26,11 @@ public:
     GameStateData& getState() { return m_state; }    
 
 private:
+    MIX_Mixer* m_mixer;
     GameStateData m_state;
+    HighScores m_highScores;
+    GameHelper m_gameHelpers;
+
     float m_lastWindowHeight = 0.0f;
     float m_opponentSpawnTimer;
     const float OPPONENT_SPAWN_INTERVAL = 2.0f;
@@ -37,16 +41,16 @@ private:
     const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
     const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
 
-    MIX_Mixer* m_mixer;
 
     void setLandscape();
-
     void spawnOpponent();    
     void spawnHealthItem(HealthItemType type);  
-
     void updateCamera();
     void checkCollisions();
 
-    HighScores m_highScores;
-    GameHelper m_gameHelpers;
+    void handleEscapeKey();
+    void handleInputMenu(const GameInput& input);
+    void handleInputHowToPlay(const GameInput& input);
+    void handleInputPlaying(const GameInput& input, float deltaTime);
+    void handleInputGameOver(const GameInput& input, float deltaTime);
 };
