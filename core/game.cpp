@@ -15,8 +15,8 @@
     // float worldHeight;
 
 Game::Game()
-    : m_state{}, m_gameHelpers(&m_state.landscape) { // TODO: dims go to globals?
-    srand((unsigned int)time(nullptr));
+    : m_state{}, m_gameHelpers(m_state.landscape) { // TODO: dims go to globals?
+    srand((unsigned int)time(nullptr)); // TODO: use in main instead???
     m_state.worldWidth = Config::Game::WORLD_WIDTH;
     m_state.worldHeight = Config::Game::WORLD_HEIGHT; // TODO
     m_highScores.loadHighScores(m_state);

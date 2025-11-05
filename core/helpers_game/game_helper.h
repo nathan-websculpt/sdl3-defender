@@ -9,11 +9,11 @@
 
 class GameHelper {
 public:
-    GameHelper(const std::vector<SDL_FPoint>* landscapePtr);
+    GameHelper(const std::vector<SDL_FPoint>& landscape);
 
     float getGroundYAt(float x) const; // for landscape
     bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;
 
 private:
-    const std::vector<SDL_FPoint>* m_landscape;
+    const std::vector<SDL_FPoint>& m_landscape;
 };

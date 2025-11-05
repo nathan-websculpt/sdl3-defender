@@ -1,10 +1,7 @@
 #include "game_helper.h"
 
-// TODO:
-//      do not deref pointers without null-checking
-
-GameHelper::GameHelper(const std::vector<SDL_FPoint>* landscapePtr)
-    : m_landscape(landscapePtr) {}
+GameHelper::GameHelper(const std::vector<SDL_FPoint>& landscape)
+    : m_landscape(landscape) {}
 
 bool GameHelper::isOutOfWorld(const SDL_FRect& r, float mx, float my) const {
     return (r.x + r.w < -mx || r.x > Config::Game::WORLD_WIDTH + mx ||
@@ -12,7 +9,7 @@ bool GameHelper::isOutOfWorld(const SDL_FRect& r, float mx, float my) const {
 }
 
 float GameHelper::getGroundYAt(float x) const {
-    const auto& land = (*m_landscape);
+    const auto& land = m_landscape;
     if (land.empty()) return globals.windowHeight;
 
     // clamp x to landscape bounds
