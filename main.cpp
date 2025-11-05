@@ -40,3 +40,4 @@ int main(int argc, char* argv[]) {
 
 // TODO: 
 //      move colors into config
+//      I may rename /rendering/ to /helpers_rendering/ or even /helpers_platform_rendering/

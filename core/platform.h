@@ -9,6 +9,7 @@
 #include "managers/sound_manager.h"
 #include "rendering/render_hud.h"
 #include "rendering/render_screens.h"
+#include "helpers_platform/projectile_clipping.h"
 
 class Platform {
 public:
@@ -31,8 +32,4 @@ private:
     // input
     GameInput pollInput(const GameStateData& state);
     void updateTextInputState(const GameStateData& state);
-
-    // helpers
-    float findBeamLandscapeIntersection(float startX, float beamY, bool goingRight, const std::vector<SDL_FPoint>& landscape, float worldWidth); // for player beams (horizontal)
-    SDL_FPoint clipRayToLandscape(float startX, float startY, float endX, float endY, const std::vector<SDL_FPoint>& landscape) const; // for opponent projectiles
 };
