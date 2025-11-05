@@ -48,9 +48,17 @@ private:
     void updateCamera();
     void checkCollisions();
 
+    // inputs
     void handleEscapeKey();
     void handleInputMenu(const GameInput& input);
     void handleInputHowToPlay(const GameInput& input);
     void handleInputPlaying(const GameInput& input, float deltaTime);
     void handleInputGameOver(const GameInput& input, float deltaTime);
+    // END: inputs
+
+    // updates
+    void updatePlayerAndProjectiles(float deltaTime, const SDL_FRect& pb);
+    bool updateOpponents(float deltaTime, const SDL_FRect& pb);
+    void handleSpawnsAndTimers(float deltaTime);
+    // END: updates
 };
