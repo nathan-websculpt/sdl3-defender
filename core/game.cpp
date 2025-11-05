@@ -93,7 +93,7 @@ void Game::update(float deltaTime) {
 
     // player projectiles
     auto& playerProjectiles = m_state.player->getProjectiles();        
-    updateAndPruneProjectiles(playerProjectiles, deltaTime);   
+    ColonyUpdateAndPrune::updateAndPruneProjectiles(playerProjectiles, deltaTime, m_gameHelpers);   
 
     keepPlayerInBounds(pb);
 
@@ -109,7 +109,7 @@ void Game::update(float deltaTime) {
         if(oppPtr->isAlive()) {
             SDL_FPoint playerPos = { pb.x, pb.y };
             oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
-            updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime);
+            ColonyUpdateAndPrune::updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime, m_gameHelpers);
         }
 
         // new: check if opponent hit landscape
@@ -149,9 +149,9 @@ void Game::update(float deltaTime) {
         ++opp_iter;
     }
 
-    updateAndPruneParticles(deltaTime);
+    ColonyUpdateAndPrune::updateAndPruneParticles(m_state.particles, deltaTime);
 
-    updateAndPruneHealthItems(deltaTime);
+    ColonyUpdateAndPrune::updateAndPruneHealthItems(m_state.healthItems, deltaTime, m_gameHelpers);
 
     // TODO: move with spawn opps
     // spawn health items
@@ -469,68 +469,6 @@ bool Game::rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const {
             a.x + a.w > b.x &&
             a.y < b.y + b.h &&
             a.y + a.h > b.y);
-}
-
-
-
-void Game::updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float deltaTime) {
-    for (auto it = projectiles.begin(); it != projectiles.end(); ) {
-        it->update(deltaTime);
-        SDL_FRect b = it->getBounds();
-        
-        if (m_gameHelpers.isOutOfWorld(b, 0.0f, 0.0f)) {
-            it = projectiles.erase(it);
-            continue;
-        }
-
-        // TODO: this part could be restricted to !it->isHorizontal because this is just for opponent projectiles
-        float projCenterX = b.x + b.w / 2.0f;
-        float groundY = m_gameHelpers.getGroundYAt(projCenterX);
-        float projBottom = b.y + b.h;
-
-        // if projectile is at or below ground - remove it
-        if (projBottom >= groundY) {
-            it = projectiles.erase(it);
-            continue;
-        }
-
-        ++it;
-    }
-}
-
-void Game::updateAndPruneParticles(float deltaTime) {
-    for (auto it = m_state.particles.begin(); it != m_state.particles.end(); ) {
-        it->update(deltaTime);
-        if (!it->isAlive()) 
-            it = m_state.particles.erase(it);
-        else 
-            ++it;
-    }
-}
-
-void Game::updateAndPruneHealthItems(float deltaTime) {
-    for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
-        auto& item = *it;
-        if (!item) {
-             ++it;
-             continue;
-        }
-        item->update(deltaTime);
-
-        // check if item hit the landscape
-        float groundY = m_gameHelpers.getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
-        float itemBottom = item->getBounds().y + item->getBounds().h;
-        if (itemBottom >= groundY && !item->isBlinking()) {
-            item->startBlinking();
-        }
-
-        // remove dead items (finished blinking)
-        if (!item->isAlive()) {
-            it = m_state.healthItems.erase(it);
-            continue;
-        }
-        ++it;
-    }
 }
 
 float Game::getBeamVisualEndX(float startX, float beamY, bool goingRight) const {

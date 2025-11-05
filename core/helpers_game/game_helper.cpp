@@ -1,5 +1,9 @@
 #include "game_helper.h"
 
+// TODO:
+//      get the world dims into globals?
+//      do not deref pointers without null-checking
+
 GameHelper::GameHelper(const std::vector<SDL_FPoint>* landscapePtr, const float* worldWPtr, const float* worldHPtr)
     : m_landscape(landscapePtr), m_worldWidth(worldWPtr), m_worldHeight(worldHPtr) {}
 

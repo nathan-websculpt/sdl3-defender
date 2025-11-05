@@ -12,6 +12,7 @@
 #include "../plf/plf_colony.h" 
 #include "game_state_data.h"
 #include "../core/helpers_game/game_helper.h" // TODO:
+#include "../core/helpers_game/colony_update_and_prune.h" // TODO:
 
 class Game {
 public:
@@ -40,17 +41,14 @@ private:
 
     void setLandscape();
 
-    void spawnHealthItem(HealthItemType type);
-    void updateAndPruneHealthItems(float deltaTime);
+    void spawnOpponent();    
+    void spawnHealthItem(HealthItemType type);  
 
     void updateCamera();
     void checkCollisions();
-    void spawnOpponent();    
 
     // helpers
     bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
-    void updateAndPruneProjectiles(plf::colony<Projectile>& proj, float deltaTime);
-    void updateAndPruneParticles(float deltaTime);
     float getBeamVisualEndX(float startX, float beamY, bool goingRight) const; // landscape stops player's beam
     void keepPlayerInBounds(SDL_FRect& pb);
 

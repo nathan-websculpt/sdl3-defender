@@ -14,6 +14,6 @@ public:
 
 private:
     const std::vector<SDL_FPoint>* m_landscape;
-    const float* m_worldWidth;
-    const float* m_worldHeight;
+    const float* m_worldWidth; 
+    const float* m_worldHeight; // TODO
 };
