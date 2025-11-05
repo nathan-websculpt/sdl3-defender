@@ -47,11 +47,6 @@ private:
     void updateCamera();
     void checkCollisions();
 
-    // helpers
-    bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
-    float getBeamVisualEndX(float startX, float beamY, bool goingRight) const; // landscape stops player's beam
-    void keepPlayerInBounds(SDL_FRect& pb);
-
     HighScores m_highScores;
     GameHelper m_gameHelpers;
 };
