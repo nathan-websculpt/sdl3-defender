@@ -11,6 +11,7 @@
 #include "../entities/opponents/sniper_opponent.h"
 #include "../plf/plf_colony.h" 
 #include "game_state_data.h"
+#include "../core/helpers_game/game_helper.h" // TODO:
 
 class Game {
 public:
@@ -48,12 +49,11 @@ private:
 
     // helpers
     bool rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const;
-    bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;
     void updateAndPruneProjectiles(plf::colony<Projectile>& proj, float deltaTime);
     void updateAndPruneParticles(float deltaTime);
-    float getGroundYAt(float x) const; // for landscape
     float getBeamVisualEndX(float startX, float beamY, bool goingRight) const; // landscape stops player's beam
     void keepPlayerInBounds(SDL_FRect& pb);
 
     HighScores m_highScores;
+    GameHelper m_gameHelpers;
 };

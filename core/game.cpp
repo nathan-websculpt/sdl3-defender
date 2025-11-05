@@ -15,7 +15,7 @@
     // float worldHeight;
 
 Game::Game()
-    : m_state{} {
+    : m_state{}, m_gameHelpers(&m_state.landscape, &m_state.worldWidth, &m_state.worldHeight) { // TODO: dims go to globals?
     srand((unsigned int)time(nullptr));
     m_state.worldWidth = Config::Game::WORLD_WIDTH;
     m_state.worldHeight = Config::Game::WORLD_HEIGHT; // TODO
@@ -115,7 +115,7 @@ void Game::update(float deltaTime) {
         // new: check if opponent hit landscape
         SDL_FRect oppBounds = oppPtr->getBounds();
         float oppCenterX = oppBounds.x + oppBounds.w / 2.0f;
-        float groundY = getGroundYAt(oppCenterX);
+        float groundY = m_gameHelpers.getGroundYAt(oppCenterX);
         if (oppBounds.y + oppBounds.h >= groundY) {
             BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
             if (b) { // only basic opponents damage world
@@ -471,24 +471,21 @@ bool Game::rectsIntersect(const SDL_FRect& a, const SDL_FRect& b) const {
             a.y + a.h > b.y);
 }
 
-bool Game::isOutOfWorld(const SDL_FRect& r, float mx, float my) const {
-    return (r.x + r.w < -mx || r.x > m_state.worldWidth + mx ||
-            r.y + r.h < -my || r.y > m_state.worldHeight + my);
-}
+
 
 void Game::updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float deltaTime) {
     for (auto it = projectiles.begin(); it != projectiles.end(); ) {
         it->update(deltaTime);
         SDL_FRect b = it->getBounds();
         
-        if (isOutOfWorld(b, 0.0f, 0.0f)) {
+        if (m_gameHelpers.isOutOfWorld(b, 0.0f, 0.0f)) {
             it = projectiles.erase(it);
             continue;
         }
 
         // TODO: this part could be restricted to !it->isHorizontal because this is just for opponent projectiles
         float projCenterX = b.x + b.w / 2.0f;
-        float groundY = getGroundYAt(projCenterX);
+        float groundY = m_gameHelpers.getGroundYAt(projCenterX);
         float projBottom = b.y + b.h;
 
         // if projectile is at or below ground - remove it
@@ -521,7 +518,7 @@ void Game::updateAndPruneHealthItems(float deltaTime) {
         item->update(deltaTime);
 
         // check if item hit the landscape
-        float groundY = getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
+        float groundY = m_gameHelpers.getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
         float itemBottom = item->getBounds().y + item->getBounds().h;
         if (itemBottom >= groundY && !item->isBlinking()) {
             item->startBlinking();
@@ -534,24 +531,6 @@ void Game::updateAndPruneHealthItems(float deltaTime) {
         }
         ++it;
     }
-}
-
-float Game::getGroundYAt(float x) const {
-    const auto& land = m_state.landscape;
-    if (land.empty()) return m_state.worldHeight;
-
-    // clamp x to landscape bounds
-    if (x <= land.front().x) return land.front().y;
-    if (x >= land.back().x) return land.back().y;
-
-    for (size_t i = 0; i < land.size() - 1; ++i) {
-        if (x >= land[i].x && x <= land[i + 1].x) {
-            // linear interpolation between land[i] and land[i+1]
-            float t = (x - land[i].x) / (land[i + 1].x - land[i].x);
-            return land[i].y + t * (land[i + 1].y - land[i].y);
-        }
-    }
-    return land.back().y; // fallback
 }
 
 float Game::getBeamVisualEndX(float startX, float beamY, bool goingRight) const {
@@ -640,7 +619,7 @@ void Game::keepPlayerInBounds(SDL_FRect& pb) {
 
     // landscape constraint (bottom)
     float playerBottomX = desiredX + pb.w / 2.0f; 
-    float groundYAtPlayerX = getGroundYAt(playerBottomX);
+    float groundYAtPlayerX = m_gameHelpers.getGroundYAt(playerBottomX);
     float absoluteWorldBottom = m_state.worldHeight - pb.h; // absolute bottom of the world
 
     // player's bottom Y should not exceed the landscape height at their X position
