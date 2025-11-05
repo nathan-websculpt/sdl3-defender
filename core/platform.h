@@ -7,8 +7,8 @@
 #include "managers/texture_manager.h"
 #include "managers/font_manager.h"
 #include "managers/sound_manager.h"
-#include "rendering/render_hud.h"
-#include "rendering/render_screens.h"
+#include "helpers_platform_rendering/render_hud.h"
+#include "helpers_platform_rendering/render_screens.h"
 #include "helpers_platform/projectile_clipping.h"
 
 class Platform {

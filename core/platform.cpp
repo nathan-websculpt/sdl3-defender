@@ -10,7 +10,7 @@
 
 Platform::Platform() = default;
 
-Platform::~Platform() { shutdown(); }
+Platform::~Platform() { shutdown(); } // TODO: main could just call this
 
 // public usage
 bool Platform::initialize() {
@@ -412,6 +412,3 @@ void Platform::updateTextInputState(const GameStateData& state) {
     }
 }
 // END: input
-
-// TODO:
-//      render is still too big; either break it up, or move some of it into /rendering/
