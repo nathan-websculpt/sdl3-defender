@@ -1,20 +1,19 @@
 #include "game_helper.h"
 
 // TODO:
-//      get the world dims into globals?
 //      do not deref pointers without null-checking
 
-GameHelper::GameHelper(const std::vector<SDL_FPoint>* landscapePtr, const float* worldWPtr, const float* worldHPtr)
-    : m_landscape(landscapePtr), m_worldWidth(worldWPtr), m_worldHeight(worldHPtr) {}
+GameHelper::GameHelper(const std::vector<SDL_FPoint>* landscapePtr)
+    : m_landscape(landscapePtr) {}
 
 bool GameHelper::isOutOfWorld(const SDL_FRect& r, float mx, float my) const {
-    return (r.x + r.w < -mx || r.x > (*m_worldWidth) + mx ||
-            r.y + r.h < -my || r.y > (*m_worldHeight) + my);
+    return (r.x + r.w < -mx || r.x > Config::Game::WORLD_WIDTH + mx ||
+            r.y + r.h < -my || r.y > globals.windowHeight + my);
 }
 
 float GameHelper::getGroundYAt(float x) const {
     const auto& land = (*m_landscape);
-    if (land.empty()) return (*m_worldHeight);
+    if (land.empty()) return globals.windowHeight;
 
     // clamp x to landscape bounds
     if (x <= land.front().x) return land.front().y;
