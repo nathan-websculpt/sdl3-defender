@@ -7,8 +7,7 @@
 #include "managers/texture_manager.h"
 #include "managers/font_manager.h"
 #include "managers/sound_manager.h"
-#include "helpers_platform_rendering/render_hud.h"
-#include "helpers_platform_rendering/render_screens.h"
+#include "helpers_platform_rendering/render_main.h"
 #include "helpers_platform/projectile_clipping.h"
 
 class Platform {
@@ -26,8 +25,6 @@ private:
 
     SDL_AudioDeviceID m_audioDeviceID = 0;
     SDL_AudioSpec m_audioSpec;
-
-    void render(const GameStateData& state);
 
     // input
     GameInput pollInput(const GameStateData& state);
