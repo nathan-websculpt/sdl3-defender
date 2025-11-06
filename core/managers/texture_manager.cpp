@@ -34,8 +34,10 @@ std::shared_ptr<SDL_Texture> TextureManager::getTexture(const std::string& filep
 }
 
 void TextureManager::clearCache() {
+    if (m_cleanedUp) return;
     SDL_Log("TextureManager: Clearing cache and destroying %zu textures.", m_textureCache.size());
     m_textureCache.clear(); // will call the deleter for each texture
+    m_cleanedUp = true;
 }
 
 TextureManager::~TextureManager() {

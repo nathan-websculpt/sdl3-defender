@@ -24,6 +24,7 @@ private:
     ~TextureManager(); // handles SDL_DestroyTexture
 
     std::unordered_map<std::string, std::shared_ptr<SDL_Texture>> m_textureCache;
+    bool m_cleanedUp = false;
 };
 
 // helper

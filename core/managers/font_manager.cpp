@@ -39,8 +39,10 @@ std::shared_ptr<TTF_Font> FontManager::getFont(const std::string& filepath, int 
 }
 
 void FontManager::clearCache() {
+    if(m_cleanedUp) return;
     SDL_Log("FontManager: Clearing cache and closing %zu fonts.", m_fontCache.size());
     m_fontCache.clear(); // will automatically call the deleter for each font
+    m_cleanedUp = true;
 }
 
 FontManager::~FontManager() {

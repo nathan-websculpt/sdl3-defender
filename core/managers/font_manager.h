@@ -24,6 +24,7 @@ private:
     ~FontManager();
 
     std::unordered_map<std::string, std::shared_ptr<TTF_Font>> m_fontCache;
+    bool m_cleanedUp = false;
 };
 
 struct TTF_Font_Deleter {
