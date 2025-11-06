@@ -46,7 +46,6 @@ private:
     void spawnOpponent();    
     void spawnHealthItem(HealthItemType type);  
     void updateCamera();
-    void checkCollisions();
 
     // inputs
     void handleEscapeKey();

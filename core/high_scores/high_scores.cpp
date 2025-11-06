@@ -1,4 +1,5 @@
 #include "high_scores.h"
+#include "../game_state_data.h"
 #include <fstream> // TODO
 #include <sstream>
 

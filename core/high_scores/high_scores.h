@@ -1,7 +1,9 @@
 #pragma once
 
 #include "../config.h"
-#include "../game_state_data.h"
+
+// new: needed to forward declare to avoid circular include after adding /helpers_game/collision_handler
+class GameStateData;
 
 class HighScores {
 public:

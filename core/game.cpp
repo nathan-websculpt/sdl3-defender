@@ -8,6 +8,7 @@
 #include "../core/config.h" // TODO
 #include "../core/globals.h"
 #include "../entities/health_item.h"
+#include "helpers_game/collision_handler.h"
 
 // TODO:
 //remove
@@ -102,7 +103,7 @@ void Game::update(float deltaTime) {
 
     handleSpawnsAndTimers(deltaTime);
 
-    checkCollisions();
+    CollisionHandler::processAllCollisions(m_state, m_gameHelpers, m_highScores, m_mixer);
     updateCamera();    
 }
 
@@ -138,133 +139,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
     }
 }
 
-void Game::checkCollisions() {
-    if (!m_state.player) return;
-
-    // collisions between player projectile and opponent
-    auto& pp = m_state.player->getProjectiles();
-    for (auto p_it = pp.begin(); p_it != pp.end(); ) {
-        SDL_FRect pb = p_it->getBounds();
-        bool projectileHit = false;
-
-        // for horizontal beams, find visual end X
-        float beamY = p_it->getSpawnY();
-        float startX = p_it->getSpawnX();
-        bool goingRight = (p_it->getVelocity().x > 0);
-        // landscape stops beam
-        float visualEndX = m_gameHelpers.getBeamVisualEndX(startX, beamY, goingRight);
-
-        for (auto& o : m_state.opponents) { // o is std::unique_ptr<BaseOpponent>&
-            if (!o || !o->isAlive()) continue;
-
-            // skip if opponent is beyond the beam's visual range (landscape stopped it)
-            float oppCenterX = o->getBounds().x + o->getBounds().w / 2.0f;
-            if (goingRight && oppCenterX > visualEndX) continue;
-            if (!goingRight && oppCenterX < visualEndX) continue;
-
-            if (m_gameHelpers.rectsIntersect(o->getBounds(), pb)) {
-                o->takeDamage(1);
-                if (!o->isAlive()) {
-                    m_state.playerScore += o->getScoreVal();
-                    o->explode(m_state.particles);
-                }
-                projectileHit = true;
-                break; // break inner loop
-            }
-        }
-        if (projectileHit) {
-            p_it = pp.erase(p_it); // erase using projectile iterator, assign returned iterator
-        } else {
-            ++p_it;
-        }
-    } 
-
-    // player collisions with opponents and opponent projectiles
-    if (m_state.player->isAlive()) {
-        for (auto o_it = m_state.opponents.begin(); o_it != m_state.opponents.end(); ) {
-            auto& o = *o_it;
-            if (!o || !o->isAlive()) {
-                 ++o_it; // skip dead opponents
-                 continue;
-            }
-
-            // check player/opponent collision
-            if (m_gameHelpers.rectsIntersect(m_state.player->getBounds(), o->getBounds())) { 
-                m_state.player->takeDamage(1);
-                o->explode(m_state.particles); 
-                m_state.playerScore += o->getScoreVal();
-                o_it = m_state.opponents.erase(o_it);
-                if (!m_state.player->isAlive()) {
-                    if (m_mixer) 
-                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
-                            
-                    m_state.state = GameStateData::State::GAME_OVER;
-                    if (m_highScores.isHighScore(m_state)) {
-                        m_state.highScoreIndex = m_highScores.getHighScoreIndex(m_state);
-                        m_state.waitingForHighScore = true;
-                        m_state.highScoreNameInput = ""; // initialize empty input
-                    }
-                    return; // exit early if player dies
-                }
-                continue; // skip projectile check if opponent was destroyed by collision
-            }
-
-            // check if opponent's projectiles hit player
-            auto& op = o->getProjectiles(); 
-            for (auto op_it = op.begin(); op_it != op.end(); ) {
-                SDL_FRect projBounds = op_it->getBounds();
-                SDL_FRect playerBounds = m_state.player->getBounds();
-
-                // collision check ... projectile and player
-                if (m_gameHelpers.rectsIntersect(projBounds, playerBounds)) {
-                    m_state.player->takeDamage(1);
-                    // erase the projectile that hit the player using the iterator
-                    op_it = op.erase(op_it);
-                    if (!m_state.player->isAlive()) {
-                        if (m_mixer) 
-                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
-
-                        m_state.state = GameStateData::State::GAME_OVER;
-                        if (m_highScores.isHighScore(m_state)) {
-                            m_state.highScoreIndex = m_highScores.getHighScoreIndex(m_state);
-                            m_state.waitingForHighScore = true;
-                            m_state.highScoreNameInput = ""; // initialize empty input
-                        }
-                        return; // exit early if player dies
-                    }
-                } else {
-                    ++op_it;
-                }
-            }
-
-            // increment opponent iterator only if the opponent itself wasn't erased in the player collision check
-            if (m_state.state != GameStateData::State::GAME_OVER && o_it != m_state.opponents.end()) { // check if state changed or iterator became invalid due to erase
-                ++o_it;
-            }
-            // ... if state is GAME_OVER or o_it was invalidated by erase in the inner loop, the outer loop will terminate
-        }
-
-        // player / health collisions (restores player or world health)
-        for (auto it = m_state.healthItems.begin(); it != m_state.healthItems.end(); ) {
-            auto& item = *it;
-            if (!item || !item->isAlive() || item->isBlinking()) { // don't collide if blinking or dead
-                ++it;
-                continue;
-            }
-            if (m_gameHelpers.rectsIntersect(m_state.player->getBounds(), item->getBounds())) {
-                if (item->getType() == HealthItemType::PLAYER) {
-                    m_state.player->restoreHealth();
-                } else if (item->getType() == HealthItemType::WORLD) {
-                    m_state.worldHealth = m_state.maxWorldHealth;
-                }
-                it = m_state.healthItems.erase(it);
-                continue;
-            }
-            ++it;
-        }
-    }
-}
-
+// TODO: move to update_handler
 void Game::spawnOpponent() {
     int type = rand() % 3;
     float x = (float)(rand() % (int)(m_state.worldWidth - 50));
@@ -276,6 +151,7 @@ void Game::spawnOpponent() {
     }
 }
 
+// TODO: move to update_handler
 void Game::spawnHealthItem(HealthItemType type) {
     float x = static_cast<float>(rand() % static_cast<int>(m_state.worldWidth - 50)); // random X within world
     float y = -50.0f; // start from top
@@ -284,9 +160,3 @@ void Game::spawnHealthItem(HealthItemType type) {
     const std::string& textureKey = (type == HealthItemType::PLAYER) ? Config::Textures::PLAYER_HEALTH_ITEM : Config::Textures::WORLD_HEALTH_ITEM;
     m_state.healthItems.emplace(std::make_unique<HealthItem>(x, y, w, h, type, textureKey));
 }
-
-// TODO: 
-//      updateAndPrune methods go into sep place
-//      rest of helpers separated
-//      5 highscore methods
-//      handleInput, update, and checkCollisions need to be broken up some
