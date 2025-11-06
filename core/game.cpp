@@ -46,25 +46,25 @@ void Game::startNewGame() {
 
 void Game::setLandscape() {
     m_state.landscape = {
-        {0, globals.windowHeight - 20},
-        {Config::Game::WORLD_WIDTH * 0.1f, globals.windowHeight - 28},
-        {Config::Game::WORLD_WIDTH * 0.18f, globals.windowHeight - 38},
-        {Config::Game::WORLD_WIDTH * 0.225f, globals.windowHeight - 50},
-        {Config::Game::WORLD_WIDTH * 0.25f, globals.windowHeight - 40},
-        {Config::Game::WORLD_WIDTH * 0.32f, globals.windowHeight - 120},
-        {Config::Game::WORLD_WIDTH * 0.41f, globals.windowHeight - 100},
-        {Config::Game::WORLD_WIDTH * 0.48f, globals.windowHeight - 140},
-        {Config::Game::WORLD_WIDTH * 0.52f, globals.windowHeight - 95},
-        {Config::Game::WORLD_WIDTH * 0.61f, globals.windowHeight - 120},
-        {Config::Game::WORLD_WIDTH * 0.68f, globals.windowHeight - 80},
-        {Config::Game::WORLD_WIDTH * 0.71f, globals.windowHeight - 110},
-        {Config::Game::WORLD_WIDTH * 0.75f, globals.windowHeight - 90},
-        {Config::Game::WORLD_WIDTH * 0.81f, globals.windowHeight - 70},
-        {Config::Game::WORLD_WIDTH * 0.86f, globals.windowHeight - 110},
-        {Config::Game::WORLD_WIDTH * 0.90f, globals.windowHeight - 75},
-        {Config::Game::WORLD_WIDTH * 0.93f, globals.windowHeight - 90},
-        {Config::Game::WORLD_WIDTH * 0.98f, globals.windowHeight - 60},
-        {Config::Game::WORLD_WIDTH, globals.windowHeight - 40}
+        {0, globals.windowHeight - 20.0f},
+        {Config::Game::WORLD_WIDTH * 0.1f, globals.windowHeight - 28.0f},
+        {Config::Game::WORLD_WIDTH * 0.18f, globals.windowHeight - 38.0f},
+        {Config::Game::WORLD_WIDTH * 0.225f, globals.windowHeight - 50.0f},
+        {Config::Game::WORLD_WIDTH * 0.25f, globals.windowHeight - 40.0f},
+        {Config::Game::WORLD_WIDTH * 0.32f, globals.windowHeight - 120.0f},
+        {Config::Game::WORLD_WIDTH * 0.41f, globals.windowHeight - 100.0f},
+        {Config::Game::WORLD_WIDTH * 0.48f, globals.windowHeight - 140.0f},
+        {Config::Game::WORLD_WIDTH * 0.52f, globals.windowHeight - 95.0f},
+        {Config::Game::WORLD_WIDTH * 0.61f, globals.windowHeight - 120.0f},
+        {Config::Game::WORLD_WIDTH * 0.68f, globals.windowHeight - 80.0f},
+        {Config::Game::WORLD_WIDTH * 0.71f, globals.windowHeight - 110.0f},
+        {Config::Game::WORLD_WIDTH * 0.75f, globals.windowHeight - 90.0f},
+        {Config::Game::WORLD_WIDTH * 0.81f, globals.windowHeight - 70.0f},
+        {Config::Game::WORLD_WIDTH * 0.86f, globals.windowHeight - 110.0f},
+        {Config::Game::WORLD_WIDTH * 0.90f, globals.windowHeight - 75.0f},
+        {Config::Game::WORLD_WIDTH * 0.93f, globals.windowHeight - 90.0f},
+        {Config::Game::WORLD_WIDTH * 0.98f, globals.windowHeight - 60.0f},
+        {Config::Game::WORLD_WIDTH, globals.windowHeight - 40.0f}
     };
 }
 
