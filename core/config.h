@@ -8,6 +8,10 @@ enum class FontSize {
     GRANDELOCO
 };
 
+// note
+// inline:      single definition across all translation units
+// constexpr:   must be evaluated at compile time
+
 namespace Config {
     namespace Textures {
         const std::string PLAYER = "assets/defender.png";
@@ -23,8 +27,8 @@ namespace Config {
     }
 
     namespace Game {
-        const int WORLD_WIDTH = 6400;
-        const int HUD_HEIGHT = 80; // TODO: constexp? float since I need to cast it later on?
+        inline constexpr int WORLD_WIDTH = 6400;
+        inline constexpr int HUD_HEIGHT = 80; // TODO: constexp? float since I need to cast it later on?
         const std::string HIGH_SCORES_PATH = "resources/highscores.txt";
     }
 
