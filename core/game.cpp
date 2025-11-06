@@ -71,7 +71,6 @@ void Game::setLandscape() {
 void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
-    // TODO: where is globals.windowHeight set? reset? look for dup code
     if (globals.windowHeight != m_lastWindowHeight) {
         m_lastWindowHeight = globals.windowHeight;
         setLandscape();

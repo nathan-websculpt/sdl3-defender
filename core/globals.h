@@ -8,10 +8,8 @@ public:
     SDL_Window* window = nullptr;
     SDL_Renderer* renderer = nullptr;
     
-    int initialWindowWidth = 800;
-    int initialWindowHeight = 600;
-    int windowWidth = 800; // TODO: set later
-    int windowHeight = 600; // TODO: set later
+    int windowWidth = 800;
+    int windowHeight = 600;
 };
 
 // declare the global instance using 'extern'

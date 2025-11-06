@@ -23,7 +23,7 @@ bool Platform::initialize() {
         return false;
     }
 
-    globals.window = SDL_CreateWindow("sdl3 defender", globals.initialWindowWidth, globals.initialWindowHeight, SDL_WINDOW_RESIZABLE);
+    globals.window = SDL_CreateWindow("sdl3 defender", globals.windowWidth, globals.windowHeight, SDL_WINDOW_RESIZABLE);
     if (!globals.window) {
         SDL_Log("failed to create window: %s", SDL_GetError());
         TTF_Quit();
@@ -47,8 +47,6 @@ bool Platform::initialize() {
     } else {
         SDL_Log("VSync successfully enabled.");
     }
-
-    SDL_GetWindowSize(globals.window, &globals.windowWidth, &globals.windowHeight); // TODO: count occurances
 
     // audio device initialization
     // define the desired audio format using SDL3 enums
@@ -140,8 +138,6 @@ void Platform::run(Game& sim) {
         
         accumulator += deltaTimeMS / 1000.0f; // convert to seconds, add to accumulator
 
-        SDL_GetWindowSize(globals.window, &globals.windowWidth, &globals.windowHeight); // TODO:
-
         auto& state = sim.getState();
 
         updateTextInputState(state); // update text input state
@@ -174,7 +170,10 @@ GameInput Platform::pollInput(const GameStateData& state) {
 
     // always poll quit/escape/enter/mouse
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_EVENT_QUIT) {
+        if (event.type == SDL_EVENT_WINDOW_RESIZED) {
+            globals.windowWidth = event.window.data1;
+            globals.windowHeight = event.window.data2;
+        } else if (event.type == SDL_EVENT_QUIT) {
             input.quit = true;
         } else if (event.type == SDL_EVENT_KEY_DOWN) {
             if (event.key.key == SDLK_ESCAPE) input.escape = true;
