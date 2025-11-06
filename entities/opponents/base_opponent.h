@@ -5,6 +5,7 @@
 #include "../projectile.h"
 #include "../particle.h" 
 #include "../../core/config.h"
+#include "../../core/globals.h"
 #include "../../plf/plf_colony.h" 
 
 struct GameStateData; // forward declaration
@@ -30,7 +31,7 @@ public:
 
     virtual const std::string& getTextureKey() const = 0;
 
-    bool isOnScreen(float objX, float objY, float cameraX, int screenWidth) const;
+    bool isOnScreen(float objX, float objY, float cameraX) const;
 
 protected:
     struct ExplosionConfig {

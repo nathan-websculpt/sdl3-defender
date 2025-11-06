@@ -64,7 +64,7 @@ void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, fl
     }
 
     m_fireTimer += deltaTime;
-    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX, globals.windowWidth);
+    bool opponentVisible = isOnScreen(m_rect.x + m_rect.w/2, m_rect.y, cameraX);
 
     if (opponentVisible && m_fireTimer >= m_fireInterval) {
         m_projectiles.emplace(

@@ -1,10 +1,8 @@
 #include "colony_update_and_prune.h"
 
-// TODO: rename methods
-
 namespace ColonyUpdateAndPrune {
 
-    void updateAndPruneProjectiles(plf::colony<Projectile>& projectiles, float deltaTime, const GameHelper& helpers) {
+    void projectiles(plf::colony<Projectile>& projectiles, float deltaTime, const GameHelper& helpers) {
         for (auto it = projectiles.begin(); it != projectiles.end(); ) {
             it->update(deltaTime);
             SDL_FRect b = it->getBounds();
@@ -29,7 +27,7 @@ namespace ColonyUpdateAndPrune {
         }
     }
 
-    void updateAndPruneParticles(plf::colony<Particle>& particles, float deltaTime) {
+    void particles(plf::colony<Particle>& particles, float deltaTime) {
         for (auto it = particles.begin(); it != particles.end(); ) {
             it->update(deltaTime);
             if (!it->isAlive()) 
@@ -39,7 +37,7 @@ namespace ColonyUpdateAndPrune {
         }
     }
 
-    void updateAndPruneHealthItems(plf::colony<std::unique_ptr<HealthItem>>& healthItems, float deltaTime, const GameHelper& helpers) {
+    void healthItems(plf::colony<std::unique_ptr<HealthItem>>& healthItems, float deltaTime, const GameHelper& helpers) {
         for (auto it = healthItems.begin(); it != healthItems.end(); ) {
             auto& item = *it;
             if (!item) {

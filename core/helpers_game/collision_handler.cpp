@@ -1,7 +1,6 @@
 #include "collision_handler.h"
 #include <memory>
 
-// TODO: check other one
 using namespace CollisionHandler;
 
 // renames helpers, state, mixer

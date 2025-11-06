@@ -80,16 +80,16 @@ void Game::update(float deltaTime) {
         pb = m_state.player->getBounds();
     }
 
-    updatePlayerAndProjectiles(deltaTime, pb);
-
     m_gameHelpers.keepPlayerInBounds(m_state.player, pb);
 
-    if(!updateOpponents(deltaTime, pb)) // TODO: ^^^ reorder
+    updatePlayerAndProjectiles(deltaTime, pb);
+
+    if(!updateOpponents(deltaTime, pb))
         return; // this means that a bomb dropped the world health to 0 - game over
 
-    ColonyUpdateAndPrune::updateAndPruneParticles(m_state.particles, deltaTime);
+    ColonyUpdateAndPrune::particles(m_state.particles, deltaTime);
 
-    ColonyUpdateAndPrune::updateAndPruneHealthItems(m_state.healthItems, deltaTime, m_gameHelpers);
+    ColonyUpdateAndPrune::healthItems(m_state.healthItems, deltaTime, m_gameHelpers);
 
     handleSpawnsAndTimers(deltaTime);
 

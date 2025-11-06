@@ -31,14 +31,10 @@ const int& BaseOpponent::getScoreVal() const {
     return m_scoreVal;
 }
 
-// TODO: use global windowWidth instead of sending screenWidth in
-bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX, int screenWidth) const {
+bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX) const {
     float screenMinX = cameraX;
-    float screenMaxX = cameraX + screenWidth;
-    // Y is always fully visible because:
-    // world height = 600px
-    // window height is enforced to be >= 600px
-    // no vertical camera movement
+    float screenMaxX = cameraX + globals.windowWidth;
+    // Y is always fully visible because there is no vertical camera movement
     return (objX >= screenMinX && objX <= screenMaxX);
 }
 

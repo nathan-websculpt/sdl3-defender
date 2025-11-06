@@ -13,7 +13,7 @@ void Game::updatePlayerAndProjectiles(float deltaTime, const SDL_FRect& playerBo
 
     // player projectiles
     auto& playerProjectiles = m_state.player->getProjectiles();        
-    ColonyUpdateAndPrune::updateAndPruneProjectiles(playerProjectiles, deltaTime, m_gameHelpers); 
+    ColonyUpdateAndPrune::projectiles(playerProjectiles, deltaTime, m_gameHelpers); 
 }
 
 bool Game::updateOpponents(float deltaTime, const SDL_FRect& playerBounds) {
@@ -27,7 +27,7 @@ bool Game::updateOpponents(float deltaTime, const SDL_FRect& playerBounds) {
         if(oppPtr->isAlive()) {
             SDL_FPoint playerPos = { playerBounds.x, playerBounds.y };
             oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
-            ColonyUpdateAndPrune::updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime, m_gameHelpers);
+            ColonyUpdateAndPrune::projectiles(oppPtr->getProjectiles(), deltaTime, m_gameHelpers);
         }
 
         // check if opponent hit landscape
