@@ -6,9 +6,7 @@
 #include "globals.h"
 #include "../entities/health_item.h"
 
-// TODO: rename pb
-
-void Game::updatePlayerAndProjectiles(float deltaTime, const SDL_FRect& pb) {
+void Game::updatePlayerAndProjectiles(float deltaTime, const SDL_FRect& playerBounds) {
     if (!m_state.player) return;
     
     m_state.player->update(deltaTime, m_state.particles);
@@ -18,7 +16,7 @@ void Game::updatePlayerAndProjectiles(float deltaTime, const SDL_FRect& pb) {
     ColonyUpdateAndPrune::updateAndPruneProjectiles(playerProjectiles, deltaTime, m_gameHelpers); 
 }
 
-bool Game::updateOpponents(float deltaTime, const SDL_FRect& pb) {
+bool Game::updateOpponents(float deltaTime, const SDL_FRect& playerBounds) {
     for (auto opp_iter = m_state.opponents.begin(); opp_iter != m_state.opponents.end(); ) {
         auto& oppPtr = *opp_iter;
         if(!oppPtr) {
@@ -27,16 +25,16 @@ bool Game::updateOpponents(float deltaTime, const SDL_FRect& pb) {
         }
 
         if(oppPtr->isAlive()) {
-            SDL_FPoint playerPos = { pb.x, pb.y };
+            SDL_FPoint playerPos = { playerBounds.x, playerBounds.y };
             oppPtr->update(deltaTime, playerPos, m_state.cameraX, m_state); // remember: world width is bigger than screen - height is same 
             ColonyUpdateAndPrune::updateAndPruneProjectiles(oppPtr->getProjectiles(), deltaTime, m_gameHelpers);
         }
 
         // check if opponent hit landscape
-        SDL_FRect oppBounds = oppPtr->getBounds();
-        float oppCenterX = oppBounds.x + oppBounds.w / 2.0f;
+        SDL_FRect opplayerBoundsounds = oppPtr->getBounds();
+        float oppCenterX = opplayerBoundsounds.x + opplayerBoundsounds.w / 2.0f;
         float groundY = m_gameHelpers.getGroundYAt(oppCenterX);
-        if (oppBounds.y + oppBounds.h >= groundY) {
+        if (opplayerBoundsounds.y + opplayerBoundsounds.h >= groundY) {
             BasicOpponent* b = dynamic_cast<BasicOpponent*>(oppPtr.get());
             if (b) { // only basic opponents damage world
                 m_state.worldHealth--;
@@ -89,4 +87,24 @@ void Game::handleSpawnsAndTimers(float deltaTime) {
         spawnOpponent();
         m_opponentSpawnTimer = 0.0f;
     }
+}
+
+void Game::spawnOpponent() {
+    int type = rand() % 3;
+    float x = (float)(rand() % (int)(Config::Game::WORLD_WIDTH - 50));
+    float y = -50.0f;
+    switch (type) {
+        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
+        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
+        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
+    }
+}
+
+void Game::spawnHealthItem(HealthItemType type) {
+    float x = static_cast<float>(rand() % static_cast<int>(Config::Game::WORLD_WIDTH - 50)); // random X within world
+    float y = -50.0f; // start from top
+    float w = 30.0f;
+    float h = 30.0f;
+    const std::string& textureKey = (type == HealthItemType::PLAYER) ? Config::Textures::PLAYER_HEALTH_ITEM : Config::Textures::WORLD_HEALTH_ITEM;
+    m_state.healthItems.emplace(std::make_unique<HealthItem>(x, y, w, h, type, textureKey));
 }

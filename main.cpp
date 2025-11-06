@@ -37,7 +37,3 @@ int main(int argc, char* argv[]) {
     platform.shutdown();
     return 0;
 }
-
-// TODO: 
-//      move colors into config
-//      I may rename /rendering/ to /helpers_rendering/ or even /helpers_platform_rendering/

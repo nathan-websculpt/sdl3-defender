@@ -11,9 +11,8 @@
 #include "helpers_game/collision_handler.h"
 
 Game::Game()
-    : m_state{}, m_gameHelpers(m_state.landscape) { // TODO: dims go to globals?
+    : m_state{}, m_gameHelpers(m_state.landscape) {
     srand((unsigned int)time(nullptr)); // TODO: use in main instead???
-    // globals.windowHeight = Config::Game::WORLD_HEIGHT; // TODO: ???
     m_highScores.loadHighScores(m_state);
 }
 
@@ -128,26 +127,4 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
     } else if (m_state.state == GameStateData::State::GAME_OVER) {
         handleInputGameOver(input, deltaTime);
     }
-}
-
-// TODO: move to update_handler
-void Game::spawnOpponent() {
-    int type = rand() % 3;
-    float x = (float)(rand() % (int)(Config::Game::WORLD_WIDTH - 50));
-    float y = -50.0f;
-    switch (type) {
-        case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
-        case 1: m_state.opponents.emplace(std::make_unique<AggressiveOpponent>(x, y, 45, 45)); break;
-        case 2: m_state.opponents.emplace(std::make_unique<SniperOpponent>(x, y, 35, 35)); break;
-    }
-}
-
-// TODO: move to update_handler
-void Game::spawnHealthItem(HealthItemType type) {
-    float x = static_cast<float>(rand() % static_cast<int>(Config::Game::WORLD_WIDTH - 50)); // random X within world
-    float y = -50.0f; // start from top
-    float w = 30.0f;
-    float h = 30.0f;
-    const std::string& textureKey = (type == HealthItemType::PLAYER) ? Config::Textures::PLAYER_HEALTH_ITEM : Config::Textures::WORLD_HEALTH_ITEM;
-    m_state.healthItems.emplace(std::make_unique<HealthItem>(x, y, w, h, type, textureKey));
 }
