@@ -1,6 +1,6 @@
 #include "high_scores.h"
 #include "../game_state_data.h"
-#include <fstream> // TODO
+#include <fstream>
 #include <sstream>
 
 HighScores::HighScores() = default;

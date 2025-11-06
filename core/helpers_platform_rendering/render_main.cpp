@@ -4,7 +4,6 @@
 #include "render_hud.h"
 #include "render_screens.h"
 #include "../../entities/health_item.h"
-#include <algorithm> // TODO: ??
 
 void RenderMain::render(const GameStateData& state) {
     switch (state.state) {
