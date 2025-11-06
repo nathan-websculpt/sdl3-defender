@@ -24,7 +24,7 @@ namespace Config {
 
     namespace Game {
         const int WORLD_WIDTH = 6400;
-        const int WORLD_HEIGHT = 600;
+        const int WORLD_HEIGHT = 600; // TODO: remove - gets set in globals
         const int HUD_HEIGHT = 80; // TODO: constexp? float since I need to cast it later on?
         const std::string HIGH_SCORES_PATH = "resources/highscores.txt";
     }

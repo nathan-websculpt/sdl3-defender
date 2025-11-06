@@ -90,11 +90,11 @@ In `Game::updateCamera()`:
 ```cpp
 float target = playerBounds.x - w/2.0f;  // center player horizontally
 if (target < 0) target = 0;
-if (target > m_worldWidth - w) target = m_worldWidth - w;
+if (target > Config::Game::WORLD_WIDTH - w) target = Config::Game::WORLD_WIDTH - w;
 m_cameraX = target;
 ```
 The camera tries to keep the player centered horizontally.
-It is clamped so you never see outside the world bounds (0 to m_worldWidth - screen_width).
+It is clamped so you never see outside the world bounds (0 to Config::Game::WORLD_WIDTH - screen_width).
 
 # World Landscape
 

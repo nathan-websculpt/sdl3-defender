@@ -10,16 +10,10 @@
 #include "../entities/health_item.h"
 #include "helpers_game/collision_handler.h"
 
-// TODO:
-//remove
-    // float worldWidth;  // world width goes beyond window
-    // float worldHeight;
-
 Game::Game()
     : m_state{}, m_gameHelpers(m_state.landscape) { // TODO: dims go to globals?
     srand((unsigned int)time(nullptr)); // TODO: use in main instead???
-    m_state.worldWidth = Config::Game::WORLD_WIDTH;
-    m_state.worldHeight = Config::Game::WORLD_HEIGHT; // TODO
+    // globals.windowHeight = Config::Game::WORLD_HEIGHT; // TODO: ???
     m_highScores.loadHighScores(m_state);
 }
 
@@ -34,8 +28,8 @@ void Game::startNewGame() {
     m_state.cameraX = 0.0f;
 
     m_lastWindowHeight = globals.windowHeight;
-    m_state.worldHeight = globals.windowHeight;
-    float px = m_state.worldWidth / 2.0f - 40.0f;
+    globals.windowHeight = globals.windowHeight;
+    float px = Config::Game::WORLD_WIDTH / 2.0f - 40.0f;
     float py = globals.windowHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
 
@@ -52,36 +46,34 @@ void Game::startNewGame() {
 
 void Game::setLandscape() {
     m_state.landscape = {
-        {0, m_state.worldHeight - 20},
-        {m_state.worldWidth * 0.1f, m_state.worldHeight - 28},
-        {m_state.worldWidth * 0.18f, m_state.worldHeight - 38},
-        {m_state.worldWidth * 0.225f, m_state.worldHeight - 50},
-        {m_state.worldWidth * 0.25f, m_state.worldHeight - 40},
-        {m_state.worldWidth * 0.32f, m_state.worldHeight - 120},
-        {m_state.worldWidth * 0.41f, m_state.worldHeight - 100},
-        {m_state.worldWidth * 0.48f, m_state.worldHeight - 140},
-        {m_state.worldWidth * 0.52f, m_state.worldHeight - 95},
-        {m_state.worldWidth * 0.61f, m_state.worldHeight - 120},
-        {m_state.worldWidth * 0.68f, m_state.worldHeight - 80},
-        {m_state.worldWidth * 0.71f, m_state.worldHeight - 110},
-        {m_state.worldWidth * 0.75f, m_state.worldHeight - 90},
-        {m_state.worldWidth * 0.81f, m_state.worldHeight - 70},
-        {m_state.worldWidth * 0.86f, m_state.worldHeight - 110},
-        {m_state.worldWidth * 0.90f, m_state.worldHeight - 75},
-        {m_state.worldWidth * 0.93f, m_state.worldHeight - 90},
-        {m_state.worldWidth * 0.98f, m_state.worldHeight - 60},
-        {m_state.worldWidth, m_state.worldHeight - 40}
+        {0, globals.windowHeight - 20},
+        {Config::Game::WORLD_WIDTH * 0.1f, globals.windowHeight - 28},
+        {Config::Game::WORLD_WIDTH * 0.18f, globals.windowHeight - 38},
+        {Config::Game::WORLD_WIDTH * 0.225f, globals.windowHeight - 50},
+        {Config::Game::WORLD_WIDTH * 0.25f, globals.windowHeight - 40},
+        {Config::Game::WORLD_WIDTH * 0.32f, globals.windowHeight - 120},
+        {Config::Game::WORLD_WIDTH * 0.41f, globals.windowHeight - 100},
+        {Config::Game::WORLD_WIDTH * 0.48f, globals.windowHeight - 140},
+        {Config::Game::WORLD_WIDTH * 0.52f, globals.windowHeight - 95},
+        {Config::Game::WORLD_WIDTH * 0.61f, globals.windowHeight - 120},
+        {Config::Game::WORLD_WIDTH * 0.68f, globals.windowHeight - 80},
+        {Config::Game::WORLD_WIDTH * 0.71f, globals.windowHeight - 110},
+        {Config::Game::WORLD_WIDTH * 0.75f, globals.windowHeight - 90},
+        {Config::Game::WORLD_WIDTH * 0.81f, globals.windowHeight - 70},
+        {Config::Game::WORLD_WIDTH * 0.86f, globals.windowHeight - 110},
+        {Config::Game::WORLD_WIDTH * 0.90f, globals.windowHeight - 75},
+        {Config::Game::WORLD_WIDTH * 0.93f, globals.windowHeight - 90},
+        {Config::Game::WORLD_WIDTH * 0.98f, globals.windowHeight - 60},
+        {Config::Game::WORLD_WIDTH, globals.windowHeight - 40}
     };
 }
 
 void Game::update(float deltaTime) {
     if (m_state.state != GameStateData::State::PLAYING) return;
 
-    // TODO: unify with other todo
-    // detect window resize for landscape
+    // TODO: where is globals.windowHeight set? reset? look for dup code
     if (globals.windowHeight != m_lastWindowHeight) {
         m_lastWindowHeight = globals.windowHeight;
-        m_state.worldHeight = globals.windowHeight; // for consistency, but not necessary
         setLandscape();
     }
 
@@ -112,7 +104,7 @@ void Game::updateCamera() {
     SDL_FRect pb = m_state.player->getBounds();
     float target = pb.x - globals.windowWidth / 2.0f;
     if (target < 0) target = 0;
-    if (target > m_state.worldWidth - globals.windowWidth) target = m_state.worldWidth - globals.windowWidth;
+    if (target > Config::Game::WORLD_WIDTH - globals.windowWidth) target = Config::Game::WORLD_WIDTH - globals.windowWidth;
     m_state.cameraX = target;
 }
 
@@ -142,7 +134,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
 // TODO: move to update_handler
 void Game::spawnOpponent() {
     int type = rand() % 3;
-    float x = (float)(rand() % (int)(m_state.worldWidth - 50));
+    float x = (float)(rand() % (int)(Config::Game::WORLD_WIDTH - 50));
     float y = -50.0f;
     switch (type) {
         case 0: m_state.opponents.emplace(std::make_unique<BasicOpponent>(x, y, 40, 40)); break;
@@ -153,7 +145,7 @@ void Game::spawnOpponent() {
 
 // TODO: move to update_handler
 void Game::spawnHealthItem(HealthItemType type) {
-    float x = static_cast<float>(rand() % static_cast<int>(m_state.worldWidth - 50)); // random X within world
+    float x = static_cast<float>(rand() % static_cast<int>(Config::Game::WORLD_WIDTH - 50)); // random X within world
     float y = -50.0f; // start from top
     float w = 30.0f;
     float h = 30.0f;

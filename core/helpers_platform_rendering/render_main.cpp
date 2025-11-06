@@ -69,7 +69,7 @@ void RenderMain::renderPlayerAndProjectiles(const GameStateData& state, float ca
             bool goingRight = (p.getVelocity().x > 0);
 
             // find visual end point
-            float rawEndX = goingRight ? state.worldWidth : 0.0f;
+            float rawEndX = goingRight ? Config::Game::WORLD_WIDTH : 0.0f;
             float landscapeEndX = ProjectileClipping::findBeamLandscapeIntersection(startX, beamY, goingRight, state.landscape);
 
             // use the closer endpoint (landscape or world edge)

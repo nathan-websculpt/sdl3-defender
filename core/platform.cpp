@@ -144,11 +144,6 @@ void Platform::run(Game& sim) {
 
         auto& state = sim.getState();
 
-        if (state.state == GameStateData::State::PLAYING) {
-            state.worldHeight = (float)globals.windowHeight; // world height depends on window resize (width does not)
-            // TODO: unify and use if like in game.cpp
-        }
-
         updateTextInputState(state); // update text input state
 
         // timestep update loop

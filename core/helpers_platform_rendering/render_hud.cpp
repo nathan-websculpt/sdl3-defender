@@ -58,8 +58,8 @@ void RenderHud::renderMinimap(const GameStateData& state) {
     SDL_SetRenderDrawColor(globals.renderer, 0, 100, 200, 255);
     SDL_RenderRect(globals.renderer, &mm);
 
-    float sx = (float)mmW / state.worldWidth;
-    float sy = (float)mmH / state.worldHeight;
+    float sx = (float)mmW / Config::Game::WORLD_WIDTH;
+    float sy = (float)mmH / globals.windowHeight;
 
     // goldish dot for player
     if (state.player) {
@@ -98,8 +98,8 @@ void RenderHud::renderMinimap(const GameStateData& state) {
     // render landscape
     if (!state.landscape.empty()) {
         SDL_SetRenderDrawColor(globals.renderer, 180, 150, 100, 200);
-        float sx = (float)mmW / state.worldWidth;
-        float sy = (float)mmH / state.worldHeight;
+        float sx = (float)mmW / Config::Game::WORLD_WIDTH;
+        float sy = (float)mmH / globals.windowHeight;
         for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
             float x1 = state.landscape[i].x * sx + mmX;
             float y1 = state.landscape[i].y * sy + mmY;
