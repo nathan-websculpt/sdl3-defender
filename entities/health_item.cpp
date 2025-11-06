@@ -4,7 +4,7 @@
 const float HealthItem::BLINK_DURATION = 0.2f;
 
 HealthItem::HealthItem(float x, float y, float w, float h, HealthItemType type, const std::string& textureKey)
-    : m_rect{x, y, w, h}, m_type(type), m_textureKey(textureKey), m_velocityY(50.0f), m_hitGround(false), m_blinking(false), m_blinkTimer(0.0f), m_blinkCount(0) 
+    : m_rect{x, y, w, h}, m_type(type), m_textureKey(textureKey), m_velocityY(50.0f), m_blinking(false), m_blinkTimer(0.0f), m_blinkCount(0) 
     { 
         m_doesStop = (std::rand() / (RAND_MAX + 1.0f)) < 0.25f; // ~25% chance
         if(m_doesStop)             
@@ -53,7 +53,6 @@ float HealthItem::getBlinkAlpha() const {
 }
 
 void HealthItem::startBlinking() {
-    m_hitGround = true; // TODO: used?
     m_blinking = true;
     m_blinkTimer = 0.0f;
     m_blinkCount = 0;

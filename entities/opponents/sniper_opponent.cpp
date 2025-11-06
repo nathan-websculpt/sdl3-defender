@@ -33,7 +33,7 @@ SniperOpponent::SniperOpponent(float x, float y, float w, float h)
     m_explosionConfig.size = 1.35f;
 }
 
-void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
+void SniperOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX) {
     if (m_health <= 0) return;
 
     // simple movement

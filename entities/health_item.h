@@ -29,7 +29,6 @@ private:
     HealthItemType m_type;
     std::string m_textureKey;
     float m_velocityY; // falling speed
-    bool m_hitGround;
     bool m_blinking;
     float m_blinkTimer;
     int m_blinkCount;

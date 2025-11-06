@@ -10,7 +10,7 @@ public:
     HighScores();
 
     void loadHighScores(GameStateData& state);
-    void submitHighScore(const std::string& name, GameStateData& state); // TODO: remove
+    void submitHighScore(const std::string& name, GameStateData& state); 
     bool isHighScore(GameStateData& state) const;
     int getHighScoreIndex(GameStateData& state) const;
 

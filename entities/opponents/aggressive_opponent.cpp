@@ -32,8 +32,7 @@ AggressiveOpponent::AggressiveOpponent(float x, float y, float w, float h)
     m_explosionConfig.size = 1.9f;
 }
 
-// TODO: no longer needs state?
-void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
+void AggressiveOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX) {
     if (m_health <= 0) return;
     m_lifetime += deltaTime;
 

@@ -29,7 +29,7 @@ BasicOpponent::BasicOpponent(float x, float y, float w, float h)
     m_explosionConfig.size = 2.2f;
 }
 
-void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) {
+void BasicOpponent::update(float deltaTime, const SDL_FPoint& playerPos, float cameraX) {
     if (m_health <= 0) return;
 
     m_rect.y += m_speed * deltaTime;

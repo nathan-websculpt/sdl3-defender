@@ -9,7 +9,7 @@ public:
     AggressiveOpponent(float x, float y, float w, float h);
     ~AggressiveOpponent() = default;
 
-    void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) override;
+    void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX) override;
 
     const std::string& getTextureKey() const override { return Config::Textures::AGGRESSIVE_OPPONENT; }
 

@@ -8,14 +8,12 @@
 #include "../../core/globals.h"
 #include "../../plf/plf_colony.h" 
 
-struct GameStateData; // forward declaration
-
 class BaseOpponent {
 public:
     BaseOpponent(float x, float y, float w, float h);
     virtual ~BaseOpponent() = default;
 
-    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX, const GameStateData& state) = 0;
+    virtual void update(float deltaTime, const SDL_FPoint& playerPos, float cameraX) = 0;
 
     SDL_FRect getBounds() const;
 
