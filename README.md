@@ -118,5 +118,5 @@ If the bottom of a hitbox (y + height) is >= groundY, it is considered in solid 
 
 - store m_cameraX in a local const to help the compiler optimize?
 - getBounds() is called twice per entity in some places - cache result?
-- use `< random >` instead of srand() and rand() 
+- use `< random >` instead of srand() and rand() ?
 - getters like getProjectiles() are allowing for external mutation (could enhance with const versions)

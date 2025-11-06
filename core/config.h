@@ -28,7 +28,7 @@ namespace Config {
 
     namespace Game {
         inline constexpr int WORLD_WIDTH = 6400;
-        inline constexpr int HUD_HEIGHT = 80; // TODO: constexp? float since I need to cast it later on?
+        inline constexpr int HUD_HEIGHT = 80;
         const std::string HIGH_SCORES_PATH = "resources/highscores.txt";
     }
 

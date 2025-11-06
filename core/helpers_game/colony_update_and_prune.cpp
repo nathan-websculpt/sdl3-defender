@@ -12,7 +12,6 @@ namespace ColonyUpdateAndPrune {
                 continue;
             }
 
-            // TODO: this part could be restricted to !it->isHorizontal because this is just for opponent projectiles
             float projCenterX = b.x + b.w / 2.0f;
             float groundY = helpers.getGroundYAt(projCenterX);
             float projBottom = b.y + b.h;
