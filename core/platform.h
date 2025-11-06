@@ -12,8 +12,15 @@
 
 class Platform {
 public:
-    Platform();
+    Platform() = default;
     ~Platform();
+
+    // delete copy operations
+    Platform(const Platform&) = delete;
+    Platform& operator=(const Platform&) = delete;
+    // default move operations
+    Platform(Platform&&) = default;
+    Platform& operator=(Platform&&) = default;
 
     bool initialize();
     void run(Game& sim);

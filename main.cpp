@@ -24,7 +24,7 @@ int main(int argc, char* argv[]) {
         std::cerr << "Failed to set working directory: " << e.what() << std::endl;
     }
 
-    std::srand(static_cast<unsigned>(std::time(nullptr))); // TODO:
+    std::srand(static_cast<unsigned>(std::time(nullptr)));
 
     Game sim;
     Platform platform;
@@ -34,6 +34,5 @@ int main(int argc, char* argv[]) {
     
     platform.run(sim);
 
-    platform.shutdown();
     return 0;
 }

@@ -10,7 +10,6 @@
 
 Game::Game()
     : m_state{}, m_gameHelpers(m_state.landscape) {
-    srand((unsigned int)time(nullptr)); // TODO: use in main instead???
     m_highScores.loadHighScores(m_state);
 }
 

@@ -8,9 +8,7 @@
 #include "../entities/health_item.h"
 #include "globals.h"
 
-Platform::Platform() = default;
-
-Platform::~Platform() { shutdown(); } // TODO: main could just call this
+Platform::~Platform() { shutdown(); } 
 
 bool Platform::initialize() {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
@@ -153,7 +151,7 @@ void Platform::run(Game& sim) {
             accumulator -= FIXED_DELTA_TIME;
         }
 
-        RenderMain::render(state); // todo: should render go into while loop? ^^^
+        RenderMain::render(state);
     }
 
     // ensure text input is stopped when the loop exits
