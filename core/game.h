@@ -1,8 +1,10 @@
 #pragma once
 #include <vector>
 #include <memory>
-#include "../core/managers/sound_manager.h"
-#include "../core/high_scores/high_scores.h"
+#include "managers/sound_manager.h"
+#include "high_scores/high_scores.h"
+#include "helpers_game/game_helper.h"
+#include "helpers_game/colony_update_and_prune.h"
 #include "../entities/player.h"
 #include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"
@@ -11,8 +13,6 @@
 #include "../entities/opponents/sniper_opponent.h"
 #include "../plf/plf_colony.h" 
 #include "game_state_data.h"
-#include "../core/helpers_game/game_helper.h" // TODO:
-#include "../core/helpers_game/colony_update_and_prune.h" // TODO:
 
 class Game {
 public:

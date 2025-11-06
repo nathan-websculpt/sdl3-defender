@@ -1,10 +1,9 @@
 #pragma once
 
-// TODO: cleanup includdes
 #include <vector>
 #include <memory>
-#include "../core/managers/sound_manager.h"
-#include "../core/high_scores/high_scores.h"
+#include "managers/sound_manager.h"
+#include "high_scores/high_scores.h"
 #include "../entities/player.h"
 #include "../entities/health_item.h"
 #include "../entities/opponents/base_opponent.h"

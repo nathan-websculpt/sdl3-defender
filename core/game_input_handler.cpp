@@ -1,8 +1,8 @@
 #include "game.h"
 #include <algorithm>
 #include <cctype>
-#include "../core/config.h"
-#include "../core/globals.h"
+#include "config.h"
+#include "globals.h"
 
 void Game::handleEscapeKey() {
     if (m_state.state == GameStateData::State::MENU) {

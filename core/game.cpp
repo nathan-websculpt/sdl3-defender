@@ -5,8 +5,8 @@
 #include <fstream> //TODO
 #include <sstream> //
 #include <cctype>
-#include "../core/config.h" // TODO
-#include "../core/globals.h"
+#include "config.h"
+#include "globals.h"
 #include "../entities/health_item.h"
 #include "helpers_game/collision_handler.h"
 

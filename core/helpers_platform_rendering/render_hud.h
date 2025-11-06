@@ -1,5 +1,4 @@
 #pragma once
-
 #include "render_helper.h"
 
 class RenderHud {

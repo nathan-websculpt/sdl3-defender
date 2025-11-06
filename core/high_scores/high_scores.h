@@ -1,5 +1,4 @@
 #pragma once
-
 #include "../config.h"
 
 // new: needed to forward declare to avoid circular include after adding /helpers_game/collision_handler
