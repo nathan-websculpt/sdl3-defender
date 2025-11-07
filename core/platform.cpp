@@ -194,6 +194,7 @@ GameInput Platform::pollInput(const GameStateData& state) {
     }
 
     // only poll movement/shoot/boost if playing
+    // TODO: switch statement
     if (state.state == GameStateData::State::PLAYING) {
         const bool* keys = SDL_GetKeyboardState(nullptr);
         input.moveLeft  = keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A];

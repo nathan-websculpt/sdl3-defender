@@ -24,7 +24,6 @@ void Game::startNewGame() {
     m_state.cameraX = 0.0f;
 
     m_lastWindowHeight = globals.windowHeight;
-    globals.windowHeight = globals.windowHeight;
     float px = Config::Game::WORLD_WIDTH / 2.0f - 40.0f;
     float py = globals.windowHeight / 2.0f - 24.0f;
     m_state.player = std::make_unique<Player>(px, py, 80, 48);
@@ -32,8 +31,8 @@ void Game::startNewGame() {
     m_state.state = GameStateData::State::PLAYING;
     m_state.worldHealth = m_state.maxWorldHealth;
     m_state.playerScore = 0;
-    m_opponentSpawnTimer = 0.0f;
 
+    m_opponentSpawnTimer = 0.0f;
     m_playerHealthItemSpawnTimer = 0.0f;
     m_worldHealthItemSpawnTimer = 0.0f;
 
@@ -115,6 +114,7 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
         return; // exit early
     }
 
+    // TODO: switch statement instead
     if (m_state.state == GameStateData::State::MENU) {
         handleInputMenu(input);
     } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {

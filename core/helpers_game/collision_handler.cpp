@@ -3,7 +3,6 @@
 
 using namespace CollisionHandler;
 
-// renames helpers, state, mixer
 namespace {
     // player projectiles hitting opponents
     void handlePlayerProjectiles(GameStateData& state, GameHelper& helpers) {
