@@ -21,7 +21,17 @@ make -j
 ### simple compile
 compile && run (note: your highscores will be in `/resources/`)
 ```bash
-g++ -std=c++17 core/*.cpp core/managers/*.cpp entities/*.cpp entities/opponents/*.cpp main.cpp `pkg-config --cflags --libs sdl3` -lSDL3_image -lSDL3_ttf -lSDL3_mixer -o m
+g++ -std=c++17 \
+core/*.cpp \
+core/helpers_game/*.cpp \
+core/helpers_platform/*.cpp \
+core/helpers_platform_rendering/*.cpp \
+core/high_scores/*.cpp \
+core/managers/*.cpp \
+entities/*.cpp \
+entities/opponents/*.cpp \
+main.cpp \
+`pkg-config --cflags --libs sdl3` -lSDL3_image -lSDL3_ttf -lSDL3_mixer -o m
 ./m
 ```
 
