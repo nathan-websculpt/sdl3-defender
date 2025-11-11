@@ -1,6 +1,7 @@
 #include "collision_handler.h"
 #include <memory>
 
+
 using namespace CollisionHandler;
 
 namespace {
@@ -21,13 +22,13 @@ namespace {
 
             for (auto& o : state.opponents) { // o is std::unique_ptr<BaseOpponent>&
                 if (!o || !o->isAlive()) continue;
-
+                SDL_FRect ob = o->getBounds();
                 // skip if opponent is beyond the beam's visual range (landscape stopped it)
-                float oppCenterX = o->getBounds().x + o->getBounds().w / 2.0f;
+                float oppCenterX = ob.x + ob.w / 2.0f;
                 if (goingRight && oppCenterX > visualEndX) continue;
                 if (!goingRight && oppCenterX < visualEndX) continue;
 
-                if (helpers.rectsIntersect(o->getBounds(), pb)) {
+                if (helpers.rectsIntersect(ob, pb)) {
                     o->takeDamage(1);
                     if (!o->isAlive()) {
                         state.playerScore += o->getScoreVal();
@@ -47,7 +48,7 @@ namespace {
 
     // player collisions with opponents and opponents projectiles collision with player
     // returns true if processing completed normally, false if it resulted in game-over
-    bool handleOpponentsAndPlayer(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer) {
+    bool handleOpponentsAndPlayer(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer, SDL_FRect& playerBounds) {
         if (!state.player || !state.player->isAlive()) return true;
         for (auto o_it = state.opponents.begin(); o_it != state.opponents.end(); ) {
             auto& o = *o_it;
@@ -56,8 +57,9 @@ namespace {
                  continue;
             }
 
+            SDL_FRect oppBounds = o->getBounds();
             // check player/opponent collision
-            if (helpers.rectsIntersect(state.player->getBounds(), o->getBounds())) { 
+            if (helpers.rectsIntersect(playerBounds, oppBounds)) { 
                 state.player->takeDamage(1);
                 o->explode(state.particles); 
                 state.playerScore += o->getScoreVal();
@@ -81,7 +83,6 @@ namespace {
             auto& op = o->getProjectiles(); 
             for (auto op_it = op.begin(); op_it != op.end(); ) {
                 SDL_FRect projBounds = op_it->getBounds();
-                SDL_FRect playerBounds = state.player->getBounds();
 
                 // collision check ... projectile and player
                 if (helpers.rectsIntersect(projBounds, playerBounds)) {
@@ -115,7 +116,7 @@ namespace {
     }
 
     // player collisions with health items
-    void handleHealthItems(GameStateData& state, GameHelper& helpers) {
+    void handleHealthItems(GameStateData& state, GameHelper& helpers, SDL_FRect& playerBounds) {
         if (!state.player) return;
         for (auto it = state.healthItems.begin(); it != state.healthItems.end(); ) {
             auto& item = *it;
@@ -123,7 +124,7 @@ namespace {
                 ++it;
                 continue;
             }
-            if (helpers.rectsIntersect(state.player->getBounds(), item->getBounds())) {
+            if (helpers.rectsIntersect(playerBounds, item->getBounds())) {
                 if (item->getType() == HealthItemType::PLAYER) {
                     state.player->restoreHealth();
                 } else if (item->getType() == HealthItemType::WORLD) {
@@ -138,13 +139,13 @@ namespace {
 
 } // namespace CollisionHandler
 
-void CollisionHandler::processAllCollisions(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer) {
+void CollisionHandler::processAllCollisions(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer, SDL_FRect& playerBounds) {
     if (!state.player) return;
 
     handlePlayerProjectiles(state, helpers);
 
-    if (!handleOpponentsAndPlayer(state, helpers, highScores, mixer)) return; // player died inside the handler and state has been set to GAME_OVER
+    if (!handleOpponentsAndPlayer(state, helpers, highScores, mixer, playerBounds)) return; // player died inside the handler and state has been set to GAME_OVER
         
-    handleHealthItems(state, helpers);
+    handleHealthItems(state, helpers, playerBounds);
 }
 

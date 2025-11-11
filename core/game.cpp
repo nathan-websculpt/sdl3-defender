@@ -71,10 +71,7 @@ void Game::update(float deltaTime) {
         setLandscape();
     }
 
-    SDL_FRect pb;
-    if (m_state.player) {
-        pb = m_state.player->getBounds();
-    }
+    SDL_FRect pb = m_state.player->getBounds();
 
     m_gameHelpers.keepPlayerInBounds(m_state.player, pb);
 
@@ -89,14 +86,12 @@ void Game::update(float deltaTime) {
 
     handleSpawnsAndTimers(deltaTime);
 
-    CollisionHandler::processAllCollisions(m_state, m_gameHelpers, m_highScores, m_mixer);
-    updateCamera();    
+    CollisionHandler::processAllCollisions(m_state, m_gameHelpers, m_highScores, m_mixer, pb);
+    updateCamera(pb);    
 }
 
-void Game::updateCamera() {
-    if (!m_state.player) return;
-    SDL_FRect pb = m_state.player->getBounds();
-    float target = pb.x - globals.windowWidth / 2.0f;
+void Game::updateCamera(SDL_FRect& playerBounds) {
+    float target = playerBounds.x - globals.windowWidth / 2.0f;
     if (target < 0) target = 0;
     if (target > Config::Game::WORLD_WIDTH - globals.windowWidth) target = Config::Game::WORLD_WIDTH - globals.windowWidth;
     m_state.cameraX = target;

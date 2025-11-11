@@ -45,7 +45,7 @@ private:
     void setLandscape();
     void spawnOpponent();    
     void spawnHealthItem(HealthItemType type);  
-    void updateCamera();
+    void updateCamera(SDL_FRect& playerBounds);
 
     // inputs
     void handleEscapeKey();

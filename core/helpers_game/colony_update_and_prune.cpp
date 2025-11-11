@@ -45,9 +45,10 @@ namespace ColonyUpdateAndPrune {
             }
             item->update(deltaTime);
 
+            SDL_FRect itemBounds = item->getBounds();
             // check if item hit the landscape
-            float groundY = helpers.getGroundYAt(item->getBounds().x + item->getBounds().w / 2.0f);
-            float itemBottom = item->getBounds().y + item->getBounds().h;
+            float groundY = helpers.getGroundYAt(itemBounds.x + itemBounds.w / 2.0f);
+            float itemBottom = itemBounds.y + itemBounds.h;
             if (itemBottom >= groundY && !item->isBlinking()) {
                 item->startBlinking();
             }

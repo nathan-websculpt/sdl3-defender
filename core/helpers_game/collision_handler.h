@@ -7,5 +7,5 @@
 #include "../../entities/health_item.h"
 
 namespace CollisionHandler {
-    void processAllCollisions(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer);
+    void processAllCollisions(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer, SDL_FRect& playerBounds);
 }
