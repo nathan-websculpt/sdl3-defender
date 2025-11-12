@@ -26,7 +26,7 @@ bool Game::updateOpponents(float deltaTime, const SDL_FRect& playerBounds) {
 
         if(oppPtr->isAlive()) {
             SDL_FPoint playerPos = { playerBounds.x, playerBounds.y };
-            oppPtr->update(deltaTime, playerPos, m_state.cameraX); // remember: world width is bigger than screen - height is same 
+            oppPtr->update(deltaTime, playerPos, m_state.cameraX);
             ColonyUpdateAndPrune::projectiles(oppPtr->getProjectiles(), deltaTime, m_gameHelpers);
         }
 
