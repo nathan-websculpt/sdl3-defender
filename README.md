@@ -21,6 +21,7 @@ make -j
 ### simple compile
 compile && run (note: your highscores will be in `/resources/`)
 ```bash
+# compile
 g++ -std=c++17 \
 core/*.cpp \
 core/helpers_game/*.cpp \
@@ -32,6 +33,7 @@ entities/*.cpp \
 entities/opponents/*.cpp \
 main.cpp \
 `pkg-config --cflags --libs sdl3` -lSDL3_image -lSDL3_ttf -lSDL3_mixer -o m
+# run
 ./m
 ```
 

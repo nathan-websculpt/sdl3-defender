@@ -17,17 +17,16 @@ void RenderHud::renderHealthBars(const GameStateData& state) {
     const int barX = 2;
     const int barY = 2;
     const int spacing = 5;
-    
-    SDL_Color white = {255, 255, 255, 255};
+
     float pHealth = (float)state.player->getHealth();
     float pMaxHealth = (float)state.player->getMaxHealth();
     float playerHealthRatio = pHealth / pMaxHealth;
     
-    renderHealthBar("Player Health:", barX, barY, barW, barH, playerHealthRatio, white);
+    renderHealthBar("Player Health:", barX, barY, barW, barH, playerHealthRatio, RenderColors::white);
     
     float worldHealthRatio = (float)state.worldHealth / 10.0f;
     int worldBarY = barY + 20 + barH + spacing;
-    renderHealthBar("World Health:", barX, worldBarY, barW, barH, worldHealthRatio, white);    
+    renderHealthBar("World Health:", barX, worldBarY, barW, barH, worldHealthRatio, RenderColors::white);    
 }
 
 void RenderHud::renderHealthBar(const char* label, int x, int y, int width, int height, float healthRatio, const SDL_Color& labelColor) {
@@ -118,10 +117,9 @@ void RenderHud::renderMinimap(const GameStateData& state) {
 
 void RenderHud::renderScore(const GameStateData& state) {
     const int barY = 10;    
-    SDL_Color white = {255, 255, 255, 255};
     float rightOffset = globals.windowWidth - 150;
     
-    RenderHelper::renderText("Score:", rightOffset, barY, white, FontSize::SMALL);
+    RenderHelper::renderText("Score:", rightOffset, barY, RenderColors::white, FontSize::SMALL);
     std::string scoreStr = std::to_string(state.playerScore);
-    RenderHelper::renderText(scoreStr.c_str(), globals.windowWidth - 90, barY, white, FontSize::SMALL);
+    RenderHelper::renderText(scoreStr.c_str(), globals.windowWidth - 90, barY, RenderColors::white, FontSize::SMALL);
 }

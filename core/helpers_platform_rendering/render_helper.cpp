@@ -4,8 +4,6 @@ void RenderHelper::renderCloseButton() {
     const float size = 20.0f;
     const float y = 10.0f;
     const float x = static_cast<float>(globals.windowWidth) - size - y;
-
-    SDL_Color white = {255, 255, 255, 255};
     
     SDL_FRect buttonRect = { x, y, size, size };
     
@@ -22,10 +20,10 @@ void RenderHelper::renderCloseButton() {
     int textX = x + (size - 12) / 2;  // approx centering
     int textY = y + (size - 20) / 2;
     
-    renderText("X", textX, textY, white, closeButtonFontSize);
+    renderText("X", textX, textY, RenderColors::white, closeButtonFontSize);
 }
 
-void RenderHelper::renderMenuButton(int x, int y, int width, int height, SDL_Color& textColor, const std::string& text) {
+void RenderHelper::renderMenuButton(int x, int y, int width, int height, const SDL_Color& textColor, const std::string& text) {
     SDL_FRect bgRect = {(float)x, (float)y, (float)width, (float)height};
     
     SDL_SetRenderDrawColor(globals.renderer, 0, 100, 200, 200);
