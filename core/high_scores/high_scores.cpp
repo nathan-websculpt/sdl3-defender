@@ -65,7 +65,7 @@ void HighScores::submitHighScore(const std::string& name, GameStateData& state) 
     }
 }
 
-void HighScores::saveHighScores(GameStateData& state) {
+void HighScores::saveHighScores(const GameStateData& state) {
     std::ofstream file(Config::Game::HIGH_SCORES_PATH);
     if (file.is_open()) {
         for (const auto& entry : state.highScores) {

@@ -9,12 +9,17 @@
 #include "helpers_game/collision_handler.h"
 
 Game::Game()
-    : m_state{}, m_gameHelpers(m_state.landscape) {
+    : 
+    m_mixer(SoundManager::getInstance().getMixerInstance()), 
+    m_state{}, 
+    m_gameHelpers(m_state.landscape), 
+    m_lastWindowHeight(0.0f), m_opponentSpawnTimer(0.0f), m_prevShootState(false),
+    m_playerHealthItemSpawnTimer(0.0f), m_worldHealthItemSpawnTimer(0.0f) 
+{
     m_highScores.loadHighScores(m_state);
 }
 
 void Game::startNewGame() {
-    m_mixer = SoundManager::getInstance().getMixerInstance();
     if (m_mixer) 
         SoundManager::getInstance().playSound(Config::Sounds::GAME_START, m_mixer);
 
@@ -90,7 +95,7 @@ void Game::update(float deltaTime) {
     updateCamera(pb);    
 }
 
-void Game::updateCamera(SDL_FRect& playerBounds) {
+void Game::updateCamera(const SDL_FRect& playerBounds) {
     float target = playerBounds.x - globals.windowWidth / 2.0f;
     if (target < 0) target = 0;
     if (target > Config::Game::WORLD_WIDTH - globals.windowWidth) target = Config::Game::WORLD_WIDTH - globals.windowWidth;

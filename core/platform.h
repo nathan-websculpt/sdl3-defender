@@ -12,7 +12,7 @@
 
 class Platform {
 public:
-    Platform() = default;
+    Platform();
     ~Platform();
 
     // delete copy operations
@@ -27,10 +27,10 @@ public:
     void shutdown();
 
 private:
-    bool m_running = true;
-    bool m_textInputActive = false; // track if text input is currently active
+    bool m_running;
+    bool m_textInputActive; // track if text input is currently active
 
-    SDL_AudioDeviceID m_audioDeviceID = 0;
+    SDL_AudioDeviceID m_audioDeviceID;
     SDL_AudioSpec m_audioSpec;
 
     // input

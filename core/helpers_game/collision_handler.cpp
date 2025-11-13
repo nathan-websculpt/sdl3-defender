@@ -6,7 +6,7 @@ using namespace CollisionHandler;
 
 namespace {
     // player projectiles hitting opponents
-    void handlePlayerProjectiles(GameStateData& state, GameHelper& helpers) {
+    void handlePlayerProjectiles(GameStateData& state, const GameHelper& helpers) {
         if (!state.player) return;
         auto& pp = state.player->getProjectiles();
         for (auto p_it = pp.begin(); p_it != pp.end(); ) {
@@ -48,7 +48,7 @@ namespace {
 
     // player collisions with opponents and opponents projectiles collision with player
     // returns true if processing completed normally, false if it resulted in game-over
-    bool handleOpponentsAndPlayer(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer, SDL_FRect& playerBounds) {
+    bool handleOpponentsAndPlayer(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, MIX_Mixer* mixer, const SDL_FRect& playerBounds) {
         if (!state.player || !state.player->isAlive()) return true;
         for (auto o_it = state.opponents.begin(); o_it != state.opponents.end(); ) {
             auto& o = *o_it;
@@ -116,7 +116,7 @@ namespace {
     }
 
     // player collisions with health items
-    void handleHealthItems(GameStateData& state, GameHelper& helpers, SDL_FRect& playerBounds) {
+    void handleHealthItems(GameStateData& state, const GameHelper& helpers, const SDL_FRect& playerBounds) {
         if (!state.player) return;
         for (auto it = state.healthItems.begin(); it != state.healthItems.end(); ) {
             auto& item = *it;

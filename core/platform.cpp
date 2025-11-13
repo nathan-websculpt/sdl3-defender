@@ -8,6 +8,9 @@
 #include "../entities/health_item.h"
 #include "globals.h"
 
+Platform::Platform()
+    : m_running(true), m_textInputActive(false), m_audioDeviceID(0) { }
+
 Platform::~Platform() { shutdown(); } 
 
 bool Platform::initialize() {
@@ -117,7 +120,6 @@ void Platform::shutdown() {
 
 void Platform::run(Game& sim) {
     const int TARGET_FPS = 60;
-    const float FRAME_TARGET_TIME_MS = 1000.0f / TARGET_FPS;
     const float FIXED_DELTA_TIME = 1.0f / TARGET_FPS; // delta time for updates
 
     // 64-bit integers for time values

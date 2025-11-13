@@ -98,8 +98,6 @@ void RenderHud::renderMinimap(const GameStateData& state) {
     // render landscape
     if (!state.landscape.empty()) {
         RenderHelper::setRenderDrawColor(RenderColors::gold2);
-        float sx = (float)mmW / Config::Game::WORLD_WIDTH;
-        float sy = (float)mmH / globals.windowHeight;
         for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
             float x1 = state.landscape[i].x * sx + mmX;
             float y1 = state.landscape[i].y * sy + mmY;

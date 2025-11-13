@@ -14,5 +14,5 @@ public:
     int getHighScoreIndex(GameStateData& state) const;
 
 private:
-    void saveHighScores(GameStateData& state);
+    void saveHighScores(const GameStateData& state);
 };

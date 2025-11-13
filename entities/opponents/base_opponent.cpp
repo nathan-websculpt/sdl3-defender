@@ -7,7 +7,9 @@
 
 BaseOpponent::BaseOpponent(float x, float y, float w, float h) 
     : m_rect{x, y, w, h},
-      m_angle(0.0f), m_startX(x), m_health(3), m_fireTimer(0.0f)
+      m_angle(0.0f), m_startX(x), m_health(3), m_fireTimer(0.0f),
+      m_speed(0.0f), m_angularSpeed(0.0f), m_oscillationAmplitude(0.0f),
+      m_fireInterval(0.0f), m_scoreVal(0)
       {}
 
 void BaseOpponent::takeDamage(int damage) {

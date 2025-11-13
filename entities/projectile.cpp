@@ -3,7 +3,7 @@
 
 // player projectile constructor shoots horizontally
 Projectile::Projectile(float spawnX, float spawnY, float direction, float speed)
-    : m_spawnX(spawnX), m_spawnY(spawnY), m_rect{spawnX, spawnY, 2.0f, 2.0f}, // m_rect is a small hitbox
+    : m_spawnX(spawnX), m_spawnY(spawnY), m_rect{spawnX, spawnY, 2.0f, 2.0f},
       m_direction(direction), m_speed(speed), m_age(0.0f), m_lifetime(0.5f) { 
     // velocity based on direction
     m_velocity.x = m_direction * m_speed;

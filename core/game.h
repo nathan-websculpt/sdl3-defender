@@ -31,21 +31,22 @@ private:
     HighScores m_highScores;
     GameHelper m_gameHelpers;
 
-    float m_lastWindowHeight = 0.0f;
-    float m_opponentSpawnTimer;
-    const float OPPONENT_SPAWN_INTERVAL = 2.0f;
-    bool m_prevShootState = false;
+    static constexpr float OPPONENT_SPAWN_INTERVAL = 2.0f;
+    static constexpr float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
+    static constexpr float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
 
-    float m_playerHealthItemSpawnTimer = 0.0f;
-    float m_worldHealthItemSpawnTimer = 0.0f;
-    const float PLAYER_HEALTH_ITEM_SPAWN_INTERVAL = 17.0f;
-    const float WORLD_HEALTH_ITEM_SPAWN_INTERVAL = 36.0f;
+    float m_lastWindowHeight;
+    float m_opponentSpawnTimer;
+    bool m_prevShootState;
+
+    float m_playerHealthItemSpawnTimer;
+    float m_worldHealthItemSpawnTimer;
 
 
     void setLandscape();
     void spawnOpponent();    
     void spawnHealthItem(HealthItemType type);  
-    void updateCamera(SDL_FRect& playerBounds);
+    void updateCamera(const SDL_FRect& playerBounds);
 
     // inputs
     void handleEscapeKey();

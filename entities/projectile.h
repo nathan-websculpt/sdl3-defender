@@ -50,7 +50,7 @@ private:
     float m_spawnX;
     float m_spawnY; 
     
-    float m_direction; // 1 is right, -1 is left
+    float m_direction = 1.0f; // 1 is right, -1 is left
     float m_speed;
 
     float m_age; // how long projectile has existed
