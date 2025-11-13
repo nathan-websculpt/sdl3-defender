@@ -139,7 +139,7 @@ namespace {
 
 } // namespace CollisionHandler
 
-void CollisionHandler::processAllCollisions(GameStateData& state, GameHelper& helpers, HighScores& highScores, MIX_Mixer* mixer, SDL_FRect& playerBounds) {
+void CollisionHandler::processAllCollisions(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, MIX_Mixer* mixer, const SDL_FRect& playerBounds) {
     if (!state.player) return;
 
     handlePlayerProjectiles(state, helpers);
