@@ -10,7 +10,6 @@ namespace ProjectileClipping {
 
         // determine search range
         size_t startIdx = 0;
-        size_t endIdx = landscape.size() - 1;
 
         if (goingRight) {
             // find first segment where x >= startX

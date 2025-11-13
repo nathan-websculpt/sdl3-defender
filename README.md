@@ -48,6 +48,19 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 
 ```
 
+if you get basic clang-tidy errors on things like string, vector, memory
+```
+# check selected GCC installation 
+clang -v
+
+# make sure that you have it
+g++-n --version
+
+# install if needed
+sudo apt install g++-n
+
+```
+
 run on single file
 ```bash
 clang-tidy ../sdl3-defender/core/platform.cpp -- -I../sdl3-defender
