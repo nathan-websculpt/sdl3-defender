@@ -1,7 +1,7 @@
 #include "render_screens.h"
 
 void RenderScreens::renderMainMenu() {
-    SDL_SetRenderDrawColor(globals.renderer, 0, 20, 40, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
     SDL_RenderClear(globals.renderer);      
     RenderHelper::renderText("SDL3 DEFENDER", globals.windowWidth/2 - 100, globals.windowHeight/2 - 120, RenderColors::white, FontSize::MEDIUM);
 
@@ -18,7 +18,7 @@ void RenderScreens::renderMainMenu() {
 }
 
 void RenderScreens::renderHowToPlayScreen() {
-    SDL_SetRenderDrawColor(globals.renderer, 0, 20, 40, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
     SDL_RenderClear(globals.renderer);
 
     int y_pos = 50; // starting Y position for text
@@ -73,7 +73,7 @@ void RenderScreens::renderHowToPlayScreen() {
 }
 
 void RenderScreens::renderGameOverScreen(const GameStateData& state) {
-    SDL_SetRenderDrawColor(globals.renderer, 0, 0, 0, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
     SDL_RenderClear(globals.renderer);
     
     RenderHelper::renderText("GAME OVER", globals.windowWidth / 2 - 100, globals.windowHeight / 2 - 60, RenderColors::red, FontSize::LARGE);
@@ -83,7 +83,7 @@ void RenderScreens::renderGameOverScreen(const GameStateData& state) {
 }
 
 void RenderScreens::renderHighScoreEntryScreen(const GameStateData& state) {
-    SDL_SetRenderDrawColor(globals.renderer, 0, 0, 0, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
     SDL_RenderClear(globals.renderer);
     RenderHelper::renderText("NEW HIGH SCORE!", globals.windowWidth / 2 - 120, globals.windowHeight / 2 - 100, RenderColors::yellow, FontSize::LARGE);
     RenderHelper::renderText(("Position: #" + std::to_string(state.highScoreIndex + 1)).c_str(), globals.windowWidth / 2 - 80, globals.windowHeight / 2 - 50, RenderColors::white, FontSize::MEDIUM);

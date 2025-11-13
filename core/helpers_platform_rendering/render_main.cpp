@@ -28,7 +28,8 @@ void RenderMain::render(const GameStateData& state) {
 }
 
 void RenderMain::renderPlaying(const GameStateData& state) {
-    SDL_SetRenderDrawColor(globals.renderer, 0, 20, 40, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
+
     SDL_RenderClear(globals.renderer);
 
     float cameraOffsetX = state.cameraX;
@@ -94,7 +95,7 @@ void RenderMain::renderOpponentsAndProjectiles(const GameStateData& state, float
             SDL_RenderTexture(globals.renderer, opponentTexture.get(), nullptr, &renderBounds);
         } else {
             // fallback rect
-            SDL_SetRenderDrawColor(globals.renderer, 255, 0, 255, 255);
+            RenderHelper::setRenderDrawColor(RenderColors::red);
             SDL_RenderFillRect(globals.renderer, &renderBounds);
         }
 
@@ -137,7 +138,7 @@ void RenderMain::renderParticles(const GameStateData& state, float cameraOffsetX
 
 void RenderMain::renderLandscape(const GameStateData& state, float cameraOffsetX) {
     if (!state.landscape.empty()) {
-        SDL_SetRenderDrawColor(globals.renderer, 100, 80, 60, 255);
+        RenderHelper::setRenderDrawColor(RenderColors::gold1);
         for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
             SDL_FPoint p1 = { state.landscape[i].x - cameraOffsetX, state.landscape[i].y };
             SDL_FPoint p2 = { state.landscape[i + 1].x - cameraOffsetX, state.landscape[i + 1].y };
@@ -165,9 +166,9 @@ void RenderMain::renderHealthItems(const GameStateData& state, float cameraOffse
             SDL_SetTextureAlphaMod(itemTexture.get(), 255); // ...resets alpha for next item
         } else {
             // fallback rectangle
-            SDL_SetRenderDrawColor(globals.renderer, 0, 255, 0, 255);
+            RenderHelper::setRenderDrawColor(RenderColors::green);
             if (item->getType() == HealthItemType::WORLD) {
-                SDL_SetRenderDrawColor(globals.renderer, 255, 255, 0, 255);
+                RenderHelper::setRenderDrawColor(RenderColors::yellow);
             }
             if (item->isBlinking()) {
                 // blinking effect

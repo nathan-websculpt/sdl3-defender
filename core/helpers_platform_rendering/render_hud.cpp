@@ -2,12 +2,12 @@
 
 void RenderHud::renderHudBackground() {
     // background
-    SDL_SetRenderDrawColor(globals.renderer, 0, 30, 50, 220);
+    RenderHelper::setRenderDrawColor(RenderColors::blueDark1);
     SDL_FRect hudBg = {0.0f, 0.0f, static_cast<float>(globals.windowWidth), static_cast<float>(Config::Game::HUD_HEIGHT)};
     SDL_RenderFillRect(globals.renderer, &hudBg);
 
     // separator line
-    SDL_SetRenderDrawColor(globals.renderer, 200, 200, 200, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::grey);
     SDL_RenderLine(globals.renderer, 0.0f, static_cast<float>(Config::Game::HUD_HEIGHT), static_cast<float>(globals.windowWidth), static_cast<float>(Config::Game::HUD_HEIGHT));
 }
 
@@ -34,15 +34,15 @@ void RenderHud::renderHealthBar(const char* label, int x, int y, int width, int 
     
     float fillWidth = std::max(0.0f, width * healthRatio);
     
-    SDL_SetRenderDrawColor(globals.renderer, 255, 0, 0, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::red);
     SDL_FRect bgRect = {(float)x, (float)(y + 20), (float)width, (float)height};
     SDL_RenderFillRect(globals.renderer, &bgRect);
     
-    SDL_SetRenderDrawColor(globals.renderer, 0, 255, 0, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::green);
     SDL_FRect fillRect = {(float)x, (float)(y + 20), fillWidth, (float)height};
     SDL_RenderFillRect(globals.renderer, &fillRect);
     
-    SDL_SetRenderDrawColor(globals.renderer, 255, 255, 255, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::white);
     SDL_RenderRect(globals.renderer, &bgRect);
 }
 
@@ -51,21 +51,22 @@ void RenderHud::renderMinimap(const GameStateData& state) {
     const int mmH = 42;
     const int mmX = (globals.windowWidth - mmW)/2;
     const int mmY = 20;
-    SDL_SetRenderDrawColor(globals.renderer, 0, 40, 80, 200);
+
+    RenderHelper::setRenderDrawColor(RenderColors::blueDark2);
     SDL_FRect mm = {(float)mmX, (float)mmY, (float)mmW, (float)mmH};
     SDL_RenderFillRect(globals.renderer, &mm);
-    SDL_SetRenderDrawColor(globals.renderer, 0, 100, 200, 255);
+    RenderHelper::setRenderDrawColor(RenderColors::blueLight);
     SDL_RenderRect(globals.renderer, &mm);
 
     float sx = (float)mmW / Config::Game::WORLD_WIDTH;
     float sy = (float)mmH / globals.windowHeight;
 
-    // goldish dot for player
+    // light yellow dot for player
     if (state.player) {
         SDL_FRect pb = state.player->getBounds();
         float px = (pb.x * sx + mmX) - 1.0f;
         float py = pb.y * sy + mmY;
-        SDL_SetRenderDrawColor(globals.renderer, 223, 245, 39, 200);
+        RenderHelper::setRenderDrawColor(RenderColors::yellowLight);
         SDL_FRect pd = {px, py, 3, 3};
         SDL_RenderFillRect(globals.renderer, &pd);
     }
@@ -76,7 +77,7 @@ void RenderHud::renderMinimap(const GameStateData& state) {
             SDL_FRect ob = o->getBounds();
             float ox = (ob.x * sx + mmX) - 1.0f;
             float oy = ob.y * sy + mmY;
-            SDL_SetRenderDrawColor(globals.renderer, 255, 0, 0, 255);
+            RenderHelper::setRenderDrawColor(RenderColors::red);
             SDL_FRect od = {ox, oy, 3, 3};
             SDL_RenderFillRect(globals.renderer, &od);
         }
@@ -88,7 +89,7 @@ void RenderHud::renderMinimap(const GameStateData& state) {
             SDL_FRect hb = h->getBounds();
             float hx = (hb.x * sx + mmX) - 1.0f;
             float hy = hb.y * sy + mmY;
-            SDL_SetRenderDrawColor(globals.renderer, 0, 255, 0, 255);
+            RenderHelper::setRenderDrawColor(RenderColors::green);
             SDL_FRect hd = {hx, hy, 3, 3};
             SDL_RenderFillRect(globals.renderer, &hd);
         }
@@ -96,7 +97,7 @@ void RenderHud::renderMinimap(const GameStateData& state) {
 
     // render landscape
     if (!state.landscape.empty()) {
-        SDL_SetRenderDrawColor(globals.renderer, 180, 150, 100, 200);
+        RenderHelper::setRenderDrawColor(RenderColors::gold2);
         float sx = (float)mmW / Config::Game::WORLD_WIDTH;
         float sy = (float)mmH / globals.windowHeight;
         for (size_t i = 0; i < state.landscape.size() - 1; ++i) {
@@ -110,7 +111,7 @@ void RenderHud::renderMinimap(const GameStateData& state) {
 
     float vx = state.cameraX * sx + mmX;
     float vw = globals.windowWidth * sx;
-    SDL_SetRenderDrawColor(globals.renderer, 255, 255, 255, 100);
+    RenderHelper::setRenderDrawColor(RenderColors::whiteDim);
     SDL_FRect vr = {vx, (float)mmY, vw, (float)mmH};
     SDL_RenderRect(globals.renderer, &vr);
 }

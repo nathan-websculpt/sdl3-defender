@@ -1,5 +1,11 @@
 #include "render_helper.h"
 
+// wraps SDL_SetRenderDrawColor - easier to keep SDL_Colors in one place
+// pass RenderColors::colorxyz into this to set SDL Draw Color
+void RenderHelper::setRenderDrawColor(const SDL_Color& c) {
+    SDL_SetRenderDrawColor(globals.renderer, c.r, c.g, c.b, c.a);
+}
+
 void RenderHelper::renderCloseButton() {
     const float size = 20.0f;
     const float y = 10.0f;
@@ -8,11 +14,11 @@ void RenderHelper::renderCloseButton() {
     SDL_FRect buttonRect = { x, y, size, size };
     
     // draw background
-    SDL_SetRenderDrawColor(globals.renderer, 40, 40, 40, 200);
+    setRenderDrawColor(RenderColors::greySlate);
     SDL_RenderFillRect(globals.renderer, &buttonRect);
     
     // draw border
-    SDL_SetRenderDrawColor(globals.renderer, 255, 255, 255, 255);
+    setRenderDrawColor(RenderColors::white);
     SDL_RenderRect(globals.renderer, &buttonRect);
     
     FontSize closeButtonFontSize = FontSize::SMALL;
@@ -26,9 +32,9 @@ void RenderHelper::renderCloseButton() {
 void RenderHelper::renderMenuButton(int x, int y, int width, int height, const SDL_Color& textColor, const std::string& text) {
     SDL_FRect bgRect = {(float)x, (float)y, (float)width, (float)height};
     
-    SDL_SetRenderDrawColor(globals.renderer, 0, 100, 200, 200);
+    setRenderDrawColor(RenderColors::blueLight);
     SDL_RenderFillRect(globals.renderer, &bgRect);
-    SDL_SetRenderDrawColor(globals.renderer, 255, 255, 255, 255);
+    setRenderDrawColor(RenderColors::white);
     SDL_RenderRect(globals.renderer, &bgRect);
     
     //centering text
