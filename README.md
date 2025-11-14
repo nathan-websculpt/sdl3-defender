@@ -39,6 +39,8 @@ main.cpp \
 ./m
 ```
 
+# Project layout
+
 ## Analysis
 
 ### clang-tidy
@@ -149,3 +151,55 @@ If the bottom of a hitbox (y + height) is >= groundY, it is considered in solid 
 - getBounds() is called twice per entity in some places - cache result?
 - use `< random >` instead of srand() and rand() ?
 - getters like getProjectiles() are allowing for external mutation (could enhance with const versions)
+
+# diagrams
+
+```mermaid
+graph TD
+    A["RenderMain::render
+    (GameStateData)"] --> B{Check GameState}
+    B --> C["State::PLAYING:
+    renderPlaying"]
+    B --> D["State::MENU:
+    renderMainMenu"]
+    B --> E["State::HOW_TO_PLAY:
+    renderHowToPlayScreen"]
+    B --> F["State::GAME_OVER:
+    renderGameOverScreen"]
+    B --> G["State::HIGH_SCORE:
+    renderHighScoreEntryScreen"]
+
+    C --> H[renderPlayerAndProjectiles]
+    C --> I[renderOpponentsAndProjectiles]
+    C --> J[renderParticles]
+    C --> K[renderLandscape]
+    C --> L[renderHealthItems]
+    C --> M[RenderHud::renderHudBackground]
+    C --> N[RenderHud::renderHealthBars]
+    C --> O[RenderHud::renderMinimap]
+    C --> P[RenderHud::renderScore]
+
+    D --> Q[RenderScreens::renderMainMenu]
+    E --> R[RenderScreens::renderHowToPlayScreen]
+    F --> S[RenderScreens::renderGameOverScreen]
+    G --> T[RenderScreens::renderHighScoreEntryScreen]
+
+    H --> U["RenderHelper
+    (SDL Calls)"]
+    I --> U
+    J --> U
+    K --> U
+    L --> U
+    M --> U
+    N --> U
+    O --> U
+    P --> U
+    Q --> U
+    R --> U
+    S --> U
+    T --> U
+
+    style A fill:#f9d,stroke:#333,stroke-width:2px
+    style U fill:#9f9,stroke:#333,stroke-width:2px
+    
+```
