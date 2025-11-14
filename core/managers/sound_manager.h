@@ -44,7 +44,7 @@ public:
     bool initialize(SDL_AudioDeviceID deviceID, const SDL_AudioSpec& spec);
     void shutdown();
 
-    bool playSound(const std::string& filepath);
+    void playSound(const std::string& filepath);
 
     MIX_Mixer* getMixerInstance() const { return m_mixerInstance.get(); }
 
@@ -55,5 +55,5 @@ private:
     std::unordered_map<std::string, std::shared_ptr<MIX_Track>> m_trackCache;
     bool m_initialized = false; 
     // store the mixer instance created during initialization
-    std::shared_ptr<MIX_Mixer> m_mixerInstance; // TODO: stop passing mixer in?
+    std::shared_ptr<MIX_Mixer> m_mixerInstance;
 };

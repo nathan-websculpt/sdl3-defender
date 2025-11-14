@@ -65,7 +65,7 @@ namespace {
                 state.playerScore += o->getScoreVal();
                 o_it = state.opponents.erase(o_it);
                 if (!state.player->isAlive()) {
-                        SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER);
+                    SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER);
                             
                     state.state = GameStateData::State::GAME_OVER;
                     if (highScores.isHighScore(state)) {
