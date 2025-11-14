@@ -39,6 +39,7 @@ public:
 
     static SoundManager& getInstance();
     std::shared_ptr<MIX_Audio> getSound(const std::string& filepath);
+    std::shared_ptr<MIX_Track> getTrack(const std::string& filepath);
     void clearCache();
     bool initialize(SDL_AudioDeviceID deviceID, const SDL_AudioSpec& spec);
     void shutdown();
@@ -51,7 +52,8 @@ private:
     SoundManager() = default;
     ~SoundManager();
     std::unordered_map<std::string, std::shared_ptr<MIX_Audio>> m_soundCache;
+    std::unordered_map<std::string, std::shared_ptr<MIX_Track>> m_trackCache;
     bool m_initialized = false; 
     // store the mixer instance created during initialization
-    std::shared_ptr<MIX_Mixer> m_mixerInstance;
+    std::shared_ptr<MIX_Mixer> m_mixerInstance; // TODO: stop passing mixer in?
 };

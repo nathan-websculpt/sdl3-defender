@@ -77,6 +77,19 @@ std::shared_ptr<MIX_Audio> SoundManager::getSound(const std::string& filepath) {
     return sharedAudio;
 }
 
+std::shared_ptr<MIX_Track> SoundManager::getTrack(const std::string& filepath) {
+    auto it = m_trackCache.find(filepath);
+    if (it != m_trackCache.end()) {
+        SDL_Log("SoundManager: Cache HIT for track '%s'.", filepath.c_str());
+        return it->second;
+    }
+
+    MIX_Track* track = MIX_CreateTrack(m_mixerInstance.get());
+    auto sharedTrack = std::shared_ptr<MIX_Track>(track, MIX_Track_Deleter{});
+    m_trackCache[filepath] = sharedTrack;
+    return sharedTrack;
+}
+
 bool SoundManager::playSound(const std::string& filepath, MIX_Mixer* mixer) {
     if (!m_initialized || !mixer) {
          SDL_Log("SoundManager: Cannot play sound, not initialized or mixer is null.");
@@ -89,24 +102,24 @@ bool SoundManager::playSound(const std::string& filepath, MIX_Mixer* mixer) {
         return false;
     }
 
-    MIX_Track* track = MIX_CreateTrack(mixer);
-    if (!track) {
+    auto trackSharedPtr = getTrack(filepath);
+    if (!trackSharedPtr) {
         SDL_Log("SoundManager: Failed to create track for sound '%s': %s", filepath.c_str(), SDL_GetError());
         return false;
     }
 
-    if (!MIX_SetTrackAudio(track, audioSharedPtr.get())) {
+    if (!MIX_SetTrackAudio(trackSharedPtr.get(), audioSharedPtr.get())) {
         SDL_Log("SoundManager: Failed to assign audio to track for sound '%s': %s", filepath.c_str(), SDL_GetError());
-        MIX_DestroyTrack(track);
+        MIX_DestroyTrack(trackSharedPtr.get()); // TODO: ???
         return false; 
     }
 
     // play once, 0 iterations
-    bool playSuccess = MIX_PlayTrack(track, 0);
+    bool playSuccess = MIX_PlayTrack(trackSharedPtr.get(), 0);
 
     if (!playSuccess) {
         SDL_Log("SoundManager: Failed to play track for sound '%s': %s", filepath.c_str(), SDL_GetError());
-        MIX_DestroyTrack(track);
+        MIX_DestroyTrack(trackSharedPtr.get()); // TODO: ???
         return false;
     }
 
