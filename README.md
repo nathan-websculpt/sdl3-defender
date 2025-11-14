@@ -3,7 +3,7 @@
 <video src="https://raw.githubusercontent.com/nathan-websculpt/sdl3-defender/main/demo/defender_demo.mp4" width="600" controls>
 </video>
 
-https://raw.githubusercontent.com/nathan-websculpt/sdl3-defender/dev8/demo/defender_short.mp4
+https://github.com/nathan-websculpt/sdl3-defender/tree/dev8/demo/defender_short.mp4
 
 # Running Game
 
