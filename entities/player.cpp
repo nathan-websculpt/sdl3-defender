@@ -56,14 +56,7 @@ void Player::shoot() {
     float dir = (m_facing == Direction::RIGHT) ? 1.0f : -1.0f;
     m_projectiles.emplace(spawn.x, spawn.y, dir, 600.0f);
     
-    MIX_Mixer* mixer = SoundManager::getInstance().getMixerInstance();
-    if (mixer) {
-        if (!SoundManager::getInstance().playSound(Config::Sounds::PLAYER_SHOOT, mixer)) {
-            SDL_Log("Warning: Failed to play player shoot sound '%s'.", Config::Sounds::PLAYER_SHOOT.c_str());
-        }
-    } else {
-        SDL_Log("Warning: SoundManager mixer not available, cannot play shoot sound '%s'.", Config::Sounds::PLAYER_SHOOT.c_str());
-    }
+    SoundManager::getInstance().playSound(Config::Sounds::PLAYER_SHOOT);
 }
 
 void Player::setSpeedBoost(bool active) {

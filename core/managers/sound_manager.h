@@ -44,7 +44,7 @@ public:
     bool initialize(SDL_AudioDeviceID deviceID, const SDL_AudioSpec& spec);
     void shutdown();
 
-    bool playSound(const std::string& filepath, MIX_Mixer* mixer);
+    bool playSound(const std::string& filepath);
 
     MIX_Mixer* getMixerInstance() const { return m_mixerInstance.get(); }
 

@@ -26,7 +26,6 @@ public:
     GameStateData& getState() { return m_state; }    
 
 private:
-    MIX_Mixer* m_mixer;
     GameStateData m_state;
     HighScores m_highScores;
     GameHelper m_gameHelpers;

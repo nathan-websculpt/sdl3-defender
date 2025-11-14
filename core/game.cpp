@@ -10,7 +10,6 @@
 
 Game::Game()
     : 
-    m_mixer(SoundManager::getInstance().getMixerInstance()), 
     m_state{}, 
     m_gameHelpers(m_state.landscape), 
     m_lastWindowHeight(0.0f), m_opponentSpawnTimer(0.0f), m_prevShootState(false),
@@ -20,8 +19,7 @@ Game::Game()
 }
 
 void Game::startNewGame() {
-    if (m_mixer) 
-        SoundManager::getInstance().playSound(Config::Sounds::GAME_START, m_mixer);
+    SoundManager::getInstance().playSound(Config::Sounds::GAME_START);
 
     m_state.opponents.clear();
     m_state.particles.clear();
@@ -91,7 +89,7 @@ void Game::update(float deltaTime) {
 
     handleSpawnsAndTimers(deltaTime);
 
-    CollisionHandler::processAllCollisions(m_state, m_gameHelpers, m_highScores, m_mixer, pb);
+    CollisionHandler::processAllCollisions(m_state, m_gameHelpers, m_highScores, pb);
     updateCamera(pb);    
 }
 

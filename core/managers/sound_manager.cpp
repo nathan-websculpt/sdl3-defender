@@ -90,8 +90,8 @@ std::shared_ptr<MIX_Track> SoundManager::getTrack(const std::string& filepath) {
     return sharedTrack;
 }
 
-bool SoundManager::playSound(const std::string& filepath, MIX_Mixer* mixer) {
-    if (!m_initialized || !mixer) {
+bool SoundManager::playSound(const std::string& filepath) {
+    if (!m_initialized || !m_mixerInstance.get()) {
          SDL_Log("SoundManager: Cannot play sound, not initialized or mixer is null.");
          return false;
     }

@@ -48,7 +48,7 @@ namespace {
 
     // player collisions with opponents and opponents projectiles collision with player
     // returns true if processing completed normally, false if it resulted in game-over
-    bool handleOpponentsAndPlayer(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, MIX_Mixer* mixer, const SDL_FRect& playerBounds) {
+    bool handleOpponentsAndPlayer(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, const SDL_FRect& playerBounds) {
         if (!state.player || !state.player->isAlive()) return true;
         for (auto o_it = state.opponents.begin(); o_it != state.opponents.end(); ) {
             auto& o = *o_it;
@@ -65,8 +65,7 @@ namespace {
                 state.playerScore += o->getScoreVal();
                 o_it = state.opponents.erase(o_it);
                 if (!state.player->isAlive()) {
-                    if (mixer) 
-                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, mixer);
+                        SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER);
                             
                     state.state = GameStateData::State::GAME_OVER;
                     if (highScores.isHighScore(state)) {
@@ -90,8 +89,7 @@ namespace {
                     // erase the projectile that hit the player using the iterator
                     op_it = op.erase(op_it);
                     if (!state.player->isAlive()) {
-                        if (mixer) 
-                            SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, mixer);
+                        SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER);
 
                         state.state = GameStateData::State::GAME_OVER;
                         if (highScores.isHighScore(state)) {
@@ -139,12 +137,12 @@ namespace {
 
 } // namespace CollisionHandler
 
-void CollisionHandler::processAllCollisions(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, MIX_Mixer* mixer, const SDL_FRect& playerBounds) {
+void CollisionHandler::processAllCollisions(GameStateData& state, const GameHelper& helpers, const HighScores& highScores, const SDL_FRect& playerBounds) {
     if (!state.player) return;
 
     handlePlayerProjectiles(state, helpers);
 
-    if (!handleOpponentsAndPlayer(state, helpers, highScores, mixer, playerBounds)) return; // player died inside the handler and state has been set to GAME_OVER
+    if (!handleOpponentsAndPlayer(state, helpers, highScores, playerBounds)) return; // player died inside the handler and state has been set to GAME_OVER
         
     handleHealthItems(state, helpers, playerBounds);
 }

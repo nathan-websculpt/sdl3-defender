@@ -40,8 +40,7 @@ bool Game::updateOpponents(float deltaTime, const SDL_FRect& playerBounds) {
                 m_state.worldHealth--;
                 if (m_state.worldHealth <= 0) {
                     // world health too low; game over
-                    if (m_mixer) 
-                        SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER, m_mixer);
+                    SoundManager::getInstance().playSound(Config::Sounds::GAME_OVER);
 
                         m_state.state = GameStateData::State::GAME_OVER;
                     if (m_highScores.isHighScore(m_state)) {

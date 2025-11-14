@@ -41,9 +41,7 @@ bool BaseOpponent::isOnScreen(float objX, float objY, float cameraX) const {
 }
 
 void BaseOpponent::explode(plf::colony<Particle>& gameParticles) const {
-    MIX_Mixer* mixer = SoundManager::getInstance().getMixerInstance();
-    if (mixer) 
-        SoundManager::getInstance().playSound(Config::Sounds::OPPONENT_EXPLODE, mixer);
+    SoundManager::getInstance().playSound(Config::Sounds::OPPONENT_EXPLODE);
 
     SDL_FPoint center = { m_rect.x + m_rect.w / 2.0f, m_rect.y + m_rect.h / 2.0f };
     const ExplosionConfig& cfg = m_explosionConfig;
