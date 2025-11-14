@@ -170,33 +170,38 @@ GameInput Platform::pollInput(const GameStateData& state) {
 
     // always poll quit/escape/enter/mouse
     while (SDL_PollEvent(&event)) {
-        if (event.type == SDL_EVENT_WINDOW_RESIZED) {
-            globals.windowWidth = event.window.data1;
-            globals.windowHeight = event.window.data2;
-        } else if (event.type == SDL_EVENT_QUIT) {
-            input.quit = true;
-        } else if (event.type == SDL_EVENT_KEY_DOWN) {
-            if (event.key.key == SDLK_ESCAPE) input.escape = true;
-            else if (event.key.key == SDLK_RETURN) input.enter = true;
-        } else if (event.type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
-            if (event.button.button == SDL_BUTTON_LEFT) {
-                input.mouseClick = true;
-                input.mouseX = event.button.x;
-                input.mouseY = event.button.y;
-            }
-        } else if (event.type == SDL_EVENT_TEXT_INPUT) { // for text input
-            if (event.text.text[0] != '\0' && event.text.text[1] == '\0') { // ensure it's a single character
-                char c = event.text.text[0];
-                if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
-                    input.charInputEvent = true;
-                    input.inputChar = c;
+        switch (event.type) {
+            case SDL_EVENT_WINDOW_RESIZED:
+                globals.windowWidth = event.window.data1;
+                globals.windowHeight = event.window.data2;
+                break;
+            case SDL_EVENT_QUIT:
+                input.quit = true;
+                break;
+            case SDL_EVENT_KEY_DOWN:
+                if (event.key.key == SDLK_ESCAPE) input.escape = true;
+                else if (event.key.key == SDLK_RETURN) input.enter = true;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                if (event.button.button == SDL_BUTTON_LEFT) {
+                    input.mouseClick = true;
+                    input.mouseX = event.button.x;
+                    input.mouseY = event.button.y;
                 }
-            }
+                break;
+            case SDL_EVENT_TEXT_INPUT:
+                if (event.text.text[0] != '\0' && event.text.text[1] == '\0') { // ensure it's a single character
+                    char c = event.text.text[0];
+                    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') || (c >= '0' && c <= '9')) {
+                        input.charInputEvent = true;
+                        input.inputChar = c;
+                    }
+                }
+                break;
         }
     }
 
     // only poll movement/shoot/boost if playing
-    // TODO: switch statement
     if (state.state == GameStateData::State::PLAYING) {
         const bool* keys = SDL_GetKeyboardState(nullptr);
         input.moveLeft  = keys[SDL_SCANCODE_LEFT] || keys[SDL_SCANCODE_A];

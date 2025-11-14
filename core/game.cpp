@@ -114,14 +114,18 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
         return; // exit early
     }
 
-    // TODO: switch statement instead
-    if (m_state.state == GameStateData::State::MENU) {
-        handleInputMenu(input);
-    } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
-        handleInputHowToPlay(input);
-    } else if (m_state.state == GameStateData::State::PLAYING) {
-        handleInputPlaying(input, deltaTime);
-    } else if (m_state.state == GameStateData::State::GAME_OVER) {
-        handleInputGameOver(input, deltaTime);
+    switch (m_state.state) {
+        case GameStateData::State::MENU:
+            handleInputMenu(input);
+            break;
+        case GameStateData::State::HOW_TO_PLAY:
+            handleInputHowToPlay(input);
+            break;
+        case GameStateData::State::PLAYING:
+            handleInputPlaying(input, deltaTime);
+            break;
+        case GameStateData::State::GAME_OVER:
+            handleInputGameOver(input, deltaTime);
+            break;
     }
 }

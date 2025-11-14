@@ -5,21 +5,26 @@
 #include "globals.h"
 
 void Game::handleEscapeKey() {
-    if (m_state.state == GameStateData::State::MENU) {
-        m_state.running = false;
-    } else if (m_state.state == GameStateData::State::PLAYING) {
-        m_state.state = GameStateData::State::MENU;
-    } else if (m_state.state == GameStateData::State::GAME_OVER) {
-        if (m_state.waitingForHighScore) {
-            std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
-            m_highScores.submitHighScore(nameToSubmit, m_state);
-            m_state.waitingForHighScore = false;
+    switch (m_state.state) {
+        case GameStateData::State::MENU:
+            m_state.running = false;
+            break;
+        case GameStateData::State::PLAYING:
             m_state.state = GameStateData::State::MENU;
-        } else {
+            break;
+        case GameStateData::State::GAME_OVER:
+            if (m_state.waitingForHighScore) {
+                std::string nameToSubmit = m_state.highScoreNameInput.empty() ? "ANON" : m_state.highScoreNameInput;
+                m_highScores.submitHighScore(nameToSubmit, m_state);
+                m_state.waitingForHighScore = false;
+                m_state.state = GameStateData::State::MENU;
+            } else {
+                m_state.state = GameStateData::State::MENU;
+            }
+            break;
+        case GameStateData::State::HOW_TO_PLAY:
             m_state.state = GameStateData::State::MENU;
-        }
-    } else if (m_state.state == GameStateData::State::HOW_TO_PLAY) {
-        m_state.state = GameStateData::State::MENU;
+            break;
     }
 }
 
