@@ -90,32 +90,24 @@ bool SoundManager::playSound(const std::string& filepath, MIX_Mixer* mixer) {
         return false;
     }
 
-    // create a temporary track for playback
     MIX_Track* track = MIX_CreateTrack(mixer);
     if (!track) {
         SDL_Log("SoundManager: Failed to create track for sound '%s': %s", filepath.c_str(), SDL_GetError());
         return false;
     }
 
-    auto sharedTrack = std::shared_ptr<MIX_Track>(track, MIX_Track_Deleter{});
-
-    if (!MIX_SetTrackAudio(sharedTrack.get(), audioSharedPtr.get())) {
+    if (!MIX_SetTrackAudio(track, audioSharedPtr.get())) {
         SDL_Log("SoundManager: Failed to assign audio to track for sound '%s': %s", filepath.c_str(), SDL_GetError());
+        MIX_DestroyTrack(track);
         return false; 
     }
 
-    SDL_PropertiesID options = SDL_CreateProperties();
-    if (!options) {
-        SDL_Log("SoundManager: Failed to create properties for sound '%s': %s", filepath.c_str(), SDL_GetError());
-        return false;
-    }
-
-    // play once
-    bool playSuccess = MIX_PlayTrack(sharedTrack.get(), options);
-    SDL_DestroyProperties(options);
+    // play once, 0 iterations
+    bool playSuccess = MIX_PlayTrack(track, 0);
 
     if (!playSuccess) {
         SDL_Log("SoundManager: Failed to play track for sound '%s': %s", filepath.c_str(), SDL_GetError());
+        MIX_DestroyTrack(track);
         return false;
     }
 
