@@ -3,6 +3,9 @@
 <video src="https://raw.githubusercontent.com/nathan-websculpt/sdl3-defender/main/demo/defender_demo.mp4" width="600" controls>
 </video>
 
+<video src="https://raw.githubusercontent.com/nathan-websculpt/sdl3-defender/dev8/demo/defender_short.mp4" width="600" controls>
+</video>
+
 # Running Game
 
 ### using build script
