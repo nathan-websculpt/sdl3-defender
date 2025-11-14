@@ -41,7 +41,171 @@ main.cpp \
 
 # Project layout
 
-## Analysis
+### main breakdown
+
+```mermaid
+graph TD
+    subgraph "Core"
+        Game["game.cpp/.h
+        - Main game loop
+        - State Management"]
+        Platform["platform.cpp/.h
+        - SDL Init/Shutdown
+        - Input Polling
+        - Main Run Loop"]
+        GameStateData["game_state_data.h
+        - Struct holding
+          game entities/score/state"]
+        GameHelper["game_helper.h/cpp
+        - Utility functions
+          for game logic"]
+        subgraph "Helpers"
+            Collision["collision_handler.h/cpp
+            - Process collisions"]
+            ColonyUpdate["colony_update_and_prune.h/cpp
+            - Update game entities"]
+            RenderMain["render_main.h/cpp
+            - Main render dispatcher"]
+            RenderPlatform["render_screens.h/cpp
+            - Menu/Screen rendering"]
+            RenderHud["render_hud.h/cpp
+            - HUD rendering"]
+            RenderHelper["render_helper.h/cpp
+            - SDL wrapper functions"]
+            ProjectileClipping["projectile_clipping.h/cpp
+            - Ray-landscape intersection"]
+        end
+        subgraph "Config & Globals"
+            Config["config.h
+            - Constants (paths, sizes)"]
+            Globals["globals.h/cpp
+            - Global SDL vars"]
+        end
+    end
+
+    subgraph "Entities"
+        Player["player.h/cpp
+        - Player logic
+        - Movement/Shooting"]
+        HealthItem["health_item.h/cpp
+        - Health pickup logic"]
+        subgraph "Opponents"
+            BaseOpponent["opponent_base.h/cpp
+            - Base class"]
+            BasicOpponent["basic_opponent.h/cpp
+            - Inherits BaseOpponent"]
+            AggressiveOpponent["aggressive_opponent.h/cpp
+            - Inherits BaseOpponent"]
+            SniperOpponent["sniper_opponent.h/cpp
+            - Inherits BaseOpponent"]
+        end
+        Projectile["projectile.h/cpp
+        - Projectile logic"]
+        Particle["particle.h/cpp
+        - Particle logic"]
+    end
+
+    %% Relationships (Managers are now just implied by dotted lines)
+    Game --> GameStateData
+    Game --> GameHelper
+    Game --> Collision
+    Game --> ColonyUpdate
+    Platform --> Game
+    Platform --> RenderMain
+    RenderMain --> RenderPlatform
+    RenderMain --> RenderHud
+    RenderMain --> RenderHelper
+    RenderPlatform --> RenderHelper
+    RenderHud --> RenderHelper
+    Collision --> GameHelper
+    ColonyUpdate --> GameHelper
+    ProjectileClipping --> GameHelper
+    Player -.-> RenderMain
+    BaseOpponent -.-> RenderMain
+    HealthItem -.-> RenderMain
+    Particle -.-> RenderMain
+    RenderMain -.-> RenderHelper
+    RenderPlatform -.-> RenderHelper
+    RenderHud -.-> RenderHelper
+    BaseOpponent --> Projectile
+    BaseOpponent --> Particle
+    Player --> Projectile
+    Player --> Particle
+    BasicOpponent -.-> BaseOpponent
+    AggressiveOpponent -.-> BaseOpponent
+    SniperOpponent -.-> BaseOpponent
+    Game --> Player
+    Game --> Opponents
+    Game --> HealthItem
+    Game --> Projectile
+    Game --> Particle
+    Opponents --> BasicOpponent
+    Opponents --> AggressiveOpponent
+    Opponents --> SniperOpponent
+
+    style Game fill:#f9d,stroke:#333,stroke-width:2px
+    style Platform fill:#f9d,stroke:#333,stroke-width:2px
+    style BaseOpponent fill:#f9f,stroke:#333,stroke-width:2px
+    style RenderHelper fill:#9f9,stroke:#333,stroke-width:2px
+    style Entities fill:#e9e9e9,stroke:#777,stroke-width:1px
+    style Helpers fill:#e9e9e9,stroke:#777,stroke-width:1px
+    style Opponents fill:#e9e9e9,stroke:#777,stroke-width:1px
+
+```
+
+### rendering
+
+```mermaid
+graph TD
+    A["RenderMain::render
+    (GameStateData)"] --> B{Check GameState}
+    B --> C["State::PLAYING:
+    renderPlaying"]
+    B --> D["State::MENU:
+    renderMainMenu"]
+    B --> E["State::HOW_TO_PLAY:
+    renderHowToPlayScreen"]
+    B --> F["State::GAME_OVER:
+    renderGameOverScreen"]
+    B --> G["State::HIGH_SCORE:
+    renderHighScoreEntryScreen"]
+
+    C --> H[renderPlayerAndProjectiles]
+    C --> I[renderOpponentsAndProjectiles]
+    C --> J[renderParticles]
+    C --> K[renderLandscape]
+    C --> L[renderHealthItems]
+    C --> M[RenderHud::renderHudBackground]
+    C --> N[RenderHud::renderHealthBars]
+    C --> O[RenderHud::renderMinimap]
+    C --> P[RenderHud::renderScore]
+
+    D --> Q[RenderScreens::renderMainMenu]
+    E --> R[RenderScreens::renderHowToPlayScreen]
+    F --> S[RenderScreens::renderGameOverScreen]
+    G --> T[RenderScreens::renderHighScoreEntryScreen]
+
+    H --> U["RenderHelper
+    (SDL Calls)"]
+    I --> U
+    J --> U
+    K --> U
+    L --> U
+    M --> U
+    N --> U
+    O --> U
+    P --> U
+    Q --> U
+    R --> U
+    S --> U
+    T --> U
+
+    style A fill:#f9d,stroke:#333,stroke-width:2px
+    style U fill:#9f9,stroke:#333,stroke-width:2px
+
+```
+
+# Static Analysis
 
 ### clang-tidy
 generate a `compile_commands.json` file inside `/build/`
@@ -142,8 +306,6 @@ If the bottom of a hitbox (y + height) is >= groundY, it is considered in solid 
    - Exploded (opponents), or
    - Repositioned (player).
      
-     
-     
 
 ## questions/TODO
 
@@ -152,54 +314,3 @@ If the bottom of a hitbox (y + height) is >= groundY, it is considered in solid 
 - use `< random >` instead of srand() and rand() ?
 - getters like getProjectiles() are allowing for external mutation (could enhance with const versions)
 
-# diagrams
-
-```mermaid
-graph TD
-    A["RenderMain::render
-    (GameStateData)"] --> B{Check GameState}
-    B --> C["State::PLAYING:
-    renderPlaying"]
-    B --> D["State::MENU:
-    renderMainMenu"]
-    B --> E["State::HOW_TO_PLAY:
-    renderHowToPlayScreen"]
-    B --> F["State::GAME_OVER:
-    renderGameOverScreen"]
-    B --> G["State::HIGH_SCORE:
-    renderHighScoreEntryScreen"]
-
-    C --> H[renderPlayerAndProjectiles]
-    C --> I[renderOpponentsAndProjectiles]
-    C --> J[renderParticles]
-    C --> K[renderLandscape]
-    C --> L[renderHealthItems]
-    C --> M[RenderHud::renderHudBackground]
-    C --> N[RenderHud::renderHealthBars]
-    C --> O[RenderHud::renderMinimap]
-    C --> P[RenderHud::renderScore]
-
-    D --> Q[RenderScreens::renderMainMenu]
-    E --> R[RenderScreens::renderHowToPlayScreen]
-    F --> S[RenderScreens::renderGameOverScreen]
-    G --> T[RenderScreens::renderHighScoreEntryScreen]
-
-    H --> U["RenderHelper
-    (SDL Calls)"]
-    I --> U
-    J --> U
-    K --> U
-    L --> U
-    M --> U
-    N --> U
-    O --> U
-    P --> U
-    Q --> U
-    R --> U
-    S --> U
-    T --> U
-
-    style A fill:#f9d,stroke:#333,stroke-width:2px
-    style U fill:#9f9,stroke:#333,stroke-width:2px
-    
-```
