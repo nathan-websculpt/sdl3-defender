@@ -112,7 +112,6 @@ void SoundManager::playSound(const std::string& filepath) {
 
     if (!MIX_SetTrackAudio(trackSharedPtr.get(), audioSharedPtr.get())) {
         SDL_Log("SoundManager: Failed to assign audio to track for sound '%s': %s", filepath.c_str(), SDL_GetError());
-        MIX_DestroyTrack(trackSharedPtr.get()); // TODO: ???
         return; 
     }
 
@@ -121,7 +120,6 @@ void SoundManager::playSound(const std::string& filepath) {
 
     if (!playSuccess) {
         SDL_Log("SoundManager: Failed to play track for sound '%s': %s", filepath.c_str(), SDL_GetError());
-        MIX_DestroyTrack(trackSharedPtr.get()); // TODO: ???
         return;
     }
 
