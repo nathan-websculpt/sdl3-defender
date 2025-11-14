@@ -2,6 +2,26 @@
 #include <iostream>
 #include <algorithm>
 
+SoundManager::~SoundManager() {
+    shutdown(); 
+}
+
+void SoundManager::shutdown() {
+    if (m_initialized) {
+        clearCache();
+        m_mixerInstance.reset();
+        m_initialized = false;
+        SDL_Log("SoundManager: SDL_mixer shut down.");
+        MIX_Quit();
+    }
+}
+
+void SoundManager::clearCache() {
+    if (m_initialized) {
+        SDL_Log("SoundManager: Clearing sound cache and destroying %zu audio objects.", m_soundCache.size());
+        m_soundCache.clear(); // will call the deleter for each MIX_Audio
+    }
+}
 SoundManager& SoundManager::getInstance() {
     static SoundManager instance;
     return instance;
@@ -33,16 +53,6 @@ bool SoundManager::initialize(SDL_AudioDeviceID deviceID, const SDL_AudioSpec& s
     return true;
 }
 
-void SoundManager::shutdown() {
-    if (m_initialized) {
-        clearCache();
-        m_mixerInstance.reset();
-        m_initialized = false;
-        SDL_Log("SoundManager: SDL_mixer shut down.");
-        MIX_Quit();
-    }
-}
-
 std::shared_ptr<MIX_Audio> SoundManager::getSound(const std::string& filepath) {
     if (!m_initialized || !m_mixerInstance) {
         SDL_Log("SoundManager: Not initialized or mixer not available! Cannot load sound: %s", filepath.c_str());
@@ -65,17 +75,6 @@ std::shared_ptr<MIX_Audio> SoundManager::getSound(const std::string& filepath) {
     m_soundCache[filepath] = sharedAudio;
     SDL_Log("SoundManager: Cache MISS, LOADED sound '%s'.", filepath.c_str());
     return sharedAudio;
-}
-
-void SoundManager::clearCache() {
-    if (m_initialized) {
-        SDL_Log("SoundManager: Clearing sound cache and destroying %zu audio objects.", m_soundCache.size());
-        m_soundCache.clear(); // will call the deleter for each MIX_Audio
-    }
-}
-
-SoundManager::~SoundManager() {
-    shutdown(); 
 }
 
 bool SoundManager::playSound(const std::string& filepath, MIX_Mixer* mixer) {
