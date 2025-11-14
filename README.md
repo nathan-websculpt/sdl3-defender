@@ -1,6 +1,6 @@
 ### Only tested in Fedora and POP!_OS
 
-<video src="https://github.com/nathan-websculpt/sdl3-defender/blob/main/demo/defender_demo.mp4" width="600" controls>
+<video src="https://raw.githubusercontent.com/nathan-websculpt/sdl3-defender/main/demo/defender_demo.mp4" width="600" controls>
 </video>
 
 # Running Game
