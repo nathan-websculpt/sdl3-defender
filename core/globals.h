@@ -5,7 +5,7 @@ class Globals {
 public:
     Globals() = default;
 
-    SDL_Window* window = nullptr;
+    SDL_Window* window = nullptr; // TODO: no longer needed in anything but platform
     SDL_Renderer* renderer = nullptr;
     
     int windowWidth = 1000;

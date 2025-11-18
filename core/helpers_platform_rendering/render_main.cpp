@@ -31,7 +31,7 @@ void RenderMain::render(const GameStateData& state) {
 }
 
 void RenderMain::renderPlaying(const GameStateData& state) {
-    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
+    RenderHelper::setRenderDrawColor(RenderColors::primary);
 
     SDL_RenderClear(globals.renderer);
 
@@ -171,7 +171,7 @@ void RenderMain::renderHealthItems(const GameStateData& state, float cameraOffse
             // fallback rectangle
             RenderHelper::setRenderDrawColor(RenderColors::green);
             if (item->getType() == HealthItemType::WORLD) {
-                RenderHelper::setRenderDrawColor(RenderColors::yellow);
+                RenderHelper::setRenderDrawColor(RenderColors::textPrimary);
             }
             if (item->isBlinking()) {
                 // blinking effect

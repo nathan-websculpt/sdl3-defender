@@ -109,7 +109,7 @@ void RenderHud::renderMinimap(const GameStateData& state) {
 
     float vx = state.cameraX * sx + mmX;
     float vw = globals.windowWidth * sx;
-    RenderHelper::setRenderDrawColor(RenderColors::whiteDim);
+    RenderHelper::setRenderDrawColor(RenderColors::whiteDim1);
     SDL_FRect vr = {vx, (float)mmY, vw, (float)mmH};
     SDL_RenderRect(globals.renderer, &vr);
 }

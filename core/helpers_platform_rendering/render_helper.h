@@ -7,15 +7,18 @@
 #include "../managers/font_manager.h"
 
 struct RenderColors {
+    static constexpr SDL_Color primary = {0, 20, 40, 255};            // game background
+    static constexpr SDL_Color secondary = {46, 62, 85, 155};            
+    static constexpr SDL_Color textPrimary = {220, 161, 29, 255};     // gold titles 
+    static constexpr SDL_Color textSecondary = {245, 245, 245, 220};  // dim white
+
     static constexpr SDL_Color white = {255, 255, 255, 255};
-    static constexpr SDL_Color whiteDim = {255, 255, 255, 100};
+    static constexpr SDL_Color whiteDim1 = {255, 255, 255, 100};
     static constexpr SDL_Color red = {255, 0, 0, 255};    
     static constexpr SDL_Color green = {0, 255, 0, 255};    
-    static constexpr SDL_Color yellow = {255, 255, 0, 255};
     static constexpr SDL_Color yellowLight = {223, 245, 39, 200};    // minimap dot for player
     static constexpr SDL_Color gold1 = {100, 80, 60, 255};           // landscape
     static constexpr SDL_Color gold2 = {180, 150, 100, 200};         // minimap landscape
-    static constexpr SDL_Color blueBG = {0, 20, 40, 255};            // game background
     static constexpr SDL_Color blueDark1 = {0, 30, 50, 220};          // HUD background
     static constexpr SDL_Color blueDark2 = {0, 40, 80, 200};          // minimap background
     static constexpr SDL_Color greySlate = {40, 40, 40, 200};        // close btn background  
