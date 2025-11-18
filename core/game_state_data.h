@@ -17,7 +17,8 @@ struct GameStateData {
         MENU,
         PLAYING,
         GAME_OVER,
-        HOW_TO_PLAY
+        HOW_TO_PLAY,
+        VIEW_HIGH_SCORES
     };
 
     State state = State::MENU;

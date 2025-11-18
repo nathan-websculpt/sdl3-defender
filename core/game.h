@@ -51,6 +51,7 @@ private:
     void handleEscapeKey();
     void handleInputMenu(const GameInput& input);
     void handleInputHowToPlay(const GameInput& input);
+    void handleInputViewHighScores(const GameInput& input);
     void handleInputPlaying(const GameInput& input, float deltaTime);
     void handleInputGameOver(const GameInput& input, float deltaTime);
     // END: inputs

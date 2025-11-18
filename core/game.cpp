@@ -119,6 +119,8 @@ void Game::handleInput(const GameInput& input, float deltaTime) {
         case GameStateData::State::HOW_TO_PLAY:
             handleInputHowToPlay(input);
             break;
+        case GameStateData::State::VIEW_HIGH_SCORES:
+            handleInputViewHighScores(input);
         case GameStateData::State::PLAYING:
             handleInputPlaying(input, deltaTime);
             break;

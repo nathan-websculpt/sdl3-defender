@@ -13,6 +13,9 @@ void RenderMain::render(const GameStateData& state) {
         case GameStateData::State::HOW_TO_PLAY: 
             RenderScreens::renderHowToPlayScreen();
             break;
+        case GameStateData::State::VIEW_HIGH_SCORES:
+            RenderScreens::renderViewHighScoresScreen(state);
+            break;
         case GameStateData::State::PLAYING: 
             renderPlaying(state);
             break;

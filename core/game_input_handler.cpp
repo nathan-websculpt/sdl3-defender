@@ -25,6 +25,9 @@ void Game::handleEscapeKey() {
         case GameStateData::State::HOW_TO_PLAY:
             m_state.state = GameStateData::State::MENU;
             break;
+        case GameStateData::State::VIEW_HIGH_SCORES:
+            m_state.state = GameStateData::State::MENU;
+            break;
     }
 }
 
@@ -38,11 +41,14 @@ void Game::handleInputMenu(const GameInput& input) {
         int h = globals.windowHeight;
         SDL_FRect playBtn = { (float)(w/2 - 100), (float)(h/2 - 60), 200, 50 };
         SDL_FRect howToPlayBtn = { (float)(w/2 - 100), (float)(h/2), 200, 50 };
-        SDL_FRect exitBtn = { (float)(w/2 - 100), (float)(h/2 + 60), 200, 50 };
+        SDL_FRect viewHighScoresBtn = { (float)(w/2 - 100), (float)(h/2 + 60), 200, 50 };
+        SDL_FRect exitBtn = { (float)(w/2 - 100), (float)(h/2 + 120), 200, 50 };
         if (mx >= playBtn.x && mx < playBtn.x + playBtn.w && my >= playBtn.y && my < playBtn.y + playBtn.h) {
             startNewGame();
         } else if (mx >= howToPlayBtn.x && mx < howToPlayBtn.x + howToPlayBtn.w && my >= howToPlayBtn.y && my < howToPlayBtn.y + howToPlayBtn.h) {
             m_state.state = GameStateData::State::HOW_TO_PLAY;
+        } else if (mx >= viewHighScoresBtn.x && mx < viewHighScoresBtn.x + viewHighScoresBtn.w && my >= viewHighScoresBtn.y && my < viewHighScoresBtn.y + viewHighScoresBtn.h) {
+            m_state.state = GameStateData::State::VIEW_HIGH_SCORES;
         } else if (mx >= exitBtn.x && mx < exitBtn.x + exitBtn.w && my >= exitBtn.y && my < exitBtn.y + exitBtn.h) {
             m_state.running = false;
         }
@@ -50,6 +56,12 @@ void Game::handleInputMenu(const GameInput& input) {
 }
 
 void Game::handleInputHowToPlay(const GameInput& input) {
+    if (input.enter || (input.mouseClick && input.mouseX > globals.windowWidth - 30 && input.mouseY < 30)) {
+        m_state.state = GameStateData::State::MENU;
+    }
+}
+
+void Game::handleInputViewHighScores(const GameInput& input) {
     if (input.enter || (input.mouseClick && input.mouseX > globals.windowWidth - 30 && input.mouseY < 30)) {
         m_state.state = GameStateData::State::MENU;
     }

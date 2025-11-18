@@ -13,8 +13,12 @@ void RenderScreens::renderMainMenu() {
     int buttonSpacing = 60;
 
     RenderHelper::renderMenuButton(centerX, startY, buttonWidth, buttonHeight, RenderColors::white, "Play");
-    RenderHelper::renderMenuButton(centerX, startY + buttonSpacing, buttonWidth, buttonHeight, RenderColors::white, "How to Play");
-    RenderHelper::renderMenuButton(centerX, startY + buttonSpacing * 2, buttonWidth, buttonHeight, RenderColors::white, "Exit");
+    startY += buttonSpacing;
+    RenderHelper::renderMenuButton(centerX, startY, buttonWidth, buttonHeight, RenderColors::white, "How to Play");
+    startY += buttonSpacing;
+    RenderHelper::renderMenuButton(centerX, startY, buttonWidth, buttonHeight, RenderColors::white, "High Scores");
+    startY += buttonSpacing;
+    RenderHelper::renderMenuButton(centerX, startY, buttonWidth, buttonHeight, RenderColors::white, "Exit");
 }
 
 void RenderScreens::renderHowToPlayScreen() {
@@ -90,6 +94,28 @@ void RenderScreens::renderHighScoreEntryScreen(const GameStateData& state) {
     RenderHelper::renderText(("Score: " + std::to_string(state.playerScore)).c_str(), globals.windowWidth / 2 - 60, globals.windowHeight / 2 - 20, RenderColors::white, FontSize::MEDIUM);
     RenderHelper::renderText("Enter Name (max 10 chars):", globals.windowWidth / 2 - 140, globals.windowHeight / 2 + 20, RenderColors::white, FontSize::SMALL);
     RenderHelper::renderText((state.highScoreNameInput + "_").c_str(), globals.windowWidth / 2 - 40, globals.windowHeight / 2 + 50, RenderColors::white, FontSize::MEDIUM);
+
+    RenderHelper::renderCloseButton();
+}
+
+void RenderScreens::renderViewHighScoresScreen(const GameStateData& state) {
+    RenderHelper::setRenderDrawColor(RenderColors::blueBG);
+    SDL_RenderClear(globals.renderer);
+
+    int y_pos = globals.windowHeight / 2 - (GameStateData::MAX_HIGH_SCORES * 30) / 2;
+    RenderHelper::renderText("HIGH SCORES", globals.windowWidth/2 - 100, y_pos - 40, RenderColors::yellow, FontSize::LARGE);
+
+    y_pos += 20;
+    for (int i = 0; i < static_cast<int>(state.highScores.size()) && i < GameStateData::MAX_HIGH_SCORES; ++i) {
+        const auto& entry = state.highScores[i];
+        std::string rankStr = std::to_string(i + 1) + ". " + entry.name + " - " + std::to_string(entry.score);
+        RenderHelper::renderText(rankStr.c_str(), globals.windowWidth/2 - 100, y_pos, RenderColors::white, FontSize::MEDIUM);
+        y_pos += 40;
+    }
+
+    if (state.highScores.empty()) {
+        RenderHelper::renderText("NO HIGH SCORES YET", globals.windowWidth/2 - 90, y_pos, RenderColors::white, FontSize::MEDIUM);
+    }
 
     RenderHelper::renderCloseButton();
 }
