@@ -111,8 +111,8 @@ void RenderScreens::renderGameOverScreen(const GameStateData& state) {
     RenderHelper::setRenderDrawColor(RenderColors::primary);
     SDL_RenderClear(globals.renderer);
     
-    RenderHelper::renderText("GAME OVER", globals.windowWidth / 2 - 100, globals.windowHeight / 2 - 60, RenderColors::red, FontSize::LARGE);
-    RenderHelper::renderText(("Score: " + std::to_string(state.playerScore)).c_str(), globals.windowWidth / 2 - 60, globals.windowHeight / 2, RenderColors::textSecondary, FontSize::MEDIUM);
+    RenderHelper::renderText("GAME OVER", globals.windowWidth / 2 - 130, globals.windowHeight / 2 - 60, RenderColors::textPrimary, FontSize::LARGE);
+    RenderHelper::renderText(("Score: " + std::to_string(state.playerScore)).c_str(), globals.windowWidth / 2 - 80, globals.windowHeight / 2, RenderColors::textSecondary, FontSize::MEDIUM);
 
     RenderHelper::renderCloseButton();
 }
@@ -120,11 +120,11 @@ void RenderScreens::renderGameOverScreen(const GameStateData& state) {
 void RenderScreens::renderHighScoreEntryScreen(const GameStateData& state) {
     RenderHelper::setRenderDrawColor(RenderColors::primary);
     SDL_RenderClear(globals.renderer);
-    RenderHelper::renderText("NEW HIGH SCORE!", globals.windowWidth / 2 - 120, globals.windowHeight / 2 - 100, RenderColors::textPrimary, FontSize::LARGE);
-    RenderHelper::renderText(("Position: #" + std::to_string(state.highScoreIndex + 1)).c_str(), globals.windowWidth / 2 - 80, globals.windowHeight / 2 - 50, RenderColors::textSecondary, FontSize::MEDIUM);
-    RenderHelper::renderText(("Score: " + std::to_string(state.playerScore)).c_str(), globals.windowWidth / 2 - 60, globals.windowHeight / 2 - 20, RenderColors::textSecondary, FontSize::MEDIUM);
-    RenderHelper::renderText("Enter Name (max 10 chars):", globals.windowWidth / 2 - 140, globals.windowHeight / 2 + 20, RenderColors::textSecondary, FontSize::SMALL);
-    RenderHelper::renderText((state.highScoreNameInput + "_").c_str(), globals.windowWidth / 2 - 40, globals.windowHeight / 2 + 50, RenderColors::textSecondary, FontSize::MEDIUM);
+    RenderHelper::renderText("NEW HIGH SCORE!", globals.windowWidth / 2 - 175, globals.windowHeight / 2 - 130, RenderColors::textPrimary, FontSize::LARGE);
+    RenderHelper::renderText(("Position: #" + std::to_string(state.highScoreIndex + 1)).c_str(), globals.windowWidth / 2 - 85, globals.windowHeight / 2 - 60, RenderColors::textSecondary, FontSize::MEDIUM);
+    RenderHelper::renderText(("Score: " + std::to_string(state.playerScore)).c_str(), globals.windowWidth / 2 - 65, globals.windowHeight / 2 - 20, RenderColors::textSecondary, FontSize::MEDIUM);
+    RenderHelper::renderText("Enter Name (max 10 chars):", globals.windowWidth / 2 - 125, globals.windowHeight / 2 + 50, RenderColors::textSecondary, FontSize::SMALL);
+    RenderHelper::renderText((state.highScoreNameInput + "_").c_str(), globals.windowWidth / 2 - 25, globals.windowHeight / 2 + 70, RenderColors::textSecondary, FontSize::MEDIUM);
 
     RenderHelper::renderCloseButton();
 }
