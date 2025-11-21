@@ -37,6 +37,10 @@ public:
     SoundManager(const SoundManager&) = delete;
     SoundManager& operator=(const SoundManager&) = delete;
 
+    // new: adding specifically because SoundManager has a raw SDL_AudioDeviceID
+    SoundManager(SoundManager&&) = delete;
+    SoundManager& operator=(SoundManager&&) = delete;
+
     static SoundManager& getInstance();
     std::shared_ptr<MIX_Audio> getSound(const std::string& filepath);
     std::shared_ptr<MIX_Track> getTrack(const std::string& filepath);

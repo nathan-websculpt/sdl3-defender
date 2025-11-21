@@ -18,9 +18,9 @@ public:
     // delete copy operations
     Platform(const Platform&) = delete;
     Platform& operator=(const Platform&) = delete;
-    // default move operations
-    Platform(Platform&&) = default;
-    Platform& operator=(Platform&&) = default;
+    // delete move operations
+    Platform(Platform&&) = delete;
+    Platform& operator=(Platform&&) = delete;
 
     bool initialize();
     void run(Game& sim);

@@ -80,7 +80,7 @@ void Game::handleInputPlaying(const GameInput& input, float deltaTime) {
     m_prevShootState = input.shoot;
 
     float speed = m_state.player->getSpeed();
-    float dx = 0, dy = 0;
+    float dx = 0, dy = 0; // TODO:
     if (input.moveLeft) { dx -= speed * deltaTime; m_state.player->setFacing(Direction::LEFT); }
     if (input.moveRight) { dx += speed * deltaTime; m_state.player->setFacing(Direction::RIGHT); }
     if (input.moveUp) dy -= speed * deltaTime;

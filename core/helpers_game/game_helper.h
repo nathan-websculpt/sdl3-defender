@@ -5,12 +5,17 @@
 #include "../config.h"
 #include "../../entities/player.h"
 
-// added to move some of the methods in Game here
-// holds non-owning pointers/references to the landscape
-
 class GameHelper {
 public:
     explicit GameHelper(const std::vector<SDL_FPoint>& landscape);
+    ~GameHelper() = default;
+
+    // new: adding because of the const std::vector<SDL_FPoint>& member causing default copy constructor/assignment to be generated
+    //      copying this obj could lead to a dangling reference if landscape where to go out of scope
+    GameHelper(const GameHelper&) = delete;
+    GameHelper& operator=(const GameHelper&) = delete;
+    GameHelper(GameHelper&&) = delete;
+    GameHelper& operator=(GameHelper&&) = delete;
 
     float getGroundYAt(float x) const; // for landscape
     bool isOutOfWorld(const SDL_FRect& r, float mx = 100.0f, float my = 100.0f) const;

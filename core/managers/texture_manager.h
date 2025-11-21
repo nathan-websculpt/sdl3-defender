@@ -8,9 +8,12 @@ struct SDL_Texture;
 
 class TextureManager {
 public:
-    // delete copy constructor and assignment operator to enforce singleton
+    // enforce singleton
     TextureManager(const TextureManager&) = delete;
     TextureManager& operator=(const TextureManager&) = delete;
+    TextureManager(TextureManager&&) = delete;
+    TextureManager& operator=(TextureManager&&) = delete;
+
 
     // get singleton instance
     static TextureManager& getInstance();

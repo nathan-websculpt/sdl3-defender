@@ -19,6 +19,12 @@ public:
     Game();
     ~Game() = default;
 
+    // non-copyable/non-movable because this is the entire game state 
+    Game(const Game&) = delete;
+    Game& operator=(const Game&) = delete;
+    Game(Game&&) = delete;
+    Game& operator=(Game&&) = delete;
+
     void startNewGame();
     void update(float deltaTime);
     void handleInput(const GameInput& input, float deltaTime);

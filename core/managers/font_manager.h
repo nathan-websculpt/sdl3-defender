@@ -8,9 +8,12 @@ struct TTF_Font;
 
 class FontManager {
 public:
-    // delete copy constructor and assignment operator to enforce singleton
+    // enforce singleton
     FontManager(const FontManager&) = delete;
     FontManager& operator=(const FontManager&) = delete;
+    FontManager(FontManager&&) = delete;
+    FontManager& operator=(FontManager&&) = delete;
+
 
     // get singleton instance
     static FontManager& getInstance();

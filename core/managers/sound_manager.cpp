@@ -13,6 +13,10 @@ void SoundManager::shutdown() {
         m_initialized = false;
         SDL_Log("SoundManager: SDL_mixer shut down.");
         MIX_Quit();
+
+        // TODO: calling MIX_Quit after clearing smart pointers may become a problem if shared pointers outlive mixer content
+        //       reoorder? 
+        //       maybe make shutdown private and only call from destructor?
     }
 }
 
