@@ -23,14 +23,14 @@ void Particle::update(float deltaTime) {
     float currentSize = m_initialSize + (m_age * m_growRate);
     
     // calc alpha based on age and fade rate
-    Uint8 currentAlpha = static_cast<Uint8>((m_lifetime - m_age) / m_lifetime * 255.0f * m_fadeRate);
+    int currentAlpha = static_cast<int>((m_lifetime - m_age) / m_lifetime * 255.0f * m_fadeRate);
 
     if (currentAlpha < 0) currentAlpha = 0;
 
     // size and alpha changes
     m_rect.w = currentSize;
     m_rect.h = currentSize;
-    m_alpha = currentAlpha;
+    m_alpha = static_cast<Uint8>(currentAlpha);
 
     // adjust position since changing size affects top-left corner
     m_rect.x -= (currentSize - m_initialSize) * 0.5f;
