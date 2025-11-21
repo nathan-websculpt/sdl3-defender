@@ -24,18 +24,18 @@ bool Platform::initialize() {
         return false;
     }
 
-    globals.window = SDL_CreateWindow("sdl3 defender", globals.windowWidth, globals.windowHeight, SDL_WINDOW_RESIZABLE);
-    if (!globals.window) {
+    m_window = SDL_CreateWindow("sdl3 defender", globals.windowWidth, globals.windowHeight, SDL_WINDOW_RESIZABLE);
+    if (!m_window) {
         SDL_Log("failed to create window: %s", SDL_GetError());
         TTF_Quit();
         SDL_Quit();
         return false;
     }
 
-    globals.renderer = SDL_CreateRenderer(globals.window, nullptr);
+    globals.renderer = SDL_CreateRenderer(m_window, nullptr);
     if (!globals.renderer) {
         SDL_Log("failed to create renderer: %s", SDL_GetError());
-        SDL_DestroyWindow(globals.window);
+        SDL_DestroyWindow(m_window);
         TTF_Quit();
         SDL_Quit();
         return false;
@@ -85,7 +85,7 @@ bool Platform::initialize() {
 
 void Platform::shutdown() {
     if (m_textInputActive) {
-        SDL_StopTextInput(globals.window); // stop text input
+        SDL_StopTextInput(m_window); // stop text input
         m_textInputActive = false;
         SDL_Log("Platform: Text input STOPPED during shutdown.");
     }
@@ -110,9 +110,9 @@ void Platform::shutdown() {
         SDL_DestroyRenderer(globals.renderer);
         globals.renderer = nullptr;
     }
-    if (globals.window) {
-        SDL_DestroyWindow(globals.window);
-        globals.window = nullptr;
+    if (m_window) {
+        SDL_DestroyWindow(m_window);
+        m_window = nullptr;
     }
     TTF_Quit();
     SDL_Quit();
@@ -158,7 +158,7 @@ void Platform::run(Game& sim) {
 
     // ensure text input is stopped when the loop exits
     if (m_textInputActive) {
-        SDL_StopTextInput(globals.window);
+        SDL_StopTextInput(m_window);
         m_textInputActive = false;
         SDL_Log("Platform: Text input STOPPED on shutdown.");
     }
@@ -227,12 +227,12 @@ void Platform::updateTextInputState(const GameStateData& state) {
 
     if (shouldTextInputBeActive && !m_textInputActive) {
         // start text input
-        SDL_StartTextInput(globals.window);
+        SDL_StartTextInput(m_window);
         m_textInputActive = true;
         SDL_Log("Platform: Text input STARTED for high score entry.");
     } else if (!shouldTextInputBeActive && m_textInputActive) {
         // stop text input
-        SDL_StopTextInput(globals.window);
+        SDL_StopTextInput(m_window);
         m_textInputActive = false;
         SDL_Log("Platform: Text input STOPPED.");
     }

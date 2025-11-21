@@ -27,6 +27,7 @@ public:
     void shutdown();
 
 private:
+    SDL_Window* m_window = nullptr;
     bool m_running;
     bool m_textInputActive; // track if text input is currently active
 
